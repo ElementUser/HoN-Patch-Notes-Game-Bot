@@ -8,8 +8,8 @@ PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/com
 """
 
 
-def get_patch_notes_line_number(comment):
+def get_patch_notes_line_number(commentBody):
     """
-    Returns the first integer from the comment
+    Returns the first integer from the comment body
     """
-    return re.search(r"\d+", comment).group()
+    return re.search(r"\d+", commentBody).group()
