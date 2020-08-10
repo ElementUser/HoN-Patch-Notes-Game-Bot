@@ -11,5 +11,12 @@ PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/com
 def get_patch_notes_line_number(commentBody):
     """
     Returns the first integer from the comment body
+
+    Returns None if no valid integer can be found
     """
-    return re.search(r"\d+", commentBody).group()
+
+    try:
+        return re.search(r"\d+", commentBody).group()
+    except AttributeError:
+        return None
+
