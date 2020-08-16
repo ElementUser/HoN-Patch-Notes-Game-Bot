@@ -1,3 +1,8 @@
 # References
 
-- https://www.storybench.org/how-to-scrape-reddit-with-python/
+- PRAW API: https://www.storybench.org/how-to-scrape-reddit-with-python/
+
+
+## Unit Testing
+- https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest
+- CI/CD & Unit Testing: https://realpython.com/python-continuous-integration/#single-source-repository
