@@ -22,15 +22,28 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
       
-    - name: Install dependencies with Poetry
+    - name: Set up Poetry dependency manager
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-        poetry install
+        source $HOME/.poetry/env
+        poetry config virtualenvs.in-project true          
+
+      - name: Set up cache
+        uses: actions/cache@v1
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies with Poetry
+        # "poetry install" will not rebuild if the cache remains unchanged
+        run: |
+          source $HOME/.poetry/env
+          poetry install
 
     - name: Lint with flake8 using Poetry
-        # stop the build if there are Python syntax errors or undefined names
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+      # stop the build if there are Python syntax errors or undefined names
+      # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
       run: |
         poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
