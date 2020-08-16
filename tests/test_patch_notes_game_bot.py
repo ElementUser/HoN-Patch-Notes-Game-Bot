@@ -1,4 +1,4 @@
-from patch_notes_game_bot import __version__
+from hon_patch_notes_game_bot import __version__
 
 
 def test_version():
