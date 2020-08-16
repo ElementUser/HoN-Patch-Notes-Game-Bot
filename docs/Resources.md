@@ -6,3 +6,6 @@
 ## Unit Testing
 - https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest
 - CI/CD & Unit Testing: https://realpython.com/python-continuous-integration/#single-source-repository
+
+## CI/CD
+- Caching example of CI .yml file with Github for Poetry: https://medium.com/@vanflymen/blazing-fast-ci-with-github-actions-poetry-black-and-pytest-9e74299dd4a5
