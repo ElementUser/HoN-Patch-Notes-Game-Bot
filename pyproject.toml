@@ -5,7 +5,7 @@ description = ""
 authors = ["William Lam <w.lam@honteam.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.8"
 praw = "^7.1.0"
 
 [tool.poetry.dev-dependencies]
