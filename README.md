@@ -1,6 +1,6 @@
 # HoN Patch Notes Guessing Game (Bot)
 
-![Build](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/actions/workflows/.github/workflows/.github_ci.yml/badge.svg)
+![Build](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/workflows/.github/workflows/.github_ci.yml/badge.svg)
 
 This application is intended to automate (or semi-automate) the process of HoN's Patch Notes Guessing Game that is hosted in a Reddit thread.
 
