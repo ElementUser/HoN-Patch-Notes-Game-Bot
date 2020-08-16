@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-    
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,12 +38,12 @@ jobs:
           poetry-${{ hashFiles('**/poetry.lock') }}
 
     - name: Set Poetry config
-    run: |
-      poetry config settings.virtualenvs.path ~/.virtualenvs
+      run: |
+        poetry config settings.virtualenvs.path ~/.virtualenvs
 
     - name: Install Dependencies (on cache miss)
-    run: poetry install
-    if: steps.cache.outputs.cache-hit != 'true'
+      run: poetry install
+      if: steps.cache.outputs.cache-hit != 'true'
 
     - name: Lint with flake8
         # stop the build if there are Python syntax errors or undefined names
