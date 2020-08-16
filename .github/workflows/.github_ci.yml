@@ -29,17 +29,17 @@ jobs:
         source $HOME/.poetry/env
         poetry config virtualenvs.in-project true          
 
-      - name: Set up cache
-        uses: actions/cache@v1
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Set up cache
+      uses: actions/cache@v1
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
 
-      - name: Install dependencies with Poetry
-        # "poetry install" will not rebuild if the cache remains unchanged
-        run: |
-          source $HOME/.poetry/env
-          poetry install
+    - name: Install dependencies with Poetry
+      # "poetry install" will not rebuild if the cache remains unchanged
+      run: |
+        source $HOME/.poetry/env
+        poetry install
 
     - name: Lint with flake8 using Poetry
       # stop the build if there are Python syntax errors or undefined names
