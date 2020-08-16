@@ -19,4 +19,3 @@ def get_patch_notes_line_number(commentBody):
         return re.search(r"\d+", commentBody).group()
     except AttributeError:
         return None
-
