@@ -12,6 +12,7 @@ praw = "^7.1.0"
 black = "^19.10b0"
 pytest = "^6.0.1"
 pytest-cov = "^2.10.1"
+flake8 = "^3.8.3"
 
 [build-system]
 requires = ["poetry>=0.12"]
