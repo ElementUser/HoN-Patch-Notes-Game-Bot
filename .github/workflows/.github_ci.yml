@@ -2,8 +2,6 @@
 # It will install Python dependencies, run tests and lint with a set of recent Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: HoN Patch Notes Game Bot - Python CI
-
 on:
   push:
     branches: [ master ]

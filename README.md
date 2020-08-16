@@ -1,5 +1,7 @@
 # HoN Patch Notes Guessing Game (Bot)
 
+![Build](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/actions/workflows/.github/workflows/.github_ci.yml/badge.svg)
+
 This application is intended to automate (or semi-automate) the process of HoN's Patch Notes Guessing Game that is hosted in a Reddit thread.
 
 Reddit users post their guess according to the rules of the game. The rules of the game are the following: 
