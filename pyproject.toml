@@ -7,6 +7,7 @@ authors = ["William Lam <w.lam@honteam.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 praw = "^7.1.0"
+tinydb = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
