@@ -47,7 +47,7 @@ def get_user_from_database(author):
         return user
     else:
         # Make a user with default attributes and add it to the database
-        user = RedditUser(id=author.id, name=author.name)
+        user = RedditUser(name=author.name)
         database.add_user(user)
         return user
 
