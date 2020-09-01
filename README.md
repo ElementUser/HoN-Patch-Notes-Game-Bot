@@ -30,12 +30,18 @@ username=insertBotUsernameHere
 ```
 
 - Install Poetry by following the installation steps [from their official documents](https://python-poetry.org/docs/). Do not use `pip install` to install Poetry.
-- After installation, on Mac/Linux you must run this command to enable the poetry command in your terminal: `source $HOME/.poetry/env`
-  - Poetry is required to handle dependencies in a virtualenv & run the script in a consistent environment regardless of the host system
+- `Mac/Linux`: After installation, on Mac/Linux you must run this command to enable the poetry command in your terminal: `source $HOME/.poetry/env`
+- Update Poetry to the latest version by running this command: `poetry self update --preview`
+  - Poetry is required to handle dependencies in a virtualenv & run the script in a consistent environment regardless of the host system.
+
+## Mac/Linux - Additional Setup
+
+- Navigate to the project root directory in your terminal and run `stat scripts.sh` to check its permissions. This file must have execute permissions (the "x" flag set) to run properly.
+- If required, use `chmod 744 scripts.sh` (assuming the current account is the owner of the file) to set file permissions properly.
 
 # Usage
 
-The following commands only work if ran in a terminal while in the project root directory:
+- Navigate to the project root directory in your terminal.
 
 - To run the script, use `./scripts.sh start`
 - To run unit tests, use `./scripts.sh test`
