@@ -45,9 +45,9 @@ Navigate to the project root directory in your terminal.
 
 - To run the script, use `./scripts.sh start`
 - To run unit tests, use `./scripts.sh test`
-- To reset the cache & database, use `./scripts.sh reset` before doing `./scripts.sh start` again
+- To reset the cache & database, use `./scripts.sh reset` before running `./scripts.sh start`
 
-(praw.ini reference)[https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html]
+[praw.ini reference](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html)
 
 # Rules of the game
 
