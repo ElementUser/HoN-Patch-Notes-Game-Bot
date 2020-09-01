@@ -15,10 +15,12 @@ case $1 in
         ;;
 
     "reset")
-        rm hon_patch_notes_game_bot/cache/
+        rm -r hon_patch_notes_game_bot/cache/
         ;;
 
     "test")
+        poetry run flake8 ./hon_patch_notes_game_bot --count --select=E9,F63,F7,F82 --show-source --statistics
+        poetry run flake8 ./hon_patch_notes_game_bot --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
         poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/
         ;;
 
@@ -31,8 +33,8 @@ case $1 in
         echo "Current command list: "
         echo "
             start: runs the program after navigating to its source code directory (to ensure it runs properly with Poetry's venv)
-            reset: resets the files in the 'hon_patch_notes_game_bot/cache/' folder
-            test: runs a pytest command to output a test report with the help of the pytest-cov library
+            reset: removes files in the 'hon_patch_notes_game_bot/cache/' folder
+            test: runs flake8 linting tests & pytest unit tests
             winners: gets a list of winners & list of total potential winners
         "
         ;;

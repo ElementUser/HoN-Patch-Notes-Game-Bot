@@ -55,7 +55,8 @@ def get_user_from_database(author):
 
 def safe_comment_reply(comment, text_body: str):
     """
-    Attempts to reply to a comment & safely handles a RedditAPIException (e.g. if that comment has been deleted & cannot be responded to)
+    Attempts to reply to a comment & safely handles a RedditAPIException
+    (e.g. if that comment has been deleted & cannot be responded to)
 
     Attributes:
         comment: a praw Comment model instance
@@ -187,7 +188,8 @@ class Core:
                                     unread_item,
                                     f">{line_content} \n\n"
                                     f"Congratulations for correctly guessing a patch note line, {author.name}! \n\n"
-                                    "You have been added to the pool of potential winners & can win a prize once this contest is over! See the main post for more details.",
+                                    "You have been added to the pool of potential winners & can win a prize once this contest is over!"
+                                    "See the main post for more details.",
                                 )
 
                             # Update user in DB

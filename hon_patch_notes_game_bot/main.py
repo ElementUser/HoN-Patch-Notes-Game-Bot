@@ -6,24 +6,21 @@ from hon_patch_notes_game_bot.core import Core
 import hon_patch_notes_game_bot.database as database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.user import RedditUser
-
-
-# ===========================================================
-# Input variables for the program - change these when needed
-# ===========================================================
-submission_title = "[TEST] Thread 3"
+from hon_patch_notes_game_bot.config import (
+    submission_title,
+    MIN_COMMENT_KARMA,
+    SLEEP_INTERVAL_SECONDS,
+    SUBREDDIT_NAME,
+    MAX_NUM_GUESSES,
+)
 
 # ============
 # Constants
 # ============
 BOT_USERNAME = "hon-bot"
 USER_AGENT = "HoN Patch Notes Game Bot by /u/hon-bot"
-SUBREDDIT_NAME = "testingground4bots"
-MAX_NUM_GUESSES = 2
-MIN_COMMENT_KARMA = 5
 PATCH_NOTES_PATH = "config/patch_notes.txt"
 SUBMISSION_CONTENT_PATH = "config/submission_content.md"
-SLEEP_INTERVAL_SECONDS = 5
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
 
