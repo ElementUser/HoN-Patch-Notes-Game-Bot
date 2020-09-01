@@ -36,6 +36,7 @@
 - https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest
 - CI/CD & Unit Testing: https://realpython.com/python-continuous-integration/#single-source-repository
 
-# Continuous Integration (CI)
+# Continuous Integration (CI) Pipeline
 
+- The CI pipeline for this project can be found [here](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/actions)
 - Reference for the .yml config file: https://github.com/python-poetry/poetry/blob/master/.github/workflows/main.yml

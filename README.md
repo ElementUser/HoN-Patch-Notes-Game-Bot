@@ -2,9 +2,44 @@
 
 ![Build](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/workflows/.github/workflows/.github_ci.yml/badge.svg)
 
-This application is intended to automate (or semi-automate) the process of HoN's Patch Notes Guessing Game that is hosted in a Reddit thread.
+This application is intended to automate the process of HoN's Patch Notes Guessing Game that is hosted in a thread on the Reddit platform.
+
+Specifically, the bot is intended to create a thread in the [/r/heroesofnewerth subreddit](https://www.reddit.com/r/HeroesofNewerth/).
 
 Reddit users post their guess according to the rules of the game. The rules of the game are the following:
+
+# Requirements
+
+- Python 3.8+ must be installed on the host system
+
+# Setup
+
+- Log onto the bot's Reddit account at: https://www.reddit.com/login/
+- Set up a Reddit app by following the instructions [here](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example), and obtain your app's `client_id` and `client_secret` (required for next step)
+- Create a `praw.ini` file in this directory: `hon_patch_notes_game_bot/praw.ini`.
+
+Configure `praw.ini` with your bot credentials so it looks like this:
+
+```
+[insertBotNameHere]
+client_id=insertClientIdHere
+client_secret=insertClientSecretHere
+password=insertBotPasswordHere
+username=insertBotUsernameHere
+```
+
+- Install Poetry by following the installation steps [from their official documents](https://python-poetry.org/docs/). Do not use `pip install` to install Poetry.
+  - Poetry is required to handle dependencies in a virtualenv & run the script in a consistent environment regardless of the host system
+
+# Usage
+
+The following commands only work if ran from the project root's terminal:
+
+- To run the script, use `./scripts.sh start`
+- To run unit tests, use `./scripts.sh test`
+- To reset the cache & database, use `./scripts.sh reset` before doing `./scripts.sh start` again
+
+(praw.ini reference)[https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html]
 
 # Rules of the game
 
@@ -15,14 +50,11 @@ Reddit users post their guess according to the rules of the game. The rules of t
 - There are blank lines in the patch notes. If you guess a blank line, you will receive a `Whiffed!` comment. You have 1 (ONE) more additional guess.
 - PLEASE USE CTRL+F or the search feature IF YOUR NUMBER HAS BEEN GUESSED. They will not count as a valid entry, and you will instantly be disqualified if you choose a number that has already been guessed.
 
-# The bot
+# The Bot
 
 The bot enforces these rules and outputs various text lines from a given `patch_notes.txt` file, depending on if a user guesses a line with the appropriate number of content or not. Some features/behaviours that the bot will encompass:
 
-- Keep track of each unique user that posts in the thread, as well as their guess count
-- Validate users to see if they are new accounts or not
-
-# Using Poetry
-
-`cd python patch_notes_game_bot`
-`poetry run main.py`
+- Log into Reddit (credentials are configured in `hon_patch_notes_game_bot/praw.ini`)
+- Keep track of each unique user that responds to the bot in the thread and/or to a comment that the bot made in the thread
+- Keep track of these user's statistics pertaining to the current game instance
+- Prevent users below a certain comment karma from commenting

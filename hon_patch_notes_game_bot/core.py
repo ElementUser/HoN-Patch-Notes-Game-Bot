@@ -63,7 +63,7 @@ def safe_comment_reply(comment, text_body: str):
         text_body: the markdown text to include in the reply made
     """
     try:
-        comment.reply(text_body)
+        comment.reply(body=text_body)
     except RedditAPIException:
         pass
 

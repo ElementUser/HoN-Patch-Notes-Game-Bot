@@ -5,8 +5,7 @@ import time
 from hon_patch_notes_game_bot.core import Core
 import hon_patch_notes_game_bot.database as database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
-from hon_patch_notes_game_bot.user import RedditUser
-from hon_patch_notes_game_bot.config import (
+from hon_patch_notes_game_bot.config.config import (
     submission_title,
     MIN_COMMENT_KARMA,
     SLEEP_INTERVAL_SECONDS,
