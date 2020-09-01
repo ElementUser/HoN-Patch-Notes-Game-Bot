@@ -55,11 +55,11 @@ class PatchNotesFile:
 
     def get_version_string(self) -> str:
         """
-        Gets the version string from self.patch_notes_file
+        Gets the version string from self.patch_notes_file (first line)
 
         Returns:
             The version string of the patch notes file
         """
-        line_content = linecache.getline(self.patch_notes_file, lineNumber)
+        line_content = linecache.getline(self.patch_notes_file, 1)
         version_string = line_content.replace("Version ", "")
         return version_string
