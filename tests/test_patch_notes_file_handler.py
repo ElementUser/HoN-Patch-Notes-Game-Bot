@@ -1,7 +1,7 @@
 import pytest
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 
-patch_notes_file_path = "./tests/cache/patch_notes_test.txt"
+patch_notes_file_path = "./tests/config/patch_notes_test.txt"
 
 
 @pytest.fixture

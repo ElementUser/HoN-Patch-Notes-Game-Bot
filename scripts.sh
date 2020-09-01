@@ -14,6 +14,10 @@ case $1 in
         poetry run python main.py
         ;;
 
+    "reset")
+        #TODO: Clear cache folder
+        ;;
+
     "test")
         poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/
         ;;

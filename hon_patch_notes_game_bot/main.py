@@ -21,8 +21,8 @@ USER_AGENT = "HoN Patch Notes Game Bot by /u/hon-bot"
 SUBREDDIT_NAME = "testingground4bots"
 MAX_NUM_GUESSES = 2
 MIN_COMMENT_KARMA = 5
-PATCH_NOTES_PATH = "cache/patch_notes.txt"
-SUBMISSION_CONTENT_PATH = "cache/submission_content.md"
+PATCH_NOTES_PATH = "config/patch_notes.txt"
+SUBMISSION_CONTENT_PATH = "config/submission_content.md"
 SLEEP_INTERVAL_SECONDS = 5
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
