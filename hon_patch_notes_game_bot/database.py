@@ -70,7 +70,7 @@ def update_user(RedditUser) -> None:
 
     Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
     """
-    db.table("user").update(vars(RedditUser))
+    db.table("user").update(vars(RedditUser), User.name == RedditUser.name)
 
 
 def check_patch_notes_line_number(line_number: int):
