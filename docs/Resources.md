@@ -1,6 +1,4 @@
-# References
-
-## Dependencies
+# Dependencies
 
 - PRAW API: https://www.storybench.org/how-to-scrape-reddit-with-python/
 
@@ -14,7 +12,7 @@
   - Used for dependency management & run the bot script in a virtualenv
   - Ensures that the bot script will run in a consistent environment regardless of its host system
 
-## Dev Dependencies
+# Dev Dependencies
 
 - pytest: https://docs.pytest.org/en/stable/
 
@@ -31,7 +29,7 @@
 - flake8: https://flake8.pycqa.org/en/latest/
   - Python code linter
 
-## Unit Testing
+# Unit Testing
 
 - https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest
 - CI/CD & Unit Testing: https://realpython.com/python-continuous-integration/#single-source-repository
