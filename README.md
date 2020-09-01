@@ -41,7 +41,7 @@ username=insertBotUsernameHere
 
 # Usage
 
-- Navigate to the project root directory in your terminal.
+Navigate to the project root directory in your terminal.
 
 - To run the script, use `./scripts.sh start`
 - To run unit tests, use `./scripts.sh test`
