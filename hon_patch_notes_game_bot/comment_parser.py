@@ -16,6 +16,7 @@ def get_patch_notes_line_number(commentBody: str) -> int:
     """
 
     try:
-        return re.search(r"\d+", commentBody).group()
+        comment_first_line = commentBody.partition("\n")[0]
+        return int(re.search(r"\d+", comment_first_line).group())
     except AttributeError:
         return None
