@@ -1,7 +1,8 @@
 #!/usr/bin/python
-import praw, time
-from praw.models import Comment
+import praw
+import time
 import database
+from praw.models import Comment
 from comment_parser import get_patch_notes_line_number
 from patch_notes_file_handler import PatchNotesFile
 from user import RedditUser
@@ -70,7 +71,7 @@ def main():
     while True:
         # Check unread replies
         for unread_item in reddit.inbox.unread(limit=None):
-            # Only proceed with processing the unread item if it is a comment & if the comment's submission.id matches the current submission.id
+            # Only proceed with processing the unread item if it belongs to the current thread
             if isinstance(unread_item, Comment):
                 unread_item.mark_read()
                 if unread_item.submission.id == submission.id:
@@ -122,7 +123,8 @@ def main():
                             user.can_submit_guess = False
                             safe_comment_reply(
                                 unread_item,
-                                f"Sorry {author.name}, you didn't use Ctrl+F like the rules told you to & you guessed a patch line number that already exists. \n\nYou are now disqualified from this thread. Better luck next time!",
+                                f"Sorry {author.name}, you didn't use Ctrl+F like the rules told you to & you guessed a patch line number that already exists. \n\n"
+                                "You are now disqualified from this thread. Better luck next time!",
                             )
                             # Update user in DB
                             database.db.table("user").update(vars(user))
@@ -140,18 +142,23 @@ def main():
                                 if user.can_submit_guess:
                                     safe_comment_reply(
                                         unread_item,
-                                        f"Whiffed! \n\n{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left! Try guessing another line number.",
+                                        f"Whiffed! \n\n"
+                                        f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left! \n\n"
+                                        "Try guessing another line number.",
                                     )
                                 else:
                                     safe_comment_reply(
                                         unread_item,
-                                        f"Sorry {author.name}, you have used all of your guesses. Better luck next time!",
+                                        f"Sorry {author.name}, you have used all of your guesses. \n\n"
+                                        "Better luck next time!",
                                     )
                             else:
                                 user.can_submit_guess = False
                                 user.is_potential_winner = True
                                 unread_item.reply(
-                                    f">{line_content} \n\nCongratulations for correctly guessing a patch note line, {author.name}!\n\nYou can now potentially receive a prize once this contest is over (see the main post for more details)!"
+                                    f">{line_content} \n\n"
+                                    f"Congratulations for correctly guessing a patch note line, {author.name}! \n\n"
+                                    "You have been added to the pool of potential winners & can win a prize once this contest is over! See the main post for more details."
                                 )
 
                             # Update user in DB

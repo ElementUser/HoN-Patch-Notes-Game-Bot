@@ -5,8 +5,7 @@ This module will keep track of all users that have posted in the allocated patch
 Data will be saved in some form of database (to prevent loss of data, e.g. if Reddit or the bot crashes)
 """
 
-from tinydb import TinyDB, Query, where
-from user import RedditUser
+from tinydb import TinyDB, Query
 
 db = TinyDB("db.json")
 User = Query()
@@ -86,4 +85,4 @@ def get_potential_winners_list():
 
     TODO: Add functionality after script ends to pick X random winners from the potential winners list
     """
-    return db.table("user").search(User.is_potential_winner == True)
+    return db.table("user").search(User.is_potential_winner)

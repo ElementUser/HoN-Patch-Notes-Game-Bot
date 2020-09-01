@@ -5,7 +5,7 @@ HoN Patch Version: `patch_version`
 ## Rules of the Game (Bot Operations)
 
 - Pick a number between 1 and `max_line_count`, and post that number to the main thread or the comment that /u/hon-bot responds to you with.
-- Guesses for lines that actually have content in the patch notes will be entered into a pool of potential winners for a prize! See the [Rewards](#Rewards) section for more information.
+- Guesses for lines that actually have content in the patch notes will be entered into the pool of potential winners for a prize! See the [Rewards](#Rewards) section for more information.
 - Each person gets 1 (ONE) guess. If your guess has a number in it in your first line of your comment, it WILL be parsed by the bot and will count as a guess (whether you want it to or not). For simplicity's sake, please only include a number in your guess.
 - Guesses for line numbers that don't exist in the patch notes count as an invalid guess. You have been warned!
 - There are blank lines in the patch notes. If you guess a blank line, you will receive a `Whiffed!` comment. You have 1 (ONE) more additional guess.
