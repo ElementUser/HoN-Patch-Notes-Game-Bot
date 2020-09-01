@@ -2,11 +2,11 @@
 
 ![Build](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/workflows/.github/workflows/.github_ci.yml/badge.svg)
 
-This application is intended to automate the process of HoN's Patch Notes Guessing Game that is hosted in a thread on the Reddit platform.
+This application automates the process of HoN's Patch Notes Guessing Game that is hosted in a thread on the Reddit platform.
 
 Specifically, the bot is intended to create a thread in the [/r/heroesofnewerth subreddit](https://www.reddit.com/r/HeroesofNewerth/).
 
-Reddit users post their guess according to the rules of the game. The rules of the game are the following:
+Reddit users post their guess according to the [Rules of the game](#Rules-of-the-game).
 
 # Requirements
 
@@ -64,7 +64,7 @@ Navigate to the project root directory in your terminal.
 
 The bot enforces these rules and outputs various text lines from a given `patch_notes.txt` file, depending on if a user guesses a line with the appropriate number of content or not. Some features/behaviours that the bot will encompass:
 
-- Log into Reddit (credentials are configured in `hon_patch_notes_game_bot/praw.ini`)
+- Log into Reddit (credentials are configured in `hon_patch_notes_game_bot/praw.ini`) and communicate with its API at fixed time intervals
 - Keep track of each unique user that responds to the bot in the thread and/or to a comment that the bot made in the thread
 - Keep track of these user's statistics pertaining to the current game instance
 - Prevent users below a certain comment karma from commenting

@@ -100,15 +100,15 @@ class Core:
         if user.can_submit_guess:
             safe_comment_reply(
                 comment,
-                f"{first_line} \n\n"
-                f"{author.name}, you have {self.max_num_guesses - user.num_guesses} guess(es) left! \n\n"
+                f"{first_line}\n\n"
+                f"{author.name}, you have {self.max_num_guesses - user.num_guesses} guess(es) left!\n\n"
                 "Try guessing another line number.",
             )
         else:
             safe_comment_reply(
                 comment,
                 f"{first_line} \n\n"
-                f"Sorry {author.name}, you have used all of your guesses. \n\n"
+                f"Sorry {author.name}, you have used all of your guesses.\n\n"
                 "Better luck next time!",
             )
 
@@ -160,7 +160,7 @@ class Core:
                                 user,
                                 author,
                                 unread_item,
-                                "This line number has already been guessed. \n\n",
+                                "This line number has already been guessed.\n\n",
                             )
 
                             # Update user in DB
@@ -177,7 +177,7 @@ class Core:
 
                             if line_content is None:
                                 self.reply_with_bad_guess_feedback(
-                                    user, author, unread_item, "Whiffed! \n\n",
+                                    user, author, unread_item, "Whiffed!\n\n",
                                 )
 
                             else:
@@ -185,9 +185,10 @@ class Core:
                                 user.is_potential_winner = True
                                 safe_comment_reply(
                                     unread_item,
-                                    f">{line_content} \n\n"
-                                    f"Congratulations for correctly guessing a patch note line, {author.name}! \n\n"
-                                    "You have been added to the pool of potential winners & can win a prize once this contest is over!"
+                                    f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
+                                    "The line from the patch notes is the following:\n\n"
+                                    f">{line_content}\n\n"
+                                    "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"
                                     "See the main post for more details.",
                                 )
 
