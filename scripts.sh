@@ -15,7 +15,7 @@ case $1 in
         ;;
 
     "reset")
-        #TODO: Clear cache folder
+        rm hon_patch_notes_game_bot/cache/
         ;;
 
     "test")
@@ -31,6 +31,7 @@ case $1 in
         echo "Current command list: "
         echo "
             start: runs the program after navigating to its source code directory (to ensure it runs properly with Poetry's venv)
+            reset: resets the files in the 'hon_patch_notes_game_bot/cache/' folder
             test: runs a pytest command to output a test report with the help of the pytest-cov library
             winners: gets a list of winners & list of total potential winners
         "

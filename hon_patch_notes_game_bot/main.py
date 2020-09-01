@@ -2,10 +2,10 @@
 import praw
 import time
 
-from core import Core
-import database
-from patch_notes_file_handler import PatchNotesFile
-from user import RedditUser
+from hon_patch_notes_game_bot.core import Core
+import hon_patch_notes_game_bot.database as database
+from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
+from hon_patch_notes_game_bot.user import RedditUser
 
 
 # ===========================================================
@@ -66,6 +66,7 @@ def main():
     # ===============================================================
     # Indefinite loop to listen to unread comment messages on Reddit
     # ===============================================================
+    print("Bot's core loop started")
     while True:
         core = Core(
             reddit=reddit,
@@ -80,6 +81,8 @@ def main():
 
         # Time to wait before calling the Reddit API again (in seconds)
         time.sleep(SLEEP_INTERVAL_SECONDS)
+
+    print("Bot script ended via time deadline")
 
 
 if __name__ == "__main__":

@@ -8,8 +8,8 @@ from praw.exceptions import RedditAPIException
 from praw.models import Comment
 import re
 
-import database
-from user import RedditUser
+import hon_patch_notes_game_bot.database as database
+from hon_patch_notes_game_bot.user import RedditUser
 
 
 def get_patch_notes_line_number(commentBody: str) -> int:
