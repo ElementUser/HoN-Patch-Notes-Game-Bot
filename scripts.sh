@@ -17,12 +17,18 @@ case $1 in
     "test")
         poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/
         ;;
+
+    "winners")
+        # TODO: implement proper file/argument line combination to run
+        ;;
+
     *)
         echo -e "Invalid option.\n"
         echo "Current command list: "
         echo "
             start: runs the program after navigating to its source code directory (to ensure it runs properly with Poetry's venv)
             test: runs a pytest command to output a test report with the help of the pytest-cov library
+            winners: gets a list of winners & list of total potential winners
         "
         ;;
 esac

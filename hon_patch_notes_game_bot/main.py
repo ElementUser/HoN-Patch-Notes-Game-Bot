@@ -22,18 +22,18 @@ USER_AGENT = "HoN Patch Notes Game Bot by /u/hon-bot"
 SUBREDDIT_NAME = "testingground4bots"
 MAX_NUM_GUESSES = 2
 MIN_COMMENT_KARMA = 5
-PATCH_NOTES_PATH = "patch_notes.txt"
+PATCH_NOTES_PATH = "cache/patch_notes.txt"
+SUBMISSION_CONTENT_PATH = "cache/submission_content.md"
 SLEEP_INTERVAL_SECONDS = 5
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
 
-# Submission content
-with open("submission_content.md", "r") as file:
-    # Replace variables in submission_content before posting it
+# Process submission content
+with open(SUBMISSION_CONTENT_PATH, "r") as file:
     submission_content = file.read()
     submission_content = submission_content.replace("`patch_version`", patch_version)
     submission_content = submission_content.replace(
-        "`max_line_count`", str(patch_notes_file.getTotalLineCount())
+        "`max_line_count`", str(patch_notes_file.get_total_line_count())
     )
 
 
@@ -61,9 +61,6 @@ def main():
     else:
         # Obtain submission via URL
         submission = reddit.submission(url=submission_url)
-
-    # Listen to unread messages from comments made in this submission thread
-    inbox = reddit.inbox
 
     # =====================================================
     # Indefinite loop to listen to unread comment messages
@@ -120,12 +117,21 @@ def main():
                         if database.check_patch_notes_line_number(
                             patch_notes_line_number
                         ):
-                            user.can_submit_guess = False
-                            safe_comment_reply(
-                                unread_item,
-                                f"Sorry {author.name}, you didn't use Ctrl+F like the rules told you to & you guessed a patch line number that already exists. \n\n"
-                                "You are now disqualified from this thread. Better luck next time!",
-                            )
+                            if user.can_submit_guess:
+                                safe_comment_reply(
+                                    unread_item,
+                                    f"Sorry, this line number has already been guessed. \n\n"
+                                    f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left! \n\n"
+                                    "Try guessing another line number.",
+                                )
+                            else:
+                                safe_comment_reply(
+                                    unread_item,
+                                    f"This line number has already been guessed. \n\n"
+                                    f"Sorry {author.name}, you have used all of your guesses. \n\n"
+                                    "Better luck next time!",
+                                )
+
                             # Update user in DB
                             database.db.table("user").update(vars(user))
                             continue
@@ -134,7 +140,7 @@ def main():
                             database.add_patch_notes_line_number(
                                 patch_notes_line_number
                             )
-                            line_content = patch_notes_file.getContentFromLineNumber(
+                            line_content = patch_notes_file.get_content_from_line_number(
                                 patch_notes_line_number
                             )
 
@@ -142,13 +148,14 @@ def main():
                                 if user.can_submit_guess:
                                     safe_comment_reply(
                                         unread_item,
-                                        f"Whiffed! \n\n"
+                                        "Whiffed! \n\n"
                                         f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left! \n\n"
                                         "Try guessing another line number.",
                                     )
                                 else:
                                     safe_comment_reply(
                                         unread_item,
+                                        "Whiffed! \n\n"
                                         f"Sorry {author.name}, you have used all of your guesses. \n\n"
                                         "Better luck next time!",
                                     )

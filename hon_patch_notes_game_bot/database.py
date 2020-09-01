@@ -7,7 +7,7 @@ Data will be saved in some form of database (to prevent loss of data, e.g. if Re
 
 from tinydb import TinyDB, Query
 
-db = TinyDB("db.json")
+db = TinyDB("cache/db.json")
 User = Query()
 LineNumber = Query()
 

@@ -7,18 +7,17 @@ This module will load in a "patch_notes.txt" and contain methods that performs r
 
 
 class PatchNotesFile:
-    def __init__(self, patch_notes_file: str) -> None:
+    def __init__(self, patch_notes_file_path: str) -> None:
         """
         Parametrized constructor
 
         Attributes:
-            patch_notes_file: path to the patch notes file to be read from
+            patch_notes_file_path: path to the patch notes file to be read from
         """
 
-        self.patch_notes_file = patch_notes_file
-        self.totalLineCount = self.getTotalLineCount()
+        self.patch_notes_file = patch_notes_file_path
 
-    def getContentFromLineNumber(self, lineNumber: int) -> str:
+    def get_content_from_line_number(self, lineNumber: int) -> str:
         """
         Attempts to get content from a particular line number from the patch notes file
 
@@ -37,7 +36,7 @@ class PatchNotesFile:
 
         return lineContent
 
-    def getTotalLineCount(self) -> int:
+    def get_total_line_count(self) -> int:
         """
         Gets the total number of lines from self.patch_notes_file
 
@@ -53,3 +52,14 @@ class PatchNotesFile:
 
         tempFile.close()
         return numLines
+
+    def get_version_string(self) -> str:
+        """
+        Gets the version string from self.patch_notes_file
+
+        Returns:
+            The version string of the patch notes file
+        """
+        line_content = linecache.getline(self.patch_notes_file, lineNumber)
+        version_string = line_content.replace("Version ", "")
+        return version_string
