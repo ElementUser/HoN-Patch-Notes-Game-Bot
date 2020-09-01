@@ -10,7 +10,9 @@ def patch_notes_file():
     return PatchNotesFile(patch_notes_file_path)
 
 
+# ============
 # Unit tests
+# ============
 def test_get_valid_line_number_func(patch_notes_file):
     # Since the test file is static, we know that line 1 has actual content
     assert patch_notes_file.get_content_from_line_number(1) is not None
@@ -28,4 +30,4 @@ def test_get_total_line_count(patch_notes_file):
 
 def test_get_version_string(patch_notes_file):
     # Since the test file is static, we know it has 730 lines
-    assert patch_notes_file.get_version_string == "4.8.5"
+    assert patch_notes_file.get_version_string() == "4.8.5"
