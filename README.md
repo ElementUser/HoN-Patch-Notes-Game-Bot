@@ -10,7 +10,8 @@ Reddit users post their guess according to the rules of the game. The rules of t
 
 # Requirements
 
-- Python 3.8+ must be installed on the host system
+- [Python 3.8](https://www.python.org/downloads/release/python-380/) or higher must be installed on the host system.
+  - If installing Python 3.8 on Linux, follow the directions [here](https://tecadmin.net/install-python-3-8-ubuntu/)
 
 # Setup
 
@@ -29,11 +30,12 @@ username=insertBotUsernameHere
 ```
 
 - Install Poetry by following the installation steps [from their official documents](https://python-poetry.org/docs/). Do not use `pip install` to install Poetry.
+- After installation, on Mac/Linux you must run this command to enable the poetry command in your terminal: `source $HOME/.poetry/env`
   - Poetry is required to handle dependencies in a virtualenv & run the script in a consistent environment regardless of the host system
 
 # Usage
 
-The following commands only work if ran from the project root's terminal:
+The following commands only work if ran in a terminal while in the project root directory:
 
 - To run the script, use `./scripts.sh start`
 - To run unit tests, use `./scripts.sh test`

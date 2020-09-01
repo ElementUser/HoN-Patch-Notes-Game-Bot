@@ -11,6 +11,7 @@ fi
 case $1 in
     "start")
         cd hon_patch_notes_game_bot
+        poetry install
         poetry run python main.py
         ;;
 
