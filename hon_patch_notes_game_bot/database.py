@@ -36,22 +36,22 @@ def get_submission_url():
     return data[0]["url"]
 
 
-def user_exists(id: int):
+def user_exists(name: str):
     """
-    Determines whether the user exists based on search by id
+    Determines whether the user exists based on search by username
 
     Returns:
         True if the user exists
         False otherwise
     """
-    return db.table("user").search(User.id.exists())
+    return db.table("user").search(User.name == name)
 
 
-def get_user(id: int):
+def get_user(name: str):
     """
-    Retrieves a user object from the database by id
+    Retrieves a user object from the database by username
     """
-    return db.table("user").get(User.id == id)
+    return db.table("user").get(User.name == name)
 
 
 def add_user(RedditUser) -> None:
@@ -60,7 +60,7 @@ def add_user(RedditUser) -> None:
 
     Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
     """
-    if not user_exists(RedditUser.id):
+    if not user_exists(RedditUser.name):
         db.table("user").insert(vars(RedditUser))
 
 

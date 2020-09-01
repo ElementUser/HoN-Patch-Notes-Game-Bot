@@ -36,10 +36,9 @@ def get_user_from_database(author):
     Returns:
         A RedditUser instance
     """
-    if database.user_exists(author.id):
-        db_user = database.get_user(author.id)
+    if database.user_exists(author.name):
+        db_user = database.get_user(author.name)
         user = RedditUser(
-            id=db_user["id"],
             name=db_user["name"],
             can_submit_guess=db_user["can_submit_guess"],
             is_potential_winner=db_user["is_potential_winner"],

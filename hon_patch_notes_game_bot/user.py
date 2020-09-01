@@ -1,7 +1,6 @@
 class RedditUser:
     def __init__(
         self,
-        id: str,
         name: str,
         can_submit_guess: bool = True,
         is_potential_winner: bool = False,
@@ -11,7 +10,6 @@ class RedditUser:
         Parametrized constructor
         """
 
-        self.id = id
         self.name = name
         self.can_submit_guess = can_submit_guess
         self.is_potential_winner = is_potential_winner

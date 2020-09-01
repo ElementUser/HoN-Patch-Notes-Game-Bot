@@ -5,7 +5,7 @@ This file will contain the bot script configuration that are most likely to chan
 # ==========
 # Variables
 # ==========
-submission_title = "[TEST] Thread 4"
+submission_title = "[TEST v1] 4.8.5 - Patch Notes Guessing Game"
 
 # ================
 # Other constants

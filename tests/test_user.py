@@ -6,7 +6,6 @@ from hon_patch_notes_game_bot.user import RedditUser
 def reddit_user():
     """Initializes RedditUser object"""
     return RedditUser(
-        id="1",
         name="Test Name",
         can_submit_guess=True,
         is_potential_winner=False,
@@ -17,8 +16,6 @@ def reddit_user():
 # ============
 # Unit tests
 # ============
-def get_patch_notes_line_number(reddit_user):
-    assert reddit_user.id == "1"
 
 
 def test_user_name(reddit_user):

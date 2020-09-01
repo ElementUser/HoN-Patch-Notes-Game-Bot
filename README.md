@@ -29,6 +29,8 @@ password=insertBotPasswordHere
 username=insertBotUsernameHere
 ```
 
+Using a `praw.ini` file is a secure way to provide the login credentials for PRAW in the bot script. `.ini` files are not committed to source control (as defined in `.gitignore`).
+
 - Install Poetry by following the installation steps [from their official documents](https://python-poetry.org/docs/). Do not use `pip install` to install Poetry.
 - `Mac/Linux`: After installation, on Mac/Linux you must run this command to enable the poetry command in your terminal: `source $HOME/.poetry/env`
 - Update Poetry to the latest version by running this command: `poetry self update --preview`
