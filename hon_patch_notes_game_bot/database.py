@@ -58,6 +58,15 @@ def add_user(RedditUser) -> None:
         db.table("user").insert(vars(RedditUser))
 
 
+def update_user(RedditUser) -> None:
+    """
+    Updates the user data in the database
+
+    Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
+    """
+    db.table("user").update(vars(RedditUser))
+
+
 def check_patch_notes_line_number(line_number: int):
     """
     Checks if a previously guessed patch notes line number already exists in the database

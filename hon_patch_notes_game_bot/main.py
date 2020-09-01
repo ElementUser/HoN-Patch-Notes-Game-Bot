@@ -1,17 +1,16 @@
 #!/usr/bin/python
 import praw
 import time
+
+from core import Core
 import database
-from praw.models import Comment
-from comment_parser import get_patch_notes_line_number
 from patch_notes_file_handler import PatchNotesFile
 from user import RedditUser
-from util import safe_comment_reply
+
 
 # ===========================================================
 # Input variables for the program - change these when needed
 # ===========================================================
-patch_version = "4.8.5"
 submission_title = "[TEST] Thread 3"
 
 # ============
@@ -31,7 +30,9 @@ patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
 # Process submission content
 with open(SUBMISSION_CONTENT_PATH, "r") as file:
     submission_content = file.read()
-    submission_content = submission_content.replace("`patch_version`", patch_version)
+    submission_content = submission_content.replace(
+        "`patch_version`", patch_notes_file.get_version_string()
+    )
     submission_content = submission_content.replace(
         "`max_line_count`", str(patch_notes_file.get_total_line_count())
     )
@@ -62,114 +63,20 @@ def main():
         # Obtain submission via URL
         submission = reddit.submission(url=submission_url)
 
-    # =====================================================
-    # Indefinite loop to listen to unread comment messages
-    # =====================================================
+    # ===============================================================
+    # Indefinite loop to listen to unread comment messages on Reddit
+    # ===============================================================
     while True:
-        # Check unread replies
-        for unread_item in reddit.inbox.unread(limit=None):
-            # Only proceed with processing the unread item if it belongs to the current thread
-            if isinstance(unread_item, Comment):
-                unread_item.mark_read()
-                if unread_item.submission.id == submission.id:
-                    author = unread_item.author
+        core = Core(
+            reddit=reddit,
+            submission=submission,
+            min_comment_karma=MIN_COMMENT_KARMA,
+            max_num_guesses=MAX_NUM_GUESSES,
+            patch_notes_file=patch_notes_file,
+        )
+        core.loop()
 
-                    # Deter Reddit throwaway accounts from participating
-                    if author.comment_karma < MIN_COMMENT_KARMA:
-                        continue
-
-                    # Get number from patch notes
-                    patch_notes_line_number = get_patch_notes_line_number(
-                        unread_item.body
-                    )
-                    if patch_notes_line_number is None:
-                        continue
-
-                    # Get author user id & search for it in the Database
-                    user_id = author.id
-                    user = None
-
-                    # Get user
-                    if database.user_exists(user_id):
-                        db_user = database.get_user(user_id)
-                        user = RedditUser(
-                            id=db_user["id"],
-                            name=db_user["name"],
-                            can_submit_guess=db_user["can_submit_guess"],
-                            is_potential_winner=db_user["is_potential_winner"],
-                            num_guesses=db_user["num_guesses"],
-                        )
-                    else:
-                        # Make a user with default attributes and add it to the database
-                        user = RedditUser(id=author.id, name=author.name)
-                        database.add_user(user)
-
-                    # Now that we have the user, run the game rules
-                    if not user.can_submit_guess:
-                        continue
-
-                    else:
-                        user.num_guesses = user.num_guesses + 1
-                        if user.num_guesses >= MAX_NUM_GUESSES:
-                            user.can_submit_guess = False
-
-                        # Check if entry was already guessed
-                        if database.check_patch_notes_line_number(
-                            patch_notes_line_number
-                        ):
-                            if user.can_submit_guess:
-                                safe_comment_reply(
-                                    unread_item,
-                                    f"Sorry, this line number has already been guessed. \n\n"
-                                    f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left! \n\n"
-                                    "Try guessing another line number.",
-                                )
-                            else:
-                                safe_comment_reply(
-                                    unread_item,
-                                    f"This line number has already been guessed. \n\n"
-                                    f"Sorry {author.name}, you have used all of your guesses. \n\n"
-                                    "Better luck next time!",
-                                )
-
-                            # Update user in DB
-                            database.db.table("user").update(vars(user))
-                            continue
-
-                        else:
-                            database.add_patch_notes_line_number(
-                                patch_notes_line_number
-                            )
-                            line_content = patch_notes_file.get_content_from_line_number(
-                                patch_notes_line_number
-                            )
-
-                            if line_content is None:
-                                if user.can_submit_guess:
-                                    safe_comment_reply(
-                                        unread_item,
-                                        "Whiffed! \n\n"
-                                        f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left! \n\n"
-                                        "Try guessing another line number.",
-                                    )
-                                else:
-                                    safe_comment_reply(
-                                        unread_item,
-                                        "Whiffed! \n\n"
-                                        f"Sorry {author.name}, you have used all of your guesses. \n\n"
-                                        "Better luck next time!",
-                                    )
-                            else:
-                                user.can_submit_guess = False
-                                user.is_potential_winner = True
-                                unread_item.reply(
-                                    f">{line_content} \n\n"
-                                    f"Congratulations for correctly guessing a patch note line, {author.name}! \n\n"
-                                    "You have been added to the pool of potential winners & can win a prize once this contest is over! See the main post for more details."
-                                )
-
-                            # Update user in DB
-                            database.db.table("user").update(vars(user))
+        # TODO: Stop script if current time is greater than the closing time.
 
         # Time to wait before calling the Reddit API again (in seconds)
         time.sleep(SLEEP_INTERVAL_SECONDS)
