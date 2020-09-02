@@ -7,6 +7,8 @@ Data will be saved in some form of database (to prevent loss of data, e.g. if Re
 from random import sample
 from tinydb import TinyDB, Query
 
+from hon_patch_notes_game_bot.user import RedditUser
+
 User = Query()
 LineNumber = Query()
 
@@ -17,6 +19,17 @@ class Database:
         Parametrized constructor
         """
         self.db = TinyDB(db_path)
+
+    def insert_submission_url(self, submission_url: str):
+        """
+        Inserts the submission url as an entry in the submission table
+
+        Receives:
+            - submission_url: the URL string of the Reddit submission
+
+        This should be the only entry based on how the code has been designed in main.py
+        """
+        self.db.table("submission").insert({"url": submission_url})
 
     def get_submission_url(self):
         """
@@ -34,17 +47,6 @@ class Database:
             return None
 
         return data[0]["url"]
-
-    def insert_submission_url(self, submission_url: str):
-        """
-        Inserts the submission url as an entry in the submission table
-
-        Receives:
-            - submission_url: the URL string of the Reddit submission
-
-        This should be the only entry based on how the code has been designed in main.py
-        """
-        self.db.table("submission").insert({"url": submission_url})
 
     def user_exists(self, name: str):
         """
@@ -70,6 +72,21 @@ class Database:
         """
         if not self.user_exists(RedditUser.name):
             self.db.table("user").insert(vars(RedditUser))
+
+    def convert_db_user_to_RedditUser(self, db_user):
+        """
+        Converts a user object from the database to a new RedditUser instance
+
+        Returns:
+            A new RedditUser instance with the same properties as the db_user
+        """
+        user = RedditUser(
+            name=db_user["name"],
+            can_submit_guess=db_user["can_submit_guess"],
+            is_potential_winner=db_user["is_potential_winner"],
+            num_guesses=db_user["num_guesses"],
+        )
+        return user
 
     def update_user(self, RedditUser) -> None:
         """
