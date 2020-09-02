@@ -104,7 +104,9 @@ class Database:
         Returns:
             A list of usernames that are marked as potential winners
         """
-        raw_user_list = self.db.table("user").search(User.is_potential_winner == True)
+        # fmt: off
+        raw_user_list = self.db.table("user").search(User.is_potential_winner == True)  # noqa: E712
+        # fmt: on
         potential_winners_list = [user["name"] for user in raw_user_list]
         return potential_winners_list
 

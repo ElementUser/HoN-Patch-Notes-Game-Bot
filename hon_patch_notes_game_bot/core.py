@@ -171,8 +171,7 @@ class Core:
                                     f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
                                     "The line from the patch notes is the following:\n\n"
                                     f">{line_content}\n"
-                                    "You have been added to the pool of potential winners & "
-                                    "can win a prize once this contest is over!\n\n"
+                                    "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
                                     "See the main post for more details.",
                                 )
 
