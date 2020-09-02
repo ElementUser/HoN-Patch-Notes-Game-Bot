@@ -49,7 +49,7 @@ password=insert_bot_password_here
 username=insert_bot_username_here
 ```
 
-Using a `praw.ini` file is a secure way to provide the login credentials for PRAW in the bot script. `.ini` files are not committed to source control (as defined in `.gitignore`).
+Using a `praw.ini` file is a secure way to provide the login credentials for PRAW in the bot script. `.ini` files are not committed to source control (as defined in `.gitignore`). [praw.ini reference](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html)
 
 - Install Poetry by following the installation steps [from their official documents](https://python-poetry.org/docs/). Do not use `pip install` to install Poetry.
 - `Mac/Linux`: After installation, on Mac/Linux you must run this command to enable the poetry command in your terminal: `source $HOME/.poetry/env`
@@ -69,4 +69,8 @@ Navigate to the project root directory in your terminal.
 - To run unit tests, use `./scripts.sh test`
 - To reset the cache & database, use `./scripts.sh reset` before running `./scripts.sh start`
 
-[praw.ini reference](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html)
+## More Usage Notes
+
+For unreleased patch notes, **do not commit and push the branch to source control before their official release**.
+
+To change up some commonly changed configuration before starting a new run, go to `hon_patch_notes_game_bot/config/config.py` and edit them.
