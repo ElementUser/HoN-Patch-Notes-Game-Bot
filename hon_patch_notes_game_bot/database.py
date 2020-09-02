@@ -5,6 +5,7 @@ This module will keep track of all users that have posted in the allocated patch
 Data will be saved in some form of database (to prevent loss of data, e.g. if Reddit or the bot crashes)
 """
 from random import sample
+import os
 from tinydb import TinyDB, Query
 
 from hon_patch_notes_game_bot.user import RedditUser
@@ -18,6 +19,12 @@ class Database:
         """
         Parametrized constructor
         """
+
+        # Make cache folder if it does not exist
+        try:
+            os.makedirs("cache")
+        except OSError:
+            pass
         self.db = TinyDB(db_path)
 
     def insert_submission_url(self, submission_url: str):
