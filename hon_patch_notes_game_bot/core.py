@@ -174,7 +174,10 @@ class Core:
 
                             if line_content is None:
                                 self.reply_with_bad_guess_feedback(
-                                    user, author, unread_item, "Whiffed!\n\n",
+                                    user,
+                                    author,
+                                    unread_item,
+                                    f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
                                 )
 
                             else:
@@ -183,7 +186,7 @@ class Core:
                                 self.safe_comment_reply(
                                     unread_item,
                                     f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
-                                    "The line from the patch notes is the following:\n\n"
+                                    f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
                                     f">{line_content}\n"
                                     "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
                                     "See the main post for more details.",

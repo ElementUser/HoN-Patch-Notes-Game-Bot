@@ -7,7 +7,7 @@ This file will contain the bot script configuration that are most likely to chan
 # Variables
 # ==========
 submission_title = (
-    "[TEST v4] Refactoring test"  # [TEST RUN] 4.8.5 - Patch Notes Guessing Game
+    "[TEST v5] Features test"  # [TEST RUN] 4.8.5 - Patch Notes Guessing Game
 )
 game_end_time = "September 18, 2020, 00:00:00 am UTC"
 
