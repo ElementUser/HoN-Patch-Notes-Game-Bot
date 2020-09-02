@@ -3,7 +3,7 @@ import praw
 import time
 
 from hon_patch_notes_game_bot.core import Core
-import hon_patch_notes_game_bot.database as database
+from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.config.config import (
     submission_title,
@@ -41,9 +41,11 @@ def main():
 
     # Initialize bot by creating reddit & subreddit instances
     reddit = praw.Reddit(BOT_USERNAME, user_agent=USER_AGENT)
-
     reddit.validate_on_submit = True
     subreddit = reddit.subreddit(SUBREDDIT_NAME)
+
+    # Initialize database
+    database = Database()
 
     submission = None
     submission_url = database.get_submission_url()
@@ -54,7 +56,7 @@ def main():
         submission = subreddit.submit(
             title=submission_title, selftext=submission_content
         )
-        database.db.table("submission").insert({"url": submission.url})
+        database.insert_submission_url(submission.url)
     else:
         # Obtain submission via URL
         submission = reddit.submission(url=submission_url)
@@ -66,6 +68,7 @@ def main():
     while True:
         core = Core(
             reddit=reddit,
+            db=database,
             submission=submission,
             min_comment_karma=MIN_COMMENT_KARMA,
             max_num_guesses=MAX_NUM_GUESSES,

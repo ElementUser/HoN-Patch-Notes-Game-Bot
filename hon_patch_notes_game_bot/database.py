@@ -4,100 +4,152 @@
 This module will keep track of all users that have posted in the allocated patch notes thread
 Data will be saved in some form of database (to prevent loss of data, e.g. if Reddit or the bot crashes)
 """
+from random import sample
 import os
 from tinydb import TinyDB, Query
 
-# Make cache folder if it does not exist
-try:
-    os.makedirs("cache")
-except OSError:
-    pass
+from hon_patch_notes_game_bot.user import RedditUser
 
-db = TinyDB("cache/db.json")
 User = Query()
 LineNumber = Query()
 
 
-def get_submission_url():
-    """
-    Gets the currently saved submission's URL, if it exists
+class Database:
+    def __init__(self, db_path: str = "cache/db.json") -> None:
+        """
+        Parametrized constructor
+        """
 
-    It is assumed that this database will only have one "url" key-value pair object at all times!
+        # Make cache folder if it does not exist
+        try:
+            os.makedirs("cache")
+        except OSError:
+            pass
+        self.db = TinyDB(db_path)
 
-    Returns:
-        The submission's URL, if it exists
-        None if no data is found
-    """
+    def insert_submission_url(self, submission_url: str):
+        """
+        Inserts the submission url as an entry in the submission table
 
-    data = db.table("submission").all()
-    if len(data) == 0:
-        return None
+        Receives:
+            - submission_url: the URL string of the Reddit submission
 
-    return data[0]["url"]
+        This should be the only entry based on how the code has been designed in main.py
+        """
+        self.db.table("submission").insert({"url": submission_url})
 
+    def get_submission_url(self):
+        """
+        Gets the currently saved submission's URL, if it exists
 
-def user_exists(name: str):
-    """
-    Determines whether the user exists based on search by username
+        It is assumed that this database will only have one "url" key-value pair object at all times!
 
-    Returns:
-        True if the user exists
-        False otherwise
-    """
-    return db.table("user").search(User.name == name)
+        Returns:
+            The submission's URL, if it exists
+            None if no data is found
+        """
 
+        data = self.db.table("submission").all()
+        if len(data) == 0:
+            return None
 
-def get_user(name: str):
-    """
-    Retrieves a user object from the database by username
-    """
-    return db.table("user").get(User.name == name)
+        return data[0]["url"]
 
+    def user_exists(self, name: str):
+        """
+        Determines whether the user exists based on search by username
 
-def add_user(RedditUser) -> None:
-    """
-    Adds the user to the database
+        Returns:
+            True if the user exists
+            False otherwise
+        """
+        return self.db.table("user").search(User.name == name)
 
-    Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
-    """
-    if not user_exists(RedditUser.name):
-        db.table("user").insert(vars(RedditUser))
+    def get_user(self, name: str):
+        """
+        Retrieves a user object from the database by username
+        """
+        return self.db.table("user").get(User.name == name)
 
+    def add_user(self, RedditUser) -> None:
+        """
+        Adds the user to the database
 
-def update_user(RedditUser) -> None:
-    """
-    Updates the user data in the database
+        Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
+        """
+        if not self.user_exists(RedditUser.name):
+            self.db.table("user").insert(vars(RedditUser))
 
-    Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
-    """
-    db.table("user").update(vars(RedditUser), User.name == RedditUser.name)
+    def convert_db_user_to_RedditUser(self, db_user):
+        """
+        Converts a user object from the database to a new RedditUser instance
 
+        Returns:
+            A new RedditUser instance with the same properties as the db_user
+        """
+        user = RedditUser(
+            name=db_user["name"],
+            can_submit_guess=db_user["can_submit_guess"],
+            is_potential_winner=db_user["is_potential_winner"],
+            num_guesses=db_user["num_guesses"],
+        )
+        return user
 
-def check_patch_notes_line_number(line_number: int):
-    """
-    Checks if a previously guessed patch notes line number already exists in the database
+    def update_user(self, RedditUser) -> None:
+        """
+        Updates the user data in the database
 
-    Returns:
-        A patch_notes_line_tracker object containing its id & line number value
-        None if the entry does not exist
-    """
-    return db.table("patch_notes_line_tracker").get(LineNumber.id == line_number)
+        Takes in a RedditUser object to do so (since the user model & RedditUser class share the same fields)
+        """
+        self.db.table("user").update(vars(RedditUser), User.name == RedditUser.name)
 
+    def check_patch_notes_line_number(self, line_number: int):
+        """
+        Checks if a previously guessed patch notes line number already exists in the database
 
-def add_patch_notes_line_number(line_number: int) -> None:
-    """
-    Adds the patch notes line number into the database.
+        Returns:
+            A patch_notes_line_tracker object containing its id & line number value
+            None if the entry does not exist
+        """
+        return self.db.table("patch_notes_line_tracker").get(
+            LineNumber.id == line_number
+        )
 
-    This is used to keep track of which line numbers have been guessed already.
-    """
-    db.table("patch_notes_line_tracker").insert({"id": line_number})
+    def add_patch_notes_line_number(self, line_number: int) -> None:
+        """
+        Adds the patch notes line number into the database.
 
+        This is used to keep track of which line numbers have been guessed already.
+        """
+        self.db.table("patch_notes_line_tracker").insert({"id": line_number})
 
-def get_potential_winners_list():
-    """
-    Returns:
-        A list of User objects that are marked as potential winners
+    def get_potential_winners_list(self):
+        """
+        Returns:
+            A list of usernames that are marked as potential winners
+        """
+        # fmt: off
+        raw_user_list = self.db.table("user").search(User.is_potential_winner == True)  # noqa: E712
+        # fmt: on
+        potential_winners_list = [user["name"] for user in raw_user_list]
+        return potential_winners_list
 
-    TODO: Add functionality after script ends to pick X random winners from the potential winners list
-    """
-    return db.table("user").search(User.is_potential_winner)
+    def get_random_winners_from_list(
+        self, num_winners: int, potential_winners_list: list
+    ):
+        """
+        Picks a number of unique winners from the potential winners list.
+
+        Attributes:
+            num_winners: the number of winners to pick from the potential winners list
+            potential_winners_list: a list containing the usernames, with each of them being a potential iwnner
+
+        Returns:
+            A list of usernames that are considered winners
+            Returns the same list if 'num_winners' is the same size or bigger than the size of potential_winners_list
+        """
+
+        if num_winners >= len(potential_winners_list):
+            return potential_winners_list
+
+        return sample(potential_winners_list, num_winners)
