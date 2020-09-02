@@ -31,7 +31,7 @@ def is_game_expired(time_string: str):
         True if the present time is later than the game end time
         False otherwise
     """
-    game_end_datetime = parse(time_string)
+    game_end_datetime = parse(time_string, fuzzy=True)
     present_time = datetime.now(tz.UTC)
     return present_time > game_end_datetime
 
