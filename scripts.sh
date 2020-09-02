@@ -26,7 +26,8 @@ case $1 in
         ;;
 
     "winners")
-        # TODO: implement proper file/argument line combination to run
+        cd hon_patch_notes_game_bot
+        poetry run python util.py
         ;;
 
     *)

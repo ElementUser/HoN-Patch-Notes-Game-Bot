@@ -25,6 +25,8 @@ class Database:
             os.makedirs("cache")
         except OSError:
             pass
+
+        self.db_path = db_path
         self.db = TinyDB(db_path)
 
     def insert_submission_url(self, submission_url: str):
