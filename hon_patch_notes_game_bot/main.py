@@ -7,11 +7,13 @@ from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.config.config import (
     submission_title,
-    MIN_COMMENT_KARMA,
     SLEEP_INTERVAL_SECONDS,
     SUBREDDIT_NAME,
-    MAX_NUM_GUESSES,
+    game_end_time,
+    NUM_WINNERS,
 )
+from hon_patch_notes_game_bot.util import is_game_expired, output_winners_list_to_file
+
 
 # ============
 # Constants
@@ -20,6 +22,7 @@ BOT_USERNAME = "hon-bot"
 USER_AGENT = "HoN Patch Notes Game Bot by /u/hon-bot"
 PATCH_NOTES_PATH = "config/patch_notes.txt"
 SUBMISSION_CONTENT_PATH = "config/submission_content.md"
+OUTPUT_FILE_PATH = "cache/winners_list.txt"
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
 
@@ -70,18 +73,27 @@ def main():
             reddit=reddit,
             db=database,
             submission=submission,
-            min_comment_karma=MIN_COMMENT_KARMA,
-            max_num_guesses=MAX_NUM_GUESSES,
             patch_notes_file=patch_notes_file,
         )
         core.loop()
 
-        # TODO: Stop script if current time is greater than the closing time.
+        # Stop indefinite loop if current time is greater than the closing time.
+        if is_game_expired(game_end_time):
+            break
 
         # Time to wait before calling the Reddit API again (in seconds)
         time.sleep(SLEEP_INTERVAL_SECONDS)
 
+    # ========================
+    # Bot end script actions
+    # ========================
     print("Bot script ended via time deadline")
+    output_winners_list_to_file(
+        db_path=database.db_path,
+        output_file_path=OUTPUT_FILE_PATH,
+        num_winners=NUM_WINNERS,
+    )
+    print(f"Winners list successfully output to: {OUTPUT_FILE_PATH}")
 
 
 if __name__ == "__main__":

@@ -6,20 +6,20 @@ PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/com
 
 from praw.exceptions import RedditAPIException
 from praw.models import Comment
+import time
 from hon_patch_notes_game_bot.user import RedditUser
 from hon_patch_notes_game_bot.util import get_patch_notes_line_number
 from hon_patch_notes_game_bot.database import Database
+from hon_patch_notes_game_bot.config.config import (
+    MIN_COMMENT_KARMA,
+    MAX_NUM_GUESSES,
+    MIN_ACCOUNT_AGE_DAYS,
+)
 
 
 class Core:
     def __init__(
-        self,
-        db: Database,
-        reddit,
-        submission,
-        min_comment_karma: int,
-        max_num_guesses: int,
-        patch_notes_file: str,
+        self, db: Database, reddit, submission, patch_notes_file: str,
     ) -> None:
         """
         Parametrized constructor
@@ -28,8 +28,6 @@ class Core:
         self.reddit = reddit
         self.db = db
         self.submission = submission
-        self.min_comment_karma = min_comment_karma
-        self.max_num_guesses = max_num_guesses
         self.patch_notes_file = patch_notes_file
 
     def reply_with_bad_guess_feedback(
@@ -47,7 +45,7 @@ class Core:
             self.safe_comment_reply(
                 comment,
                 f"{first_line}\n\n"
-                f"{author.name}, you have {self.max_num_guesses - user.num_guesses} guess(es) left!\n\n"
+                f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left!\n\n"
                 "Try guessing another line number.",
             )
         else:
@@ -97,7 +95,18 @@ class Core:
         except RedditAPIException:
             pass
 
-    def loop(self):
+    def is_account_too_new(self, Redditor, days):
+        """
+        Checks if the Reddit account is too new to post
+
+        Returns:
+            True if the account is too new to post
+            False if the account is old enough to post
+        """
+        DAYS_TO_SECONDS = 86400
+        return Redditor.created_utc > (time.time() - (days * DAYS_TO_SECONDS))
+
+    def loop(self):  # noqa: C901
         """
         Core loop of the bot
         """
@@ -110,8 +119,13 @@ class Core:
                 if unread_item.submission.id == self.submission.id:
                     author = unread_item.author
 
-                    # Prevent Reddit throwaway accounts from participating
-                    if author.comment_karma < self.min_comment_karma:
+                    # Deter Reddit throwaway accounts from participating
+                    if author.comment_karma < MIN_COMMENT_KARMA:
+                        continue
+
+                    if self.is_account_too_new(
+                        Redditor=author, days=MIN_ACCOUNT_AGE_DAYS
+                    ):
                         continue
 
                     # Get number from patch notes
@@ -134,7 +148,7 @@ class Core:
 
                     else:
                         user.num_guesses = user.num_guesses + 1
-                        if user.num_guesses >= self.max_num_guesses:
+                        if user.num_guesses >= MAX_NUM_GUESSES:
                             user.can_submit_guess = False
 
                         # Check if entry was already guessed
@@ -145,7 +159,7 @@ class Core:
                                 user,
                                 author,
                                 unread_item,
-                                "This line number has already been guessed.\n\n",
+                                f"Line #{patch_notes_line_number} has already been guessed.\n\n",
                             )
 
                             # Update user in DB
@@ -160,7 +174,10 @@ class Core:
 
                             if line_content is None:
                                 self.reply_with_bad_guess_feedback(
-                                    user, author, unread_item, "Whiffed!\n\n",
+                                    user,
+                                    author,
+                                    unread_item,
+                                    f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
                                 )
 
                             else:
@@ -169,7 +186,7 @@ class Core:
                                 self.safe_comment_reply(
                                     unread_item,
                                     f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
-                                    "The line from the patch notes is the following:\n\n"
+                                    f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
                                     f">{line_content}\n"
                                     "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
                                     "See the main post for more details.",
