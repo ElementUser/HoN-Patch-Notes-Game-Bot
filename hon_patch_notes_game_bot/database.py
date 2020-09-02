@@ -5,6 +5,7 @@ This module will keep track of all users that have posted in the allocated patch
 Data will be saved in some form of database (to prevent loss of data, e.g. if Reddit or the bot crashes)
 """
 import os
+from random import sample
 from tinydb import TinyDB, Query
 
 # Make cache folder if it does not exist
@@ -96,8 +97,26 @@ def add_patch_notes_line_number(line_number: int) -> None:
 def get_potential_winners_list():
     """
     Returns:
-        A list of User objects that are marked as potential winners
-
-    TODO: Add functionality after script ends to pick X random winners from the potential winners list
+        A list of usernames that are marked as potential winners
     """
-    return db.table("user").search(User.is_potential_winner)
+    raw_user_list = db.table("user").search(User.is_potential_winner == True)
+    potential_winners_list = [user["name"] for user in raw_user_list]
+    return potential_winners_list
+
+
+def get_random_winners_from_list(num_winners: int, potential_winners_list: list):
+    """
+    Picks a number of unique winners from the potential winners list.
+
+    Attributes:
+        num_winners: the number of winners to pick from the potential winners list
+        potential_winners_list: a list containing the usernames, with each of them being a potential iwnner
+
+    Returns:
+        A list of usernames that are considered winners (returns the same list if 'num_winners' is the same size or bigger than the size of potential_winners_list)
+    """
+
+    if num_winners >= len(potential_winners_list):
+        return potential_winners_list
+
+    return sample(potential_winners_list, num_winners)
