@@ -2,11 +2,13 @@
 This module contains standalone utility functions
 """
 import re
+import sys
 from dateutil import tz
 from dateutil.parser import parse
 from datetime import datetime
 
 from hon_patch_notes_game_bot.database import Database
+from hon_patch_notes_game_bot.config.config import NUM_WINNERS
 
 
 def get_patch_notes_line_number(commentBody: str) -> int:
@@ -72,6 +74,21 @@ def output_winners_list_to_file(db_path, output_file_path, num_winners=10):
 
 # Only run if util function is ran directly from command line
 if __name__ == "__main__":
+    """
+    Runs output_winners_list_to_file() with num_winners being taken from the command line args
+    """
+    if len(sys.argv) > 2:
+        sys.exit(
+            "Please use 0 arguments or 1 arguments (where the 1st argument is a number)"
+        )
+
+    if len(sys.argv) == 2:
+        num_winners = int(sys.argv[1])
+    else:
+        num_winners = NUM_WINNERS
+
     output_winners_list_to_file(
-        db_path="cache/db.json", output_file_path="cache/winners_list.txt"
+        db_path="cache/db.json",
+        output_file_path="cache/winners_list.txt",
+        num_winners=num_winners,
     )
