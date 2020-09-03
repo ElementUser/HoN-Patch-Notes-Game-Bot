@@ -32,7 +32,7 @@ This bot now has a feature where it auto-updates the community-compiled patch no
 
 Therefore, a separate Reddit thread has been created for the community-compiled Patch Notes Thread.
 
-[Click here to navigate to the community-compiled Patch Notes Thread!](#community-patch-notes-thread-url)
+**[Click here to navigate to the community-compiled Patch Notes Thread!](#community-patch-notes-thread-url)**
 
 ## GL HF!
 
