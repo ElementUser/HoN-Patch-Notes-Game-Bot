@@ -61,5 +61,5 @@ class PatchNotesFile:
             The version string of the patch notes file
         """
         line_content = linecache.getline(self.patch_notes_file, 1)
-        version_string = line_content.replace("Version ", "").rstrip("\n")
+        version_string = line_content.replace("Version ", "").rstrip()
         return version_string

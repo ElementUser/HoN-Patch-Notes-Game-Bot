@@ -31,3 +31,14 @@ def test_output_winners_list_to_file():
     # Remove existing file after running test
     os.remove(output_file_path)
 
+
+def test_generate_submission_compiled_patch_notes_template_line():
+    line_number = 123
+    expected_string = f">{line_number} |\n\n"
+    assert (
+        util.generate_submission_compiled_patch_notes_template_line(
+            line_number=line_number
+        )
+        == expected_string
+    )
+
