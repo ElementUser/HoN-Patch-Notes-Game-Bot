@@ -16,7 +16,7 @@ HoN Patch Version: `patch_version`
 - Use your collective knowledge and put together the patch notes early!
 - Don't ruin the fun for others. Don't be rude or a jerk.
 - Note that the patch notes published here are subject to change at any time after this game has been set live. However, they are unlikely to change much (if at all).
-- To prevent spam from throwaway accounts, this bot will not respond to accounts that are below a certain comment karma threshold.
+- To prevent spam from throwaway accounts, this bot will not respond to accounts that are below a certain comment karma threshold or that have been created too recently.
 
 ## Rewards
 

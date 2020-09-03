@@ -26,7 +26,7 @@ The bot enforces these rules and outputs various text lines from a given `patch_
 - Log into Reddit (credentials are configured in `hon_patch_notes_game_bot/praw.ini`) and communicate with its API at fixed time intervals
 - Keep track of each unique user that responds to the bot in the thread and/or to a comment that the bot made in the thread
 - Keep track of these user's statistics pertaining to the current game instance
-- Prevent users below a certain comment karma from commenting
+- Prevent Reddit accounts that are too new or below a certain comment karma from commenting
 - Creates a second Reddit thread where it keeps track of the correctly guessed patch note lines & fills in the content for the public to view
 
 ---
