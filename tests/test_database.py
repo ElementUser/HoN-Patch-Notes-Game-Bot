@@ -18,7 +18,7 @@ def database():
 # ============
 def test_insert_submission_url(database):
     url_string = "http://test_url.com"
-    database.insert_submission_url(url_string)
+    database.insert_submission_url(tag="test_entry", submission_url=url_string)
     assert database.db.table("submission").search(Query().url == url_string)
     # Remove entry from database afterwards
     database.db.table("submission").remove(Query().url == url_string)
@@ -26,14 +26,7 @@ def test_insert_submission_url(database):
 
 def test_get_submission_url(database):
     url_string = "https://www.reddit.com/r/HeroesofNewerth/comments/iku1aq/test_run_485_patch_notes_guessing_game/"
-    assert database.get_submission_url() == url_string
-
-    # Remove all data from the submission table temporarily to test negative case
-    database.db.table("submission").truncate()
-    assert database.get_submission_url() is None
-
-    # Re-insert data afterwards
-    database.insert_submission_url(url_string)
+    assert database.get_submission_url(tag="main") == url_string
 
 
 def test_user_exists(database):

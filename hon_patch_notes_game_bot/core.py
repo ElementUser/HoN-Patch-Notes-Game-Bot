@@ -8,7 +8,10 @@ from praw.exceptions import RedditAPIException
 from praw.models import Comment
 import time
 from hon_patch_notes_game_bot.user import RedditUser
-from hon_patch_notes_game_bot.util import get_patch_notes_line_number
+from hon_patch_notes_game_bot.util import (
+    get_patch_notes_line_number,
+    generate_submission_compiled_patch_notes_template_line,
+)
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.config.config import (
     MIN_COMMENT_KARMA,
@@ -19,7 +22,12 @@ from hon_patch_notes_game_bot.config.config import (
 
 class Core:
     def __init__(
-        self, db: Database, reddit, submission, patch_notes_file: str,
+        self,
+        db: Database,
+        reddit,
+        submission,
+        community_submission,
+        patch_notes_file: str,
     ) -> None:
         """
         Parametrized constructor
@@ -28,6 +36,7 @@ class Core:
         self.reddit = reddit
         self.db = db
         self.submission = submission
+        self.community_submission = community_submission
         self.patch_notes_file = patch_notes_file
 
     def reply_with_bad_guess_feedback(
@@ -59,6 +68,8 @@ class Core:
     def get_user_from_database(self, author):
         """
         Gets a RedditUser instance from the database if found
+
+        If not found, creates the user and adds it to the database
 
         Attributes:
             author: a praw Author model instance
@@ -99,12 +110,46 @@ class Core:
         """
         Checks if the Reddit account is too new to post
 
+        Attributes:
+            Redditor: a PRAW Redditor instance to check
+            days: the number of days in the past to act as the threshold
+
         Returns:
             True if the account is too new to post
             False if the account is old enough to post
         """
         DAYS_TO_SECONDS = 86400
         return Redditor.created_utc > (time.time() - (days * DAYS_TO_SECONDS))
+
+    def update_community_compiled_patch_notes_in_submission(
+        self, patch_notes_line_number, line_content
+    ):
+        """
+        Edits the submission body & replaces the appropriate line number
+        with the line content via string.rfind() & string slicing
+
+        Attributes:
+            patch_notes_line_number: the correct patch notes line number that has been guessed
+            line_content: the content of the specified patch notes line number
+        """
+        submission_text = self.community_submission.selftext
+        target_text = generate_submission_compiled_patch_notes_template_line(
+            patch_notes_line_number
+        )
+        line_index = submission_text.rfind(target_text)
+
+        # line_index is still the start index of target_text
+        # To move to the end of line_index, increase index by len(target_text)
+        line_index += len(target_text.rstrip())
+
+        edited_submission_text = (
+            submission_text[:line_index]
+            + " "
+            + line_content.rstrip()
+            + submission_text[line_index:]
+        )
+
+        self.community_submission.edit(body=edited_submission_text)
 
     def loop(self):  # noqa: C901
         """
@@ -135,7 +180,7 @@ class Core:
                     if patch_notes_line_number is None:
                         continue
 
-                    # Get author user id & search for it in the Database
+                    # Get author user id & search for it in the Database (add it if it doesn't exist)
                     user = self.get_user_from_database(author)
 
                     # ===================
@@ -151,7 +196,7 @@ class Core:
                         if user.num_guesses >= MAX_NUM_GUESSES:
                             user.can_submit_guess = False
 
-                        # Check if entry was already guessed
+                        # Invalid guess if the line number was already guessed
                         if self.db.check_patch_notes_line_number(
                             patch_notes_line_number
                         ):
@@ -172,6 +217,7 @@ class Core:
                                 patch_notes_line_number
                             )
 
+                            # Invalid guess by getting a blank line in the patch notes
                             if line_content is None:
                                 self.reply_with_bad_guess_feedback(
                                     user,
@@ -180,16 +226,26 @@ class Core:
                                     f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
                                 )
 
+                            # Valid guess!
                             else:
                                 user.can_submit_guess = False
                                 user.is_potential_winner = True
+
+                                # Update community compiled patch notes in submission
+                                self.update_community_compiled_patch_notes_in_submission(
+                                    patch_notes_line_number=patch_notes_line_number,
+                                    line_content=line_content,
+                                )
+
                                 self.safe_comment_reply(
                                     unread_item,
                                     f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
                                     f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
                                     f">{line_content}\n"
                                     "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
-                                    "See the main post for more details.",
+                                    "See the main post for more details for potential prizes.\n\n___\n\n"
+                                    "The community-compiled patch notes have been updated with your valid entry.\n\n"
+                                    f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
                                 )
 
                             # Update user in DB

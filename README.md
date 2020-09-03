@@ -6,12 +6,14 @@ This application automates the process of HoN's Patch Notes Guessing Game that i
 
 Specifically, the bot is intended to create a thread in the [/r/heroesofnewerth subreddit](https://www.reddit.com/r/HeroesofNewerth/).
 
-Reddit users post their guess according to the [Rules of the game](#Rules-of-the-game). To skip to using this bot, go to [Requirements](#Requirements).
+Reddit users post their guess according to the [Rules of the game](#Rules-of-the-game).
+
+To skip to Bot Usage directly, go to the [Requirements section](#Requirements).
 
 ## Rules of the game
 
 - Pick a number between 1 and `max_line_count` (this is dynamically determined at runtime), and post that number to the main thread or the comment that /u/hon-bot responds to you with.
-- Guesses for lines that actually have content in the patch notes will be entered into the pool of potential winners for a prize! See the [Rewards](#Rewards) section for more information.
+- Guesses for lines that actually have content in the patch notes will be entered into the pool of potential winners for a prize!
 - Each person gets 1 (ONE) guess. If your guess has a number in it in your first line of your comment, it WILL be parsed by the bot and will count as a guess (whether you want it to or not). For simplicity's sake, please only include a number in your guess.
 - Guesses for line numbers that don't exist in the patch notes count as an invalid guess. You have been warned!
 - There are blank lines in the patch notes. If you guess a blank line, you will receive a `Whiffed!` comment response. You have 1 (ONE) more additional guess.
@@ -25,6 +27,7 @@ The bot enforces these rules and outputs various text lines from a given `patch_
 - Keep track of each unique user that responds to the bot in the thread and/or to a comment that the bot made in the thread
 - Keep track of these user's statistics pertaining to the current game instance
 - Prevent users below a certain comment karma from commenting
+- Creates a second Reddit thread where it keeps track of the correctly guessed patch note lines & fills in the content for the public to view
 
 ---
 

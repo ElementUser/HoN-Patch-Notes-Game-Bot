@@ -72,6 +72,13 @@ def output_winners_list_to_file(db_path, output_file_path, num_winners=10):
             output_file.write(f"{user}\n")
 
 
+def generate_submission_compiled_patch_notes_template_line(line_number):
+    """
+    For a given line number, construct the template line for the community-compiled patch notes.
+    """
+    return f">{str(line_number)} |\n\n"
+
+
 # Only run if util function is ran directly from command line
 if __name__ == "__main__":
     """

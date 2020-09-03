@@ -29,7 +29,7 @@ class Database:
         self.db_path = db_path
         self.db = TinyDB(db_path)
 
-    def insert_submission_url(self, submission_url: str):
+    def insert_submission_url(self, tag: str, submission_url: str):
         """
         Inserts the submission url as an entry in the submission table
 
@@ -38,24 +38,24 @@ class Database:
 
         This should be the only entry based on how the code has been designed in main.py
         """
-        self.db.table("submission").insert({"url": submission_url})
+        self.db.table("submission").insert({"tag": tag, "url": submission_url})
 
-    def get_submission_url(self):
+    def get_submission_url(self, tag):
         """
-        Gets the currently saved submission's URL, if it exists
+        Gets the currently saved submission's URL, if it exists.
 
-        It is assumed that this database will only have one "url" key-value pair object at all times!
+        Attributes:
+            tag: tag of the item to search for
 
         Returns:
             The submission's URL, if it exists
             None if no data is found
         """
-
-        data = self.db.table("submission").all()
-        if len(data) == 0:
+        submission_data = self.db.table("submission").get(Query().tag == tag)
+        if submission_data is None:
             return None
 
-        return data[0]["url"]
+        return submission_data["url"]
 
     def user_exists(self, name: str):
         """
