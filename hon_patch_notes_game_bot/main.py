@@ -73,7 +73,7 @@ def processed_community_notes_thread_submission_content(
                 line_number=line_number
             )
 
-        submission_content += f"\n\n**[Click here to go back to the main Guessing Game thread.]({main_submission_url})**"
+        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**"
         return submission_content
 
 
