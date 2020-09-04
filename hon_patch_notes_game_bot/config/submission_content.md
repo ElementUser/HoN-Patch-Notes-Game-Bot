@@ -2,7 +2,7 @@ It's time for the HoN Patch Notes guessing game again!
 
 HoN Patch Version: `patch_version`
 
-This game will automatically stop running at `game_end_time`. The bot will stop monitoring and responding to comments in this thread after that time.
+This game will automatically stop running at **`game_end_time`**. The bot will stop monitoring and responding to comments in this thread after that time.
 
 ## Rules of the Game
 

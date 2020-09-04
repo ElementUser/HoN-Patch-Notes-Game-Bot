@@ -51,7 +51,7 @@ def processed_submission_content(submission_content_path, patch_notes_file):
         )
         submission_content = submission_content.replace(
             "`game_end_time`",
-            f"[{game_end_time}]({convert_time_string_to_wolframalpha_query_url})",
+            f"[{game_end_time}]({convert_time_string_to_wolframalpha_query_url(game_end_time)})",
         )
 
         return submission_content
@@ -168,12 +168,16 @@ def main():  # noqa: C901
     # Bot end script actions
     # ========================
     print("Reddit Bot script ended via time deadline")
-    output_winners_list_to_file(
+    winners_submission_content = output_winners_list_to_file(
         db_path=database.db_path,
         output_file_path=OUTPUT_FILE_PATH,
         num_winners=NUM_WINNERS,
     )
     print(f"Winners list successfully output to: {OUTPUT_FILE_PATH}")
+
+    # Update main submission with winner submission content at the top
+    submission.edit(winners_submission_content + submission.selftext)
+    print("Reddit submission successfully updated with the winners list info!")
 
 
 if __name__ == "__main__":
