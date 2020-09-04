@@ -78,7 +78,7 @@ def processed_community_notes_thread_submission_content(
                 line_number=line_number
             )
 
-        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**"  # noqa: E501
+        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**\n\nFeel free to discuss patch changes here liberally (based on the currently revealed notes! :)"  # noqa: E501
         return submission_content
 
 
