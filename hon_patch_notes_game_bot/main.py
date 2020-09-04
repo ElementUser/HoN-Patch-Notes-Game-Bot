@@ -17,6 +17,7 @@ from hon_patch_notes_game_bot.util import (
     is_game_expired,
     output_winners_list_to_file,
     generate_submission_compiled_patch_notes_template_line,
+    convert_time_string_to_wolframalpha_query_url,
 )
 
 
@@ -48,6 +49,10 @@ def processed_submission_content(submission_content_path, patch_notes_file):
         submission_content = submission_content.replace(
             "`max_line_count`", str(patch_notes_file.get_total_line_count())
         )
+        submission_content = submission_content.replace(
+            "`game_end_time`",
+            f"[{game_end_time}]({convert_time_string_to_wolframalpha_query_url})",
+        )
 
         return submission_content
 
@@ -73,7 +78,7 @@ def processed_community_notes_thread_submission_content(
                 line_number=line_number
             )
 
-        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**"
+        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**"  # noqa: E501
         return submission_content
 
 

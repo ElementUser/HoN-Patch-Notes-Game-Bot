@@ -42,3 +42,13 @@ def test_generate_submission_compiled_patch_notes_template_line():
         == expected_string
     )
 
+
+def test_convert_time_string_to_wolframalpha_query_url():
+    time_string = "September 14, 2020, 04:00:00 am UTC"
+    expected_url = (
+        "https://www.wolframalpha.com/input/?i=September+14,+2020,+04:00:00+am+UTC"
+    )
+    assert (
+        util.convert_time_string_to_wolframalpha_query_url(time_string) == expected_url
+    )
+

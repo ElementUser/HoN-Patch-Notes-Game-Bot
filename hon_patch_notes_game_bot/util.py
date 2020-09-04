@@ -79,6 +79,17 @@ def generate_submission_compiled_patch_notes_template_line(line_number):
     return f">{str(line_number)} |\n\n"
 
 
+def convert_time_string_to_wolframalpha_query_url(time_string):
+    """
+    Converts a time string to a Wolframalpha URL
+
+    Returns:
+        - The converted URL that links to the Wolframalpha query results
+    """
+    formatted_query = time_string.replace(" ", "+")
+    return f"https://www.wolframalpha.com/input/?i={formatted_query}"
+
+
 # Only run if util function is ran directly from command line
 if __name__ == "__main__":
     """

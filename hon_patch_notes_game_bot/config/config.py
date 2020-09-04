@@ -10,8 +10,8 @@ This file will contain the bot script configuration that are most likely to chan
 # [GAME] 4.8.X - Patch Notes Guessing Game
 submission_title = "[GAME] 4.8.6 - Patch Notes Guessing Game"
 
-community_submission_title = "[VIEW-ONLY] 4.8.6 - community-compiled Patch Notes"
-game_end_time = "September 18, 2020, 00:00:00 am UTC"
+community_submission_title = "[VIEW-ONLY] 4.8.6: community-compiled Patch Notes"
+game_end_time = "September 14, 2020, 04:00:00 am UTC"
 
 # ================
 # Other constants

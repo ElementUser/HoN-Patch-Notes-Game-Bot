@@ -2,6 +2,8 @@ It's time for the HoN Patch Notes guessing game again!
 
 HoN Patch Version: `patch_version`
 
+This game will automatically stop running at `game_end_time`. The bot will stop monitoring and responding to comments in this thread after that time.
+
 ## Rules of the Game
 
 - Pick a number between 1 and `max_line_count`, and post that number to the main thread or the comment that /u/hon-bot responds to you with.
