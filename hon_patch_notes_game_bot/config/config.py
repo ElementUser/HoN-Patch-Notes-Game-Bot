@@ -18,7 +18,7 @@ game_end_time = "September 14, 2020, 4:00 am UTC"
 # ================
 SUBREDDIT_NAME = "heroesofnewerth"  # testingground4bots / heroesofnewerth
 MAX_NUM_GUESSES = 2
-MIN_COMMENT_KARMA = 3
+MIN_COMMENT_KARMA = 4
 MIN_ACCOUNT_AGE_DAYS = 7
 NUM_WINNERS = 10
 SLEEP_INTERVAL_SECONDS = 10
