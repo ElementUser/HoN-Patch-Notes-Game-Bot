@@ -219,6 +219,12 @@ class Core:
 
                             # Invalid guess by getting a blank line in the patch notes
                             if line_content is None:
+                                blank_line = "..."
+                                self.update_community_compiled_patch_notes_in_submission(
+                                    patch_notes_line_number=patch_notes_line_number,
+                                    line_content=blank_line,
+                                )
+
                                 self.reply_with_bad_guess_feedback(
                                     user,
                                     author,

@@ -72,7 +72,7 @@ def processed_community_notes_thread_submission_content(
             "#main-reddit-thread", main_submission_url
         )
 
-        submission_content += "\n\n# Community-compiled Patch Notes\n\nThe patch notes compiled by the community will automatically be updated below:\n\n"  # noqa: E501
+        submission_content += "\n\n# Community-compiled Patch Notes\n\nThe patch notes compiled by the community will automatically be updated below (guessed lines that are blank will be marked with `...`):\n\n"  # noqa: E501
         for line_number in range(1, patch_notes_file.get_total_line_count() + 1):
             submission_content += generate_submission_compiled_patch_notes_template_line(
                 line_number=line_number
