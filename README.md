@@ -78,3 +78,7 @@ Navigate to the project root directory in your terminal.
 For unreleased patch notes, **do not commit and push the branch to source control before their official release**.
 
 To change up some commonly changed configuration before starting a new run, go to `hon_patch_notes_game_bot/config/config.py` and edit them.
+
+## Extra Documentation
+
+Feel free to browse the [docs](/docs) folder in the repository and browse the documentation there for more details on some of the tools, resources & references used for this project & the reason why they were included in this project.
