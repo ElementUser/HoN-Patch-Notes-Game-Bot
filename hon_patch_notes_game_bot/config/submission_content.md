@@ -24,7 +24,7 @@ This game will automatically stop running at **`game_end_time`**. The bot will s
 
 - 10 Lucky Winners from the pool of potential winners will receive `gold_coin_reward` Gold Coins each (NAEU/International Client only - SEA players will not get a working code if they win, unfortunately).
 - Winners will be announced in this thread when the game ends.
-- You will receive a message from /u/S2Sliferjam if you have been chosen!
+- You will receive a message from /u/hon-bot if you have been chosen!
 
 ---
 
