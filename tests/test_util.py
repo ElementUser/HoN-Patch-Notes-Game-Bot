@@ -21,11 +21,14 @@ def test_is_game_expired():
 
 
 def test_output_winners_list_to_file():
-    db_path = "./tests/cache/db_test.json"
+    potential_winners_list = ["a", "b", "c", "d", "e"]
+    winners_list = ["a", "b", "c"]
     output_file_path = "./tests/cache/winners_list.txt"
 
     util.output_winners_list_to_file(
-        db_path=db_path, output_file_path=output_file_path,
+        potential_winners_list=potential_winners_list,
+        winners_list=winners_list,
+        output_file_path=output_file_path,
     )
     assert os.path.exists(output_file_path)
     # Remove existing file after running test

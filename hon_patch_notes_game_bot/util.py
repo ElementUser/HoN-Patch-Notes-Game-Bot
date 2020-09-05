@@ -7,7 +7,6 @@ from dateutil import tz
 from dateutil.parser import parse
 from datetime import datetime
 
-from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.config.config import NUM_WINNERS
 
 
@@ -38,7 +37,7 @@ def is_game_expired(time_string: str):
     return present_time > game_end_datetime
 
 
-def output_winners_list_to_file(db_path, output_file_path, num_winners=10):
+def output_winners_list_to_file(potential_winners_list, winners_list, output_file_path):
     """
     Outputs the list of winners & potential winners to an output file
 
@@ -46,22 +45,16 @@ def output_winners_list_to_file(db_path, output_file_path, num_winners=10):
         String content that was written to the file
 
     Attributes:
-        db_path: the path to the local TinyDB database file
+        potential_winners_list: the list of potential winners
+        winners_list: the list of actual winners
         output_file_path: the path to where the data will be output
     """
-    database = Database(db_path)
-    # Process winners
     with open(output_file_path, "a+") as output_file:
         # Reference for reading & overwriting a file: https://stackoverflow.com/a/2424410
         text = output_file.read()
         output_file.seek(0)
         output_file.write(text)
         output_file.truncate()
-
-        potential_winners_list = database.get_potential_winners_list()
-        winners_list = database.get_random_winners_from_list(
-            num_winners=num_winners, potential_winners_list=potential_winners_list
-        )
 
         file_content = "## Winners\n\n"
 
@@ -80,26 +73,6 @@ def output_winners_list_to_file(db_path, output_file_path, num_winners=10):
             + "\n___\n\n"
         )
         return winners_submission_content
-
-
-def send_message_to_recipients(
-    reddit, winners_list_path, recipients_list, version_string
-):
-    """
-    Sends the winners list results to a list of recipients via Private Message (PM)
-
-    This function must be called only after the winners_list_path file exists!
-    """
-    with open(winners_list_path, "r") as winners_list_file:
-        winners_list_text = winners_list_file.read()
-        subject_line = (
-            f"{version_string} - Winners for the HoN Patch Notes Guessing Game"
-        )
-
-        for recipient in recipients_list:
-            reddit.redditor(recipient).message(
-                subject=subject_line, message=winners_list_text
-            )
 
 
 def generate_submission_compiled_patch_notes_template_line(line_number: int):

@@ -9,9 +9,9 @@ This file will contain the bot script configuration that are most likely to chan
 
 # [GAME] 4.8.X - Patch Notes Guessing Game
 submission_title = "[GAME] 4.8.6 - Patch Notes Guessing Game"
-
 community_submission_title = "4.8.6: community-revealed Patch Notes"
 game_end_time = "September 14, 2020, 4:00 am UTC"
+gold_coin_reward = 200
 
 # ================
 # Other constants
@@ -31,4 +31,4 @@ SLEEP_INTERVAL_SECONDS = 10
 disallowed_users_set = {"the_timezone_bot", "timee_bot"}
 
 # Recipients list (for Private Messages) for the winners list
-winners_list_pm_recipients = ["ElementUser", "S2Sliferjam"]
+staff_recipients = ["ElementUser", "S2Sliferjam"]

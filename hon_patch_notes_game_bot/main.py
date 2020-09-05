@@ -12,14 +12,18 @@ from hon_patch_notes_game_bot.config.config import (
     SUBREDDIT_NAME,
     game_end_time,
     NUM_WINNERS,
-    winners_list_pm_recipients,
+    staff_recipients,
+    gold_coin_reward,
 )
 from hon_patch_notes_game_bot.util import (
     is_game_expired,
     output_winners_list_to_file,
     generate_submission_compiled_patch_notes_template_line,
     convert_time_string_to_wolframalpha_query_url,
-    send_message_to_recipients,
+)
+from hon_patch_notes_game_bot.communications import (
+    send_message_to_staff,
+    send_message_to_winners,
 )
 
 
@@ -55,6 +59,9 @@ def processed_submission_content(submission_content_path, patch_notes_file):
         submission_content = submission_content.replace(
             "`game_end_time`",
             f"[{game_end_time}]({convert_time_string_to_wolframalpha_query_url(game_end_time)})",
+        )
+        submission_content = submission_content.replace(
+            "`gold_coin_reward`", str(gold_coin_reward),
         )
 
         return submission_content
@@ -171,24 +178,40 @@ def main():  # noqa: C901
     # Bot end script actions
     # ========================
     print("Reddit Bot script ended via time deadline")
+
+    # Save winners list in memory
+    potential_winners_list = database.get_potential_winners_list()
+    winners_list = database.get_random_winners_from_list(
+        num_winners=NUM_WINNERS, potential_winners_list=potential_winners_list
+    )
+
+    # Save winners submission content to file
     winners_submission_content = output_winners_list_to_file(
-        db_path=database.db_path,
+        potential_winners_list=potential_winners_list,
+        winners_list=winners_list,
         output_file_path=WINNERS_LIST_FILE_PATH,
-        num_winners=NUM_WINNERS,
     )
     print(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
-
-    # Send winners list Private Message to the appropriate recipients
-    send_message_to_recipients(
-        reddit=reddit,
-        winners_list_path=WINNERS_LIST_FILE_PATH,
-        recipients_list=winners_list_pm_recipients,
-        version_string=version_string,
-    )
 
     # Update main submission with winner submission content at the top
     submission.edit(winners_submission_content + submission.selftext)
     print("Reddit submission successfully updated with the winners list info!")
+
+    # Send Private Messages to the staff members regarding the winners
+    send_message_to_staff(
+        reddit=reddit,
+        winners_list_path=WINNERS_LIST_FILE_PATH,
+        staff_recipients=staff_recipients,
+        version_string=version_string,
+    )
+
+    # Send each winner a message asking them to contact S2Sliferjam for the Gold Coin codes
+    send_message_to_winners(
+        reddit=reddit,
+        winners_list=winners_list,
+        version_string=version_string,
+        gold_coin_reward=gold_coin_reward,
+    )
 
 
 if __name__ == "__main__":

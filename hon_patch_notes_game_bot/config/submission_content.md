@@ -22,7 +22,7 @@ This game will automatically stop running at **`game_end_time`**. The bot will s
 
 ## Rewards
 
-- 10 Lucky Winners from the pool of potential winners will receive 200 Gold Coins each.
+- 10 Lucky Winners from the pool of potential winners will receive `gold_coin_reward` Gold Coins each.
 - Winners will be announced in this thread when the game ends.
 - You will receive a message from /u/S2Sliferjam if you have been chosen!
 
