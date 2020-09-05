@@ -12,12 +12,14 @@ from hon_patch_notes_game_bot.config.config import (
     SUBREDDIT_NAME,
     game_end_time,
     NUM_WINNERS,
+    winners_list_pm_recipients,
 )
 from hon_patch_notes_game_bot.util import (
     is_game_expired,
     output_winners_list_to_file,
     generate_submission_compiled_patch_notes_template_line,
     convert_time_string_to_wolframalpha_query_url,
+    send_message_to_recipients,
 )
 
 
@@ -29,9 +31,10 @@ USER_AGENT = "HoN Patch Notes Game Bot by /u/hon-bot"
 PATCH_NOTES_PATH = "config/patch_notes.txt"
 SUBMISSION_CONTENT_PATH = "config/submission_content.md"
 COMMUNITY_SUBMISSION_CONTENT_PATH = "config/community_patch_notes_compilation.md"
-OUTPUT_FILE_PATH = "cache/winners_list.txt"
+WINNERS_LIST_FILE_PATH = "cache/winners_list.txt"
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
+version_string = patch_notes_file.get_version_string()
 
 
 def processed_submission_content(submission_content_path, patch_notes_file):
@@ -44,7 +47,7 @@ def processed_submission_content(submission_content_path, patch_notes_file):
     with open(submission_content_path, "r") as file:
         submission_content = file.read()
         submission_content = submission_content.replace(
-            "`patch_version`", patch_notes_file.get_version_string()
+            "`patch_version`", version_string
         )
         submission_content = submission_content.replace(
             "`max_line_count`", str(patch_notes_file.get_total_line_count())
@@ -78,7 +81,7 @@ def processed_community_notes_thread_submission_content(
                 line_number=line_number
             )
 
-        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**\n\nFeel free to discuss patch changes here liberally (based on the currently revealed notes! :)"  # noqa: E501
+        submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**\n\nFeel free to discuss patch changes here liberally (based on the currently revealed notes)! :)"  # noqa: E501
         return submission_content
 
 
@@ -170,10 +173,18 @@ def main():  # noqa: C901
     print("Reddit Bot script ended via time deadline")
     winners_submission_content = output_winners_list_to_file(
         db_path=database.db_path,
-        output_file_path=OUTPUT_FILE_PATH,
+        output_file_path=WINNERS_LIST_FILE_PATH,
         num_winners=NUM_WINNERS,
     )
-    print(f"Winners list successfully output to: {OUTPUT_FILE_PATH}")
+    print(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
+
+    # Send winners list Private Message to the appropriate recipients
+    send_message_to_recipients(
+        reddit=reddit,
+        winners_list_path=WINNERS_LIST_FILE_PATH,
+        recipients_list=winners_list_pm_recipients,
+        version_string=version_string,
+    )
 
     # Update main submission with winner submission content at the top
     submission.edit(winners_submission_content + submission.selftext)

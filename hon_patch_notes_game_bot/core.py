@@ -17,6 +17,7 @@ from hon_patch_notes_game_bot.config.config import (
     MIN_COMMENT_KARMA,
     MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
+    disallowed_users_set,
 )
 
 
@@ -151,6 +152,28 @@ class Core:
 
         self.community_submission.edit(body=edited_submission_text)
 
+    def is_disallowed_to_post(self, Redditor):
+        """
+        Checks if a Redditor is disallowed to post based on their account stats
+
+        Returns:
+            True if they are disallowed to post
+            False if their post should be examined further
+        """
+
+        # Do not process posts from disallowed users
+        if Redditor.name in disallowed_users_set:
+            return True
+
+        # Deter Reddit throwaway accounts from participating
+        if Redditor.comment_karma < MIN_COMMENT_KARMA:
+            return True
+
+        if self.is_account_too_new(Redditor=Redditor, days=MIN_ACCOUNT_AGE_DAYS):
+            return True
+
+        return False
+
     def loop(self):  # noqa: C901
         """
         Core loop of the bot
@@ -164,16 +187,11 @@ class Core:
                 if unread_item.submission.id == self.submission.id:
                     author = unread_item.author
 
-                    # Deter Reddit throwaway accounts from participating
-                    if author.comment_karma < MIN_COMMENT_KARMA:
+                    # Exit loop early if the user does not meet the posting conditions
+                    if self.is_disallowed_to_post(author):
                         continue
 
-                    if self.is_account_too_new(
-                        Redditor=author, days=MIN_ACCOUNT_AGE_DAYS
-                    ):
-                        continue
-
-                    # Get number from patch notes
+                    # Get patch notes line number from the user's post
                     patch_notes_line_number = get_patch_notes_line_number(
                         unread_item.body
                     )

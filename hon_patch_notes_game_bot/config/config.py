@@ -22,3 +22,13 @@ MIN_COMMENT_KARMA = 4
 MIN_ACCOUNT_AGE_DAYS = 7
 NUM_WINNERS = 10
 SLEEP_INTERVAL_SECONDS = 10
+
+# ================
+# User lists
+# ================
+
+# Disallowed users: use a set for the O(1) access time
+disallowed_users_set = {"the_timezone_bot", "timee_bot"}
+
+# Recipients list (for Private Messages) for the winners list
+winners_list_pm_recipients = ["ElementUser", "S2Sliferjam"]

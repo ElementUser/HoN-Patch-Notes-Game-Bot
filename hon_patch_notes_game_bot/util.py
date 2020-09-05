@@ -82,6 +82,26 @@ def output_winners_list_to_file(db_path, output_file_path, num_winners=10):
         return winners_submission_content
 
 
+def send_message_to_recipients(
+    reddit, winners_list_path, recipients_list, version_string
+):
+    """
+    Sends the winners list results to a list of recipients via Private Message (PM)
+
+    This function must be called only after the winners_list_path file exists!
+    """
+    with open(winners_list_path, "r") as winners_list_file:
+        winners_list_text = winners_list_file.read()
+        subject_line = (
+            f"{version_string} - Winners for the HoN Patch Notes Guessing Game"
+        )
+
+        for recipient in recipients_list:
+            reddit.redditor(recipient).message(
+                subject=subject_line, message=winners_list_text
+            )
+
+
 def generate_submission_compiled_patch_notes_template_line(line_number: int):
     """
     For a given line number, construct the template line for the community-compiled patch notes.
