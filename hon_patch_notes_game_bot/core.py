@@ -3,7 +3,7 @@ This module contains the bot's core loop
 
 PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/comment.html
 """
-
+from prawcore.exceptions import ServerError
 from praw.exceptions import RedditAPIException
 from praw.models import Comment
 import time
@@ -180,97 +180,107 @@ class Core:
         """
 
         # Check unread replies
-        for unread_item in self.reddit.inbox.unread(limit=None):
-            # Only proceed with processing the unread item if it belongs to the current thread
-            if isinstance(unread_item, Comment):
-                unread_item.mark_read()
-                if unread_item.submission.id == self.submission.id:
-                    author = unread_item.author
+        try:
+            for unread_item in self.reddit.inbox.unread(limit=None):
+                # Only proceed with processing the unread item if it belongs to the current thread
+                if isinstance(unread_item, Comment):
+                    unread_item.mark_read()
+                    if unread_item.submission.id == self.submission.id:
+                        author = unread_item.author
 
-                    # Exit loop early if the user does not meet the posting conditions
-                    if self.is_disallowed_to_post(author):
-                        continue
+                        # Exit loop early if the user does not meet the posting conditions
+                        if self.is_disallowed_to_post(author):
+                            continue
 
-                    # Get patch notes line number from the user's post
-                    patch_notes_line_number = get_patch_notes_line_number(
-                        unread_item.body
-                    )
-                    if patch_notes_line_number is None:
-                        continue
+                        # Get patch notes line number from the user's post
+                        patch_notes_line_number = get_patch_notes_line_number(
+                            unread_item.body
+                        )
+                        if patch_notes_line_number is None:
+                            continue
 
-                    # Get author user id & search for it in the Database (add it if it doesn't exist)
-                    user = self.get_user_from_database(author)
+                        # Get author user id & search for it in the Database (add it if it doesn't exist)
+                        user = self.get_user_from_database(author)
 
-                    # ===================
-                    # Run the game rules
-                    # ===================
+                        # ===================
+                        # Run the game rules
+                        # ===================
 
-                    # Prevent users who cannot make a guess from participating
-                    if not user.can_submit_guess:
-                        continue
-
-                    else:
-                        user.num_guesses = user.num_guesses + 1
-                        if user.num_guesses >= MAX_NUM_GUESSES:
-                            user.can_submit_guess = False
-
-                        # Invalid guess if the line number was already guessed
-                        if self.db.check_patch_notes_line_number(
-                            patch_notes_line_number
-                        ):
-                            self.reply_with_bad_guess_feedback(
-                                user,
-                                author,
-                                unread_item,
-                                f"Line #{patch_notes_line_number} has already been guessed.\n\n",
-                            )
-
-                            # Update user in DB
-                            self.db.update_user(user)
+                        # Prevent users who cannot make a guess from participating
+                        if not user.can_submit_guess:
                             continue
 
                         else:
-                            self.db.add_patch_notes_line_number(patch_notes_line_number)
-                            line_content = self.patch_notes_file.get_content_from_line_number(
+                            user.num_guesses = user.num_guesses + 1
+                            if user.num_guesses >= MAX_NUM_GUESSES:
+                                user.can_submit_guess = False
+
+                            # Invalid guess if the line number was already guessed
+                            if self.db.check_patch_notes_line_number(
                                 patch_notes_line_number
-                            )
-
-                            # Invalid guess by getting a blank line in the patch notes
-                            if line_content is None:
-                                blank_line = "..."
-                                self.update_community_compiled_patch_notes_in_submission(
-                                    patch_notes_line_number=patch_notes_line_number,
-                                    line_content=blank_line,
-                                )
-
+                            ):
                                 self.reply_with_bad_guess_feedback(
                                     user,
                                     author,
                                     unread_item,
-                                    f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
+                                    f"Line #{patch_notes_line_number} has already been guessed.\n\n",
                                 )
 
-                            # Valid guess!
+                                # Update user in DB
+                                self.db.update_user(user)
+                                continue
+
                             else:
-                                user.can_submit_guess = False
-                                user.is_potential_winner = True
-
-                                # Update community compiled patch notes in submission
-                                self.update_community_compiled_patch_notes_in_submission(
-                                    patch_notes_line_number=patch_notes_line_number,
-                                    line_content=line_content,
+                                self.db.add_patch_notes_line_number(
+                                    patch_notes_line_number
+                                )
+                                line_content = self.patch_notes_file.get_content_from_line_number(
+                                    patch_notes_line_number
                                 )
 
-                                self.safe_comment_reply(
-                                    unread_item,
-                                    f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
-                                    f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
-                                    f">{line_content}\n"
-                                    "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
-                                    "See the main post for more details for potential prizes.\n\n___\n\n"
-                                    "The community-compiled patch notes have been updated with your valid entry.\n\n"
-                                    f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
-                                )
+                                # Invalid guess by getting a blank line in the patch notes
+                                if line_content is None:
+                                    blank_line = "..."
+                                    self.update_community_compiled_patch_notes_in_submission(
+                                        patch_notes_line_number=patch_notes_line_number,
+                                        line_content=blank_line,
+                                    )
 
-                            # Update user in DB
-                            self.db.update_user(user)
+                                    self.reply_with_bad_guess_feedback(
+                                        user,
+                                        author,
+                                        unread_item,
+                                        f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
+                                    )
+
+                                # Valid guess!
+                                else:
+                                    user.can_submit_guess = False
+                                    user.is_potential_winner = True
+
+                                    # Update community compiled patch notes in submission
+                                    self.update_community_compiled_patch_notes_in_submission(
+                                        patch_notes_line_number=patch_notes_line_number,
+                                        line_content=line_content,
+                                    )
+
+                                    self.safe_comment_reply(
+                                        unread_item,
+                                        f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
+                                        f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
+                                        f">{line_content}\n"
+                                        "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
+                                        "See the main post for more details for potential prizes.\n\n___\n\n"
+                                        "The community-compiled patch notes have been updated with your valid entry.\n\n"
+                                        f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
+                                    )
+
+                                # Update user in DB
+                                self.db.update_user(user)
+
+        # Occasionally, Reddit may throw a 503 server error while under heavy load.
+        # In that case, log the error & just wait and try again in the next loop cycle
+        except ServerError as error:
+            print(error)
+            time.sleep(60)
+
