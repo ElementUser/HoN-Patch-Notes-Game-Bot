@@ -166,6 +166,9 @@ class Core:
             return True
 
         # Deter Reddit throwaway accounts from participating
+        if not Redditor.has_verified_email:
+            return True
+
         if Redditor.comment_karma < MIN_COMMENT_KARMA:
             return True
 
