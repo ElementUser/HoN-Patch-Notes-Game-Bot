@@ -117,6 +117,12 @@ class Database:
             LineNumber.id == line_number
         )
 
+    def get_all_entries_in_patch_notes_tracker(self):
+        """
+        Returns all entries in the patch_notes_traacker table (as a list of dictionaries)
+        """
+        return self.db.table("patch_notes_line_tracker").all()
+
     def add_patch_notes_line_number(self, line_number: int) -> None:
         """
         Adds the patch notes line number into the database.

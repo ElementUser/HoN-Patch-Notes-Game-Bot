@@ -177,6 +177,26 @@ class Core:
 
         return False
 
+    def fix_corrupted_community_submission_edit(self):
+        """
+        An emergency function in case editing the community submission ends up removing the corrupted data.
+
+        This function searches for each template string line number in the submission,
+        and then fills it with the line content according to the local database & current patch_notes.txt file
+        """
+        patch_notes_entries = self.database.get_all_entries_in_patch_notes_tracker()
+        for entry in patch_notes_entries:
+            line_number = entry["id"]
+            line_content = self.patch_notes_file.get_content_from_line_number(
+                line_number
+            )
+            if line_content is None:
+                line_content = "..."
+
+            self.update_community_compiled_patch_notes_in_submission(
+                patch_notes_line_number=line_number, line_content=line_content
+            )
+
     def loop(self):  # noqa: C901
         """
         Core loop of the bot
