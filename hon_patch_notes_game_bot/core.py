@@ -152,9 +152,13 @@ class Core:
 
         self.community_submission.edit(body=edited_submission_text)
 
-    def is_disallowed_to_post(self, Redditor):
+    def is_disallowed_to_post(self, Redditor, comment):
         """
         Checks if a Redditor is disallowed to post based on their account stats
+
+        Attributes:
+            Redditor: a PRAW Redditor instance
+            comment: a PRAW comment model instance to respond to
 
         Returns:
             True if they are disallowed to post
@@ -167,12 +171,27 @@ class Core:
 
         # Deter Reddit throwaway accounts from participating
         if not Redditor.has_verified_email:
+            self.safe_comment_reply(
+                comment,
+                f"Sorry {Redditor.name}, your email is not verified on your account.\n\n"
+                "Please try again after you have officially verified your email with Reddit!",
+            )
             return True
 
         if Redditor.comment_karma < MIN_COMMENT_KARMA:
+            self.safe_comment_reply(
+                comment,
+                f"Sorry {Redditor.name}, your comment karma is too low.\n\n"
+                "Please try again when you have legitimately raised your comment karma a bit!",
+            )
             return True
 
         if self.is_account_too_new(Redditor=Redditor, days=MIN_ACCOUNT_AGE_DAYS):
+            self.safe_comment_reply(
+                comment,
+                f"Sorry {Redditor.name}, your account is too new.\n\n"
+                "Please try again in the future!",
+            )
             return True
 
         return False
@@ -212,7 +231,7 @@ class Core:
                         author = unread_item.author
 
                         # Exit loop early if the user does not meet the posting conditions
-                        if self.is_disallowed_to_post(author):
+                        if self.is_disallowed_to_post(author, unread_item):
                             continue
 
                         # Get patch notes line number from the user's post
