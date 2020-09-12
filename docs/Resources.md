@@ -38,3 +38,4 @@
 
 - The CI pipeline for this project can be found [here](https://github.com/ElementUser/HoN-Patch-Notes-Game-Bot/actions)
 - Reference for the .yml config file: https://github.com/python-poetry/poetry/blob/master/.github/workflows/main.yml
+- Custom Status Badges: [shields.io](https://shields.io/)
