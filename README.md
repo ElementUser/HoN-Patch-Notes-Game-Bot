@@ -1,6 +1,6 @@
 # HoN Patch Notes Guessing Game (Bot)
 
-![Build](https://img.shields.io/github/workflow/status/ElementUser/HoN-Patch-Notes-Game-Bot/Github%20CI?label=Build%3A%20Github%20CI)
+![Build](https://img.shields.io/github/workflow/status/ElementUser/HoN-Patch-Notes-Game-Bot/Github%20CI?label=Build%3A%20Github%20CI&style=flat-square)
 
 This application automates the process of HoN's Patch Notes Guessing Game that is hosted in a thread on the Reddit platform.
 
