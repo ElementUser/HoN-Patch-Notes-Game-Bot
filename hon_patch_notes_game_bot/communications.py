@@ -3,7 +3,9 @@ This module contains functions related to communications across the Reddit platf
 """
 
 
-def send_message_to_staff(reddit, winners_list_path, staff_recipients, version_string):
+def send_message_to_staff(
+    reddit, winners_list_path, staff_recipients, version_string, gold_coin_reward
+):
     """
     Sends the winners list results to a list of recipients via Private Message (PM)
 
@@ -14,9 +16,13 @@ def send_message_to_staff(reddit, winners_list_path, staff_recipients, version_s
         winners_list_path: the file path to read from for the winners list + potential winners list
         staff_recipients: a list of staff member recipients for the PM
         version_string: the version of the patch notes
+        gold_coin_reward: the number of Gold Coins intended for the reward
     """
     with open(winners_list_path, "r") as winners_list_file:
-        winners_list_text = winners_list_file.read()
+        winners_list_text = (
+            f"Give {str(gold_coin_reward)} Gold Coins to each winner.\n\n"
+            + winners_list_file.read()
+        )
         subject_line = (
             f"{version_string} - Winners for the HoN Patch Notes Guessing Game"
         )

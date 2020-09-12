@@ -203,6 +203,7 @@ def main():  # noqa: C901
         winners_list_path=WINNERS_LIST_FILE_PATH,
         staff_recipients=staff_recipients,
         version_string=version_string,
+        gold_coin_reward=gold_coin_reward,
     )
 
     # Send each winner a message asking them to contact S2Sliferjam for the Gold Coin codes
