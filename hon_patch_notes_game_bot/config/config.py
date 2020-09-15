@@ -28,7 +28,7 @@ SLEEP_INTERVAL_SECONDS = 10
 # ================
 
 # Disallowed users: use a set for the O(1) access time
-disallowed_users_set = {"the_timezone_bot", "timee_bot", "-koy"}
+disallowed_users_set = {"the_timezone_bot", "timee_bot", "-koy", "rrreeddiitt"}
 
 # Recipients list (for Private Messages) for the winners list
 staff_recipients = ["ElementUser", "S2Sliferjam"]
