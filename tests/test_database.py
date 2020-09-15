@@ -25,19 +25,19 @@ def test_insert_submission_url(database):
 
 
 def test_get_submission_url(database):
-    url_string = "https://www.reddit.com/r/HeroesofNewerth/comments/iku1aq/test_run_485_patch_notes_guessing_game/"
+    url_string = "https://www.reddit.com/r/HeroesofNewerth/comments/in14hz/game_486_patch_notes_guessing_game/"
     assert database.get_submission_url(tag="main") == url_string
 
 
 def test_user_exists(database):
-    assert database.user_exists("ElementUser")
+    assert database.user_exists("S2Sliferjam")
     assert not database.user_exists(
         "random_user_that_doesnt_exist_89213u893u13u132u139u31983u13dasdadsadsa"
     )
 
 
 def test_get_user(database):
-    assert database.get_user("ElementUser")
+    assert database.get_user("S2Sliferjam")
 
 
 def test_add_user(database):
@@ -50,7 +50,7 @@ def test_add_user(database):
 
 
 def test_convert_db_user_to_RedditUser(database):
-    db_user = database.get_user("ElementUser")
+    db_user = database.get_user("S2Sliferjam")
     reddit_user = database.convert_db_user_to_RedditUser(db_user)
 
     # Cannot iterate over an object's attributes directly,
@@ -63,7 +63,7 @@ def test_convert_db_user_to_RedditUser(database):
 
 def test_update_user(database):
     updated_num_guesses = 1000
-    db_user = database.get_user("ElementUser")
+    db_user = database.get_user("S2Sliferjam")
     reddit_user = database.convert_db_user_to_RedditUser(db_user)
 
     # Save original user data
@@ -72,7 +72,7 @@ def test_update_user(database):
     # Change the num_guesses field & test that
     reddit_user.num_guesses = updated_num_guesses
     database.update_user(reddit_user)
-    new_db_user = database.get_user("ElementUser")
+    new_db_user = database.get_user("S2Sliferjam")
     assert new_db_user["num_guesses"] == updated_num_guesses
 
     # Reupdate user in database with original user data once the test is complete
