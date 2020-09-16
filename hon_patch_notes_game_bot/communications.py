@@ -1,6 +1,7 @@
 """
 This module contains functions related to communications across the Reddit platform
 """
+from praw.exceptions import RedditAPIException
 
 
 def send_message_to_staff(
@@ -28,9 +29,15 @@ def send_message_to_staff(
         )
 
         for recipient in staff_recipients:
-            reddit.redditor(recipient).message(
-                subject=subject_line, message=winners_list_text
-            )
+            try:
+                reddit.redditor(recipient).message(
+                    subject=subject_line, message=winners_list_text
+                )
+            except RedditAPIException:
+                print(
+                    f"{recipient} was not sent a message, as they have disable incoming Private Messages."
+                )
+                continue
 
 
 def send_message_to_winners(reddit, winners_list, version_string, gold_coin_reward):
@@ -53,4 +60,11 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
             f"Please send /u/S2Sliferjam a Private Message (PM) to request a code for {str(gold_coin_reward)} Gold Coins.\n\n"
             "Thank you for participating in the game! =)"
         )
-        reddit.redditor(recipient).message(subject=subject_line, message=message)
+        try:
+            reddit.redditor(recipient).message(subject=subject_line, message=message)
+        except RedditAPIException:
+            print(
+                f"{recipient} was not sent a message, as they have disable incoming Private Messages."
+            )
+            continue
+
