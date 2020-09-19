@@ -106,6 +106,8 @@ class Core:
             comment.reply(body=text_body)
         except RedditAPIException:
             pass
+        except Exception:
+            pass
 
     def is_account_too_new(self, Redditor, days):
         """
@@ -322,6 +324,9 @@ class Core:
 
         # Occasionally, Reddit may throw a 503 server error while under heavy load.
         # In that case, log the error & just wait and try again in the next loop cycle
-        except ServerError as error:
+        except ServerError as serverError:
+            print(serverError)
+            time.sleep(60)
+        except Exception as error:
             print(error)
             time.sleep(60)

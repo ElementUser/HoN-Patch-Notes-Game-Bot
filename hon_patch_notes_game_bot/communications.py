@@ -33,9 +33,14 @@ def send_message_to_staff(
                 reddit.redditor(recipient).message(
                     subject=subject_line, message=winners_list_text
                 )
-            except RedditAPIException:
+            except RedditAPIException as redditError:
                 print(
-                    f"{recipient} was not sent a message, as they have disable incoming Private Messages."
+                    f"{redditError}\n{recipient} was not sent a message, continuing to next recipient"
+                )
+                continue
+            except Exception as error:
+                print(
+                    f"{error}\n{recipient} was not sent a message, continuing to next recipient"
                 )
                 continue
 
@@ -62,9 +67,13 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
         )
         try:
             reddit.redditor(recipient).message(subject=subject_line, message=message)
-        except RedditAPIException:
+        except RedditAPIException as redditError:
             print(
-                f"{recipient} was not sent a message, as they have disable incoming Private Messages."
+                f"{redditError}\n{recipient} was not sent a message, continuing to next recipient"
             )
             continue
-
+        except Exception as error:
+            print(
+                f"{error}\n{recipient} was not sent a message, continuing to next recipient"
+            )
+            continue
