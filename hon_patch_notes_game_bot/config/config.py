@@ -24,11 +24,14 @@ NUM_WINNERS = 10
 SLEEP_INTERVAL_SECONDS = 10
 
 # ================
-# User lists
+# Lists
 # ================
 
 # Disallowed users: use a set for the O(1) access time
 disallowed_users_set = {"the_timezone_bot", "timee_bot", "-koy", "rrreeddiitt"}
 
-# Recipients list (for Private Messages) for the winners list
+# Recipients user list (for Private Messages) for the winners list
 staff_recipients = ["ElementUser", "S2Sliferjam"]
+
+# Invalid line strings (for guess validity in the game)
+invalid_line_strings = ["_______", "-------"]

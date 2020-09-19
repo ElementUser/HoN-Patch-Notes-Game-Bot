@@ -18,6 +18,7 @@ from hon_patch_notes_game_bot.config.config import (
     MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
     disallowed_users_set,
+    invalid_line_strings,
 )
 
 
@@ -282,14 +283,18 @@ class Core:
                                     patch_notes_line_number
                                 )
 
+                                # Boolean flag to check if the current guess is still considered valid
+                                # Set to True initially & a series of checks to set it to False will occur right after this
+                                is_valid_guess = True
+
                                 # Invalid guess by getting a blank line in the patch notes
                                 if line_content is None:
+                                    is_valid_guess = False
                                     blank_line = "..."
                                     self.update_community_compiled_patch_notes_in_submission(
                                         patch_notes_line_number=patch_notes_line_number,
                                         line_content=blank_line,
                                     )
-
                                     self.reply_with_bad_guess_feedback(
                                         user,
                                         author,
@@ -297,8 +302,26 @@ class Core:
                                         f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
                                     )
 
+                                # Other invalid strings for guessing
+                                for invalid_string in invalid_line_strings:
+                                    if invalid_string in line_content:
+                                        is_valid_guess = False
+                                        self.update_community_compiled_patch_notes_in_submission(
+                                            patch_notes_line_number=patch_notes_line_number,
+                                            line_content=line_content,
+                                        )
+                                        self.reply_with_bad_guess_feedback(
+                                            user,
+                                            author,
+                                            unread_item,
+                                            f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry."
+                                            "It contains the following invalid string:\n\n"
+                                            f">{invalid_string}\n\n",
+                                        )
+                                        break
+
                                 # Valid guess!
-                                else:
+                                if is_valid_guess:
                                     user.can_submit_guess = False
                                     user.is_potential_winner = True
 
