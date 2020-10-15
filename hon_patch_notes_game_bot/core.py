@@ -314,7 +314,7 @@ class Core:
                                             user,
                                             author,
                                             unread_item,
-                                            f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry."
+                                            f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry.\n\n"
                                             "It contains the following invalid string:\n\n"
                                             f">{invalid_string}\n\n",
                                         )
