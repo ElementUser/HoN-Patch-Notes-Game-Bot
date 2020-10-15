@@ -67,6 +67,9 @@ def processed_submission_content(submission_content_path, patch_notes_file):
         submission_content = submission_content.replace(
             "`max_num_guesses`", str(MAX_NUM_GUESSES),
         )
+        submission_content = submission_content.replace(
+            "`num_winners`", str(NUM_WINNERS),
+        )
 
         return submission_content
 
