@@ -14,6 +14,7 @@ from hon_patch_notes_game_bot.config.config import (
     NUM_WINNERS,
     staff_recipients,
     gold_coin_reward,
+    MAX_NUM_GUESSES,
 )
 from hon_patch_notes_game_bot.util import (
     is_game_expired,
@@ -62,6 +63,9 @@ def processed_submission_content(submission_content_path, patch_notes_file):
         )
         submission_content = submission_content.replace(
             "`gold_coin_reward`", str(gold_coin_reward),
+        )
+        submission_content = submission_content.replace(
+            "`max_num_guesses`", str(MAX_NUM_GUESSES),
         )
 
         return submission_content

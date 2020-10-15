@@ -8,10 +8,10 @@ This file will contain the bot script configuration that are most likely to chan
 # ==========
 
 # [GAME] 4.8.X - Patch Notes Guessing Game
-submission_title = "[GAME] 4.8.6 - Patch Notes Guessing Game"
-community_submission_title = "4.8.6: community-revealed Patch Notes"
-game_end_time = "September 12, 2020, 4:00 am UTC"
-gold_coin_reward = 200
+submission_title = "[GAME] 4.8.7 - Patch Notes Guessing Game"
+community_submission_title = "4.8.7: community-revealed Patch Notes"
+game_end_time = "November 22, 2020, 4:00 am UTC"
+gold_coin_reward = 400
 
 # ================
 # Other constants
@@ -20,7 +20,7 @@ SUBREDDIT_NAME = "heroesofnewerth"  # testingground4bots / heroesofnewerth
 MAX_NUM_GUESSES = 2
 MIN_COMMENT_KARMA = 4
 MIN_ACCOUNT_AGE_DAYS = 7
-NUM_WINNERS = 10
+NUM_WINNERS = 20
 SLEEP_INTERVAL_SECONDS = 10
 
 # ================
