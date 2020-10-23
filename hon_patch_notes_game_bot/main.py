@@ -176,17 +176,11 @@ def main():  # noqa: C901
             community_submission=community_submission,
             patch_notes_file=patch_notes_file,
         )
-        core.loop()
+        if not core.loop():
+            break
 
         # Stop indefinite loop if current time is greater than the closing time.
         if is_game_expired(game_end_time):
-            break
-
-        # Stop indefinite loop if the number of revealed lines exceeds the max allowed revealed line count
-        if database.get_entry_count_in_patch_notes_line_tracker() >= (
-            (MAX_PERCENT_OF_LINES_REVEALED / 100)
-            * patch_notes_file.get_total_line_count()
-        ):
             break
 
         # Time to wait before calling the Reddit API again (in seconds)

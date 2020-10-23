@@ -17,6 +17,7 @@ from hon_patch_notes_game_bot.config.config import (
     MIN_COMMENT_KARMA,
     MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
+    MAX_PERCENT_OF_LINES_REVEALED,
     disallowed_users_set,
     invalid_line_strings,
 )
@@ -40,6 +41,18 @@ class Core:
         self.submission = submission
         self.community_submission = community_submission
         self.patch_notes_file = patch_notes_file
+
+    def has_exceeded_revealed_line_count(self):
+        """
+        Checks if the number of revealed lines exceeds the max allowed revealed line count
+
+        Returns True if the line count has been exceeded
+        Returns False otherwise
+        """
+        return self.db.get_entry_count_in_patch_notes_line_tracker() >= (
+            (MAX_PERCENT_OF_LINES_REVEALED / 100)
+            * self.patch_notes_file.get_total_line_count()
+        )
 
     def reply_with_bad_guess_feedback(
         self, user, author, comment, first_line: str
@@ -222,10 +235,14 @@ class Core:
     def loop(self):  # noqa: C901
         """
         Core loop of the bot
+
+        Returns True if the loop should continue running, False otherwise
         """
 
         # Check unread replies
         try:
+            should_continue_loop = True
+
             for unread_item in self.reddit.inbox.unread(limit=None):
                 # Only proceed with processing the unread item if it belongs to the current thread
                 if isinstance(unread_item, Comment):
@@ -256,7 +273,7 @@ class Core:
                             continue
 
                         else:
-                            user.num_guesses = user.num_guesses + 1
+                            user.num_guesses += 1
                             if user.num_guesses >= MAX_NUM_GUESSES:
                                 user.can_submit_guess = False
 
@@ -276,6 +293,7 @@ class Core:
                                 continue
 
                             else:
+                                # Add the guessed entry to the patch_notes_line_number table
                                 self.db.add_patch_notes_line_number(
                                     patch_notes_line_number
                                 )
@@ -301,6 +319,9 @@ class Core:
                                         unread_item,
                                         f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
                                     )
+                                    should_continue_loop = (
+                                        not self.has_exceeded_revealed_line_count()
+                                    )
 
                                 # Other invalid strings for guessing
                                 for invalid_string in invalid_line_strings:
@@ -317,6 +338,9 @@ class Core:
                                             f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry.\n\n"
                                             "It contains the following invalid string:\n\n"
                                             f">{invalid_string}\n\n",
+                                        )
+                                        should_continue_loop = (
+                                            not self.has_exceeded_revealed_line_count()
                                         )
                                         break
 
@@ -341,17 +365,25 @@ class Core:
                                         "The community-compiled patch notes have been updated with your valid entry.\n\n"
                                         f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
                                     )
+                                    should_continue_loop = (
+                                        not self.has_exceeded_revealed_line_count()
+                                    )
 
                                 # Update user in DB
                                 self.db.update_user(user)
+
+            # After going through the bot's inbox, return whether the loop should continue or not back to main.py
+            return should_continue_loop
 
         # Occasionally, Reddit may throw a 503 server error while under heavy load.
         # In that case, log the error & just wait and try again in the next loop cycle
         except ServerError as serverError:
             print(serverError)
             time.sleep(60)
+            return True  # main.py loop should continue after the sleep period
 
         # Handle remaining unforeseen exceptions and log the error
         except Exception as error:
             print(error)
             time.sleep(60)
+            return True  # main.py loop should continue after the sleep period
