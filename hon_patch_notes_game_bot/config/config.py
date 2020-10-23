@@ -17,6 +17,7 @@ gold_coin_reward = 400
 # Other constants
 # ================
 SUBREDDIT_NAME = "heroesofnewerth"  # testingground4bots / heroesofnewerth
+MAX_PERCENT_OF_LINES_REVEALED = 70  # Safety-oriented variable to ensure that the entire patch notes will not be revealed
 MAX_NUM_GUESSES = 2
 MIN_COMMENT_KARMA = 4
 MIN_ACCOUNT_AGE_DAYS = 7

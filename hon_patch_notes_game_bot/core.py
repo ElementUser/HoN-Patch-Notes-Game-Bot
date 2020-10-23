@@ -350,6 +350,8 @@ class Core:
         except ServerError as serverError:
             print(serverError)
             time.sleep(60)
+
+        # Handle remaining unforeseen exceptions and log the error
         except Exception as error:
             print(error)
             time.sleep(60)

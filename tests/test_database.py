@@ -92,6 +92,13 @@ def test_add_patch_notes_line_number(database):
     )
 
 
+def test_get_entry_count_in_patch_notes_line_tracker(database):
+    entry_count = database.get_entry_count_in_patch_notes_line_tracker()
+
+    ## We know the number of lines in the test database
+    assert entry_count == 102
+
+
 def test_get_potential_winners_list(database):
     potential_winners_list = database.get_potential_winners_list()
     assert len(potential_winners_list) > 0

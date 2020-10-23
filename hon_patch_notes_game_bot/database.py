@@ -119,7 +119,7 @@ class Database:
 
     def get_all_entries_in_patch_notes_tracker(self):
         """
-        Returns all entries in the patch_notes_traacker table (as a list of dictionaries)
+        Returns all entries in the patch_notes_tracker table (as a list of dictionaries)
         """
         return self.db.table("patch_notes_line_tracker").all()
 
@@ -130,6 +130,12 @@ class Database:
         This is used to keep track of which line numbers have been guessed already.
         """
         self.db.table("patch_notes_line_tracker").insert({"id": line_number})
+
+    def get_entry_count_in_patch_notes_line_tracker(self) -> int:
+        """
+        Returns the entry count (number of entries) in the patch_notes_line_tracker table
+        """
+        return len(self.get_all_entries_in_patch_notes_tracker())
 
     def get_potential_winners_list(self):
         """

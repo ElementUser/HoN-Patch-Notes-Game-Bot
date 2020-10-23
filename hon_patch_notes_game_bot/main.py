@@ -15,6 +15,7 @@ from hon_patch_notes_game_bot.config.config import (
     staff_recipients,
     gold_coin_reward,
     MAX_NUM_GUESSES,
+    MAX_PERCENT_OF_LINES_REVEALED,
 )
 from hon_patch_notes_game_bot.util import (
     is_game_expired,
@@ -69,6 +70,9 @@ def processed_submission_content(submission_content_path, patch_notes_file):
         )
         submission_content = submission_content.replace(
             "`num_winners`", str(NUM_WINNERS),
+        )
+        submission_content = submission_content.replace(
+            "`MAX_PERCENT_OF_LINES_REVEALED`", str(MAX_PERCENT_OF_LINES_REVEALED)
         )
 
         return submission_content
@@ -176,6 +180,13 @@ def main():  # noqa: C901
 
         # Stop indefinite loop if current time is greater than the closing time.
         if is_game_expired(game_end_time):
+            break
+
+        # Stop indefinite loop if the number of revealed lines exceeds the max allowed revealed line count
+        if database.get_entry_count_in_patch_notes_line_tracker() >= (
+            (MAX_PERCENT_OF_LINES_REVEALED / 100)
+            * patch_notes_file.get_total_line_count()
+        ):
             break
 
         # Time to wait before calling the Reddit API again (in seconds)
