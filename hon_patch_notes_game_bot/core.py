@@ -323,26 +323,28 @@ class Core:
                                         not self.has_exceeded_revealed_line_count()
                                     )
 
-                                # Other invalid strings for guessing
-                                for invalid_string in invalid_line_strings:
-                                    if invalid_string in line_content:
-                                        is_valid_guess = False
-                                        self.update_community_compiled_patch_notes_in_submission(
-                                            patch_notes_line_number=patch_notes_line_number,
-                                            line_content=line_content,
-                                        )
-                                        self.reply_with_bad_guess_feedback(
-                                            user,
-                                            author,
-                                            unread_item,
-                                            f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry.\n\n"
-                                            "It contains the following invalid string:\n\n"
-                                            f">{invalid_string}\n\n",
-                                        )
-                                        should_continue_loop = (
-                                            not self.has_exceeded_revealed_line_count()
-                                        )
-                                        break
+                                # Only check for invalid strings if line_content is not empty
+                                else:
+                                    # If the line content is correct, check other invalid strings for guessing
+                                    for invalid_string in invalid_line_strings:
+                                        if invalid_string in line_content:
+                                            is_valid_guess = False
+                                            self.update_community_compiled_patch_notes_in_submission(
+                                                patch_notes_line_number=patch_notes_line_number,
+                                                line_content=line_content,
+                                            )
+                                            self.reply_with_bad_guess_feedback(
+                                                user,
+                                                author,
+                                                unread_item,
+                                                f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry.\n\n"
+                                                "It contains the following invalid string:\n\n"
+                                                f">{invalid_string}\n\n",
+                                            )
+                                            should_continue_loop = (
+                                                not self.has_exceeded_revealed_line_count()
+                                            )
+                                            break
 
                                 # Valid guess!
                                 if is_valid_guess:
