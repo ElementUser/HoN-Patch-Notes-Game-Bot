@@ -15,6 +15,7 @@ from hon_patch_notes_game_bot.util import (
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.config.config import (
     MIN_COMMENT_KARMA,
+    MIN_LINK_KARMA,
     MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
     MAX_PERCENT_OF_LINES_REVEALED,
@@ -194,11 +195,14 @@ class Core:
             )
             return True
 
-        if Redditor.comment_karma < MIN_COMMENT_KARMA:
+        if (
+            Redditor.comment_karma < MIN_COMMENT_KARMA
+            and Redditor.link_karma < MIN_LINK_KARMA
+        ):
             self.safe_comment_reply(
                 comment,
-                f"Sorry {Redditor.name}, your comment karma is too low.\n\n"
-                "Please try again when you have legitimately raised your comment karma a bit!",
+                f"Sorry {Redditor.name}, either your link karma or comment karma is too low.\n\n"
+                "Please try again when you have legitimately raised your link and/or comment karma a bit!",
             )
             return True
 

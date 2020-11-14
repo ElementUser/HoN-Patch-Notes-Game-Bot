@@ -19,7 +19,7 @@ This game will automatically stop running at **`game_end_time`**, or when **`MAX
 - Use your collective knowledge and put together the patch notes early!
 - Don't ruin the fun for others. Don't be rude or a jerk.
 - Note that the patch notes published here are subject to change at any time after this game has been set live. However, they are unlikely to change much (if at all).
-- To prevent spam from throwaway accounts, this bot will not respond to accounts that are below a certain comment karma threshold or that have been created too recently.
+- To prevent exploits from throwaway accounts, this bot will not accept guesses from accounts that are below a certain link karma or comment karma threshold, or if the account has been created too recently.
 - Participants must also have their email verified for their Reddit account - otherwise, the bot will not respond to them.
 
 ## Rewards
