@@ -201,7 +201,7 @@ class Core:
         ):
             self.safe_comment_reply(
                 comment,
-                f"Sorry {Redditor.name}, either your link karma or comment karma is too low.\n\n"
+                f"Sorry {Redditor.name}, your link karma and your comment karma are too low.\n\n"
                 "Please try again when you have legitimately raised your link and/or comment karma a bit!",
             )
             return True
