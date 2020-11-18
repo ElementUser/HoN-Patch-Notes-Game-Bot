@@ -218,7 +218,7 @@ def main():  # noqa: C901
         gold_coin_reward=gold_coin_reward,
     )
 
-    # Send each winner a message asking them to contact S2Sliferjam for the Gold Coin codes
+    # Send each winner a message asking them to contact FB-Saphirez for the Gold Coin codes
     send_message_to_winners(
         reddit=reddit,
         winners_list=winners_list,

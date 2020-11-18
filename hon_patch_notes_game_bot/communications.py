@@ -62,7 +62,7 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
         message = (
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
-            f"Please send /u/S2Sliferjam a Private Message (PM) to request a code for {str(gold_coin_reward)} Gold Coins.\n\n"
+            f"Please send /u/FB-Saphirez a Private Message (PM) to request a code for {str(gold_coin_reward)} Gold Coins.\n\n"
             "Thank you for participating in the game! =)"
         )
         try:

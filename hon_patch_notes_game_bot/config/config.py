@@ -33,7 +33,7 @@ SLEEP_INTERVAL_SECONDS = 10
 disallowed_users_set = {"the_timezone_bot", "timee_bot", "-koy", "rrreeddiitt"}
 
 # Recipients user list (for Private Messages) for the winners list
-staff_recipients = ["ElementUser", "S2Sliferjam"]
+staff_recipients = ["ElementUser", "FB-Saphirez"]
 
 # Invalid line strings (for guess validity in the game)
 invalid_line_strings = ["_______", "-------"]
