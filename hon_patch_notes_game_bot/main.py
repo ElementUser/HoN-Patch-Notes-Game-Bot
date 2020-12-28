@@ -226,6 +226,8 @@ def main():  # noqa: C901
         gold_coin_reward=gold_coin_reward,
     )
 
+    print("Reddit bot script ended gracefully")
+
 
 if __name__ == "__main__":
     main()

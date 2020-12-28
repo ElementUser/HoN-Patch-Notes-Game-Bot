@@ -1,6 +1,7 @@
 """
 This module contains functions related to communications across the Reddit platform
 """
+import time
 from praw.exceptions import RedditAPIException
 
 
@@ -67,11 +68,27 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
         )
         try:
             reddit.redditor(recipient).message(subject=subject_line, message=message)
-        except RedditAPIException as redditError:
+
+        # Reddit API Exception
+        except RedditAPIException as redditException:
             print(
-                f"{redditError}\n{recipient} was not sent a message, continuing to next recipient"
+                f"{redditException}\n{recipient} was not sent a message, continuing to next recipient"
             )
+
+            # Rate limit error handling
+            # Reference: https://github.com/GrafeasGroup/tor/blob/5ee21af7cc752abc6e7ae6aa47228105e6ec2e05/tor/core/helpers.py#L160-L171
+            if redditException.error_type == "RATELIMIT":
+                # Sleep for the rate limit duration
+                totalLength = str(redditException.items[0].message).split(
+                    "you are doing that too much. try again in ", 1
+                )[1]
+                minutesToSleep = totalLength[0].partition("minutes.")[0]
+                secondsToSleep = int(minutesToSleep) * 60
+                print("Sleeping for " + str(secondsToSleep) + " seconds")
+                time.sleep(secondsToSleep)
+
             continue
+
         except Exception as error:
             print(
                 f"{error}\n{recipient} was not sent a message, continuing to next recipient"
