@@ -48,7 +48,9 @@ def send_message_to_staff(
 
 def send_message_to_winners(reddit, winners_list, version_string, gold_coin_reward):
     """
-    Sends the winners list results to a list of recipients via Private Message (PM)
+    Sends the winners list results to a list of recipients via Private Message (PM).
+
+    This function uses recursion to send messages to failed recipients.
 
     Attributes:
         reddit: the PRAW Reddit instance
@@ -58,6 +60,8 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
     """
 
     subject_line = f"Winner for the {version_string} Patch Notes Guessing Game"
+
+    failed_recipients_list = []
 
     for recipient in winners_list:
         message = (
@@ -71,8 +75,9 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
 
         # Reddit API Exception
         except RedditAPIException as redditException:
+            failed_recipients_list.append(recipient)
             print(
-                f"{redditException}\n{recipient} was not sent a message, continuing to next recipient"
+                f"{redditException}\n{recipient} was not sent a message (added to retry list), continuing to next recipient"
             )
 
             # Rate limit error handling
@@ -91,6 +96,13 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
 
         except Exception as error:
             print(
-                f"{error}\n{recipient} was not sent a message, continuing to next recipient"
+                f"{error}\n{recipient} was not sent a message (will not retry), continuing to next recipient"
             )
             continue
+
+    # At the end of the function, recurse this function to re-send messages to failed recipients
+    # Recurse only if failed_recipients_list has content in it
+    if len(failed_recipients_list) > 0:
+        send_message_to_winners(
+            reddit, failed_recipients_list, version_string, gold_coin_reward
+        )
