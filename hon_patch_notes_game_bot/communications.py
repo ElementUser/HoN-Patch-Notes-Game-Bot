@@ -3,7 +3,7 @@ This module contains functions related to communications across the Reddit platf
 """
 import time
 from praw.exceptions import RedditAPIException
-from hon_patch_notes_game_bot.communications import STAFF_MEMBER_THAT_HANDS_OUT_REWARDS
+from hon_patch_notes_game_bot.config import STAFF_MEMBER_THAT_HANDS_OUT_REWARDS
 
 
 def send_message_to_staff(
