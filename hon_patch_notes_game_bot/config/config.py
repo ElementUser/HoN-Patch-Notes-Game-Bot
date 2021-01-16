@@ -8,10 +8,10 @@ This file will contain the bot script configuration that are most likely to chan
 # ==========
 
 # [GAME] 4.8.X - Patch Notes Guessing Game
-submission_title = "[GAME] 4.8.7 - Patch Notes Guessing Game"
-community_submission_title = "4.8.7: community-revealed Patch Notes"
-game_end_time = "November 22, 2020, 4:00 am UTC"
-gold_coin_reward = 400
+submission_title = "[GAME] 4.9.1 - Patch Notes Guessing Game"
+community_submission_title = "4.9.1 - Community-revealed Patch Notes"
+game_end_time = "January 28, 2021, 4:00 am UTC"
+gold_coin_reward = 300
 
 # ================
 # Other constants
@@ -22,8 +22,9 @@ MAX_NUM_GUESSES = 2
 MIN_COMMENT_KARMA = 4
 MIN_LINK_KARMA = 4
 MIN_ACCOUNT_AGE_DAYS = 7
-NUM_WINNERS = 20
+NUM_WINNERS = 15
 SLEEP_INTERVAL_SECONDS = 10
+STAFF_MEMBER_THAT_HANDS_OUT_REWARDS = "FB-Saphirez"
 
 # ================
 # Lists
