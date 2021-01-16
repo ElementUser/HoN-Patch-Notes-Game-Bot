@@ -5,7 +5,7 @@
 # Useful for using the `at` command to schedule this to run ahead of time.
 
 # To schedule this file to be run, execute this command in this directory:
-# ./tmux_start.sh | at 12:00 PM 01/23/2021
+# echo "./tmux_start.sh" | at 12:00 PM 01/23/2021
 
 # Change the date & time as needed
 
