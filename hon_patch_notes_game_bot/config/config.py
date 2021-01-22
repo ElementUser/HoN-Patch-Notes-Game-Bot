@@ -31,7 +31,13 @@ STAFF_MEMBER_THAT_HANDS_OUT_REWARDS = "FB-Saphirez"
 # ================
 
 # Disallowed users: use a set for the O(1) access time
-disallowed_users_set = {"the_timezone_bot", "timee_bot", "-koy", "rrreeddiitt"}
+disallowed_users_set = {
+    "the_timezone_bot",
+    "timee_bot",
+    "generic_reddit_bot_2",
+    "-koy",
+    "rrreeddiitt",
+}
 
 # Recipients user list (for Private Messages) for the winners list
 staff_recipients = ["ElementUser", "FB-Saphirez"]
