@@ -24,7 +24,7 @@ class Database:
         try:
             os.makedirs("cache")
         except OSError:
-            pass
+            print("Skipping creation of cache folder (already exists)...")
 
         self.db_path = db_path
         self.db = TinyDB(db_path)

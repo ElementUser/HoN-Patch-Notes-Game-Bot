@@ -73,6 +73,7 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
         )
         try:
             reddit.redditor(recipient).message(subject=subject_line, message=message)
+            print(f"Winner message sent to {recipient}")
 
         # Reddit API Exception
         except RedditAPIException as redditException:

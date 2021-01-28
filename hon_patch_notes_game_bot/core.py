@@ -385,11 +385,15 @@ class Core:
         # In that case, log the error & just wait and try again in the next loop cycle
         except ServerError as serverError:
             print(serverError)
-            time.sleep(60)
+            sleep_time = 60
+            print(f"Sleeping for {sleep_time} seconds...")
+            time.sleep(sleep_time)
             return True  # main.py loop should continue after the sleep period
 
         # Handle remaining unforeseen exceptions and log the error
         except Exception as error:
             print(error)
-            time.sleep(60)
+            sleep_time = 60
+            print(f"Sleeping for {sleep_time} seconds...")
+            time.sleep(sleep_time)
             return True  # main.py loop should continue after the sleep period
