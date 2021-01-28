@@ -56,14 +56,18 @@ def output_winners_list_to_file(potential_winners_list, winners_list, output_fil
         output_file.write(text)
         output_file.truncate()
 
-        file_content = "## Winners\n\n"
+        # Winners subheading and content
+        file_content = "## Winners\n\n```"
 
         for winner in winners_list:
             file_content += f"{winner}\n"
+        file_content += "```"
 
-        file_content += "\n## Potential Winners\n\n"
+        # Potential Winners subheading and content
+        file_content += "\n## Potential Winners\n\n```"
         for user in potential_winners_list:
             file_content += f"{user}\n"
+        file_content += "```"
         output_file.write(file_content)
 
         winners_submission_content = (
