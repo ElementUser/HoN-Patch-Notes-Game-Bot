@@ -36,6 +36,7 @@ disallowed_users_set = {
     "timee_bot",
     "generic_reddit_bot_2",
     "-koy",
+    "-koy888",
     "rrreeddiitt",
 }
 
