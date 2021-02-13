@@ -10,11 +10,12 @@ Reddit users post their guess according to the [Rules of the game](#Rules-of-the
 
 To skip to Bot Usage directly, go to the [Requirements section](#Requirements).
 
-## Rules of the game
+## Rules of the Game
 
-- Pick a number between 1 and `max_line_count` (dynamically determined at run-time), and post that number to the main thread or the comment that /u/hon-bot responds to you with.
-- Guesses for lines that actually have content in the patch notes will be entered into the pool of potential winners for a prize! See the Rewards section for more information.
-- Each person gets `max_num_guesses` (dynamically determined at run-time) guesses until they either get a valid line or run out of guesses. If your guess has a number in it in your first line of your comment, it WILL be parsed by the bot and will count as a guess (whether you want it to or not). For simplicity's sake, please only include a number in your guess.
+- Pick a number between 1 and `max_line_count`, and post that number to the main thread or the comment that /u/hon-bot responds to you with.
+- Guesses for lines that actually have content in the patch notes are considered "valid guesses", and the user will be entered into the pool of potential winners for a prize if they get a valid guess! See the Rewards section for more information.
+- Each user gets `max_num_guesses` guesses until they run out of guesses.
+- If your guess has a number in it in your first line of your comment, it WILL be parsed by the bot and will count as a guess (whether you want it to or not). For simplicity's sake, please only include a number in your guess.
 - Guesses for line numbers that don't exist in the patch notes count as an invalid guess. You have been warned!
 - There are invalid lines in the patch notes. These are blank lines, and lines with separator elements like `_______` and `-------`.
   - If you guess an invalid line, you will receive a `Whiffed!` comment response. Your number of guesses remaining will reduce by 1 when this occurs, and you will no longer be able to participate if this number reaches 0.

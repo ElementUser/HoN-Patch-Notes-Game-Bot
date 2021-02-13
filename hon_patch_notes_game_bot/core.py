@@ -66,12 +66,23 @@ class Core:
             comment: the praw Comment model instance to respond to
             first_line: the first line in the reply content
         """
+
+        # User can still continue guessing
         if user.can_submit_guess:
             self.safe_comment_reply(
                 comment,
                 f"{first_line}\n\n"
                 f"{author.name}, you have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left!\n\n"
                 "Try guessing another line number.",
+            )
+
+        # User cannot submit guesses anymore, but was a successful winner
+        elif user.is_potential_winner:
+            self.safe_comment_reply(
+                comment,
+                f"{first_line} \n\n"
+                f"{author.name}, you have used all of your guesses.\n\n"
+                "Based on one of your previous guesses, you are still entered into the pool of potential winners!",
             )
         else:
             self.safe_comment_reply(
@@ -352,7 +363,6 @@ class Core:
 
                                 # Valid guess!
                                 if is_valid_guess:
-                                    user.can_submit_guess = False
                                     user.is_potential_winner = True
 
                                     # Update community compiled patch notes in submission
@@ -368,6 +378,7 @@ class Core:
                                         f">{line_content}\n"
                                         "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
                                         "See the main post for more details for potential prizes.\n\n___\n\n"
+                                        f"You have {user.num_guesses} guess(es) left!\n\n"
                                         "The community-compiled patch notes have been updated with your valid entry.\n\n"
                                         f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
                                     )
