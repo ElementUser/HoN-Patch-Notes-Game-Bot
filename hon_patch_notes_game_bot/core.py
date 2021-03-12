@@ -371,17 +371,31 @@ class Core:
                                         line_content=line_content,
                                     )
 
-                                    self.safe_comment_reply(
-                                        unread_item,
-                                        f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
-                                        f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
-                                        f">{line_content}\n"
-                                        "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
-                                        "See the main post for more details for potential prizes.\n\n___\n\n"
-                                        f"You have {user.num_guesses} guess(es) left!\n\n"
-                                        "The community-compiled patch notes have been updated with your valid entry.\n\n"
-                                        f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
-                                    )
+                                    if user.can_submit_guess:
+                                        self.safe_comment_reply(
+                                            unread_item,
+                                            f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
+                                            f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
+                                            f">{line_content}\n"
+                                            "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
+                                            "See the main post for more details for potential prizes.\n\n___\n\n"
+                                            f"You have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left!\n\n"
+                                            "The community-compiled patch notes have been updated with your valid entry.\n\n"
+                                            f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
+                                        )
+                                    else:
+                                        self.safe_comment_reply(
+                                            unread_item,
+                                            f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
+                                            f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
+                                            f">{line_content}\n"
+                                            "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
+                                            "See the main post for more details for potential prizes.\n\n___\n\n"
+                                            f"{author.name}, you have used all of your guesses.\n\n"
+                                            "The community-compiled patch notes have been updated with your valid entry.\n\n"
+                                            f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
+                                        )
+
                                     should_continue_loop = (
                                         not self.has_exceeded_revealed_line_count()
                                     )
