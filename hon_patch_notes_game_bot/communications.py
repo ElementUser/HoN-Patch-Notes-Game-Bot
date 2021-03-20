@@ -2,6 +2,7 @@
 This module contains functions related to communications across the Reddit platform
 """
 import time
+import re
 from praw.exceptions import RedditAPIException
 from hon_patch_notes_game_bot.config.config import STAFF_MEMBER_THAT_HANDS_OUT_REWARDS
 
@@ -85,11 +86,15 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
             # Rate limit error handling
             # Reference: https://github.com/GrafeasGroup/tor/blob/5ee21af7cc752abc6e7ae6aa47228105e6ec2e05/tor/core/helpers.py#L160-L171
             if redditException.error_type == "RATELIMIT":
-                # Sleep for the rate limit duration
-                totalLength = str(redditException.items[0].message).split(
-                    "you are doing that too much. try again in ", 1
-                )[1]
-                minutesToSleep = totalLength[0].partition("minutes.")[0]
+                # Error printouts for debugging
+                print(f"Full Reddit Exception: {redditException}\n\n")
+                print(f"Reddit Exception Item 0: {redditException.items[0]}\n\n")
+
+                # Sleep for the rate limit duration by parsing the minute count from exception message
+                regex_capture = re.search(
+                    r"(\d+) minutes", redditException.items[0].message
+                )
+                minutesToSleep = regex_capture.group(1)
                 secondsToSleep = int(minutesToSleep) * 60
                 print("Sleeping for " + str(secondsToSleep) + " seconds")
                 time.sleep(secondsToSleep)
