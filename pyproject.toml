@@ -2,7 +2,7 @@
 authors = ["William Lam <w.lam@honteam.com>"]
 description = ""
 name = "hon_patch_notes_game_bot"
-version = "0.1.0"
+version = "0.2.0"
 
 [tool.poetry.dependencies]
 praw = "^7.1.4"
