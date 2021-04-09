@@ -35,7 +35,7 @@ The bot enforces these rules and outputs various text lines from a given `patch_
 
 # Requirements
 
-- [Python 3.7](https://www.python.org/downloads/release/python-3710/) or higher must be installed on the host system.
+- [Python 3.7](https://www.python.org/downloads/release/python-379/) or higher must be installed on the host system.
   - If installing Python 3.8 or higher on Linux, follow the directions [here](https://tecadmin.net/install-python-3-8-ubuntu/)
 
 # Setup
