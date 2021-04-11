@@ -38,6 +38,7 @@ disallowed_users_set = {
     "-koy",
     "-koy888",
     "rrreeddiitt",
+    "diabetis_"
 }
 
 # Recipients user list (for Private Messages) for the winners list
