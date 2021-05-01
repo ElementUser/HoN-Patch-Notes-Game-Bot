@@ -4,6 +4,7 @@
 *.ini
 *.json
 winners_list.txt
+patch_notes.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
