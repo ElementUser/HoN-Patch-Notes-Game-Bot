@@ -4,9 +4,11 @@
 This module will keep track of all users that have posted in the allocated patch notes thread
 Data will be saved in some form of database (to prevent loss of data, e.g. if Reddit or the bot crashes)
 """
-from random import sample
 import os
+from random import sample
 from tinydb import TinyDB, Query
+from tinydb.table import Document
+from typing import List, Optional
 
 from hon_patch_notes_game_bot.user import RedditUser
 
@@ -15,7 +17,7 @@ LineNumber = Query()
 
 
 class Database:
-    def __init__(self, db_path: str = "cache/db.json") -> None:
+    def __init__(self, db_path: str = "cache/db.json"):
         """
         Parametrized constructor
         """
@@ -40,7 +42,7 @@ class Database:
         """
         self.db.table("submission").insert({"tag": tag, "url": submission_url})
 
-    def get_submission_url(self, tag):
+    def get_submission_url(self, tag) -> Optional[str]:
         """
         Gets the currently saved submission's URL, if it exists.
 
@@ -57,7 +59,7 @@ class Database:
 
         return submission_data["url"]
 
-    def user_exists(self, name: str):
+    def user_exists(self, name: str) -> bool:
         """
         Determines whether the user exists based on search by username
 
@@ -65,15 +67,15 @@ class Database:
             True if the user exists
             False otherwise
         """
-        return self.db.table("user").search(User.name == name)
+        return len(self.db.table("user").search(User.name == name)) > 0
 
-    def get_user(self, name: str):
+    def get_user(self, name: str) -> Optional[Document]:
         """
         Retrieves a user object from the database by username
         """
         return self.db.table("user").get(User.name == name)
 
-    def add_user(self, RedditUser) -> None:
+    def add_user(self, RedditUser: RedditUser):
         """
         Adds the user to the database
 
@@ -82,7 +84,7 @@ class Database:
         if not self.user_exists(RedditUser.name):
             self.db.table("user").insert(vars(RedditUser))
 
-    def convert_db_user_to_RedditUser(self, db_user):
+    def convert_db_user_to_RedditUser(self, db_user) -> RedditUser:
         """
         Converts a user object from the database to a new RedditUser instance
 
@@ -97,7 +99,7 @@ class Database:
         )
         return user
 
-    def update_user(self, RedditUser) -> None:
+    def update_user(self, RedditUser):
         """
         Updates the user data in the database
 
@@ -105,25 +107,28 @@ class Database:
         """
         self.db.table("user").update(vars(RedditUser), User.name == RedditUser.name)
 
-    def check_patch_notes_line_number(self, line_number: int):
+    def check_patch_notes_line_number(self, line_number: int) -> bool:
         """
         Checks if a previously guessed patch notes line number already exists in the database
 
         Returns:
-            A patch_notes_line_tracker object containing its id & line number value
-            None if the entry does not exist
+            True if the patch notes line number exists in the database
+            False otherwise
         """
-        return self.db.table("patch_notes_line_tracker").get(
-            LineNumber.id == line_number
-        )
+        if (
+            self.db.table("patch_notes_line_tracker").get(LineNumber.id == line_number)
+            is None
+        ):
+            return False
+        return True
 
-    def get_all_entries_in_patch_notes_tracker(self):
+    def get_all_entries_in_patch_notes_tracker(self) -> List[Document]:
         """
-        Returns all entries in the patch_notes_tracker table (as a list of dictionaries)
+        Returns all entries in the patch_notes_tracker table (as a list of Document objects)
         """
         return self.db.table("patch_notes_line_tracker").all()
 
-    def add_patch_notes_line_number(self, line_number: int) -> None:
+    def add_patch_notes_line_number(self, line_number: int):
         """
         Adds the patch notes line number into the database.
 
@@ -137,7 +142,7 @@ class Database:
         """
         return len(self.get_all_entries_in_patch_notes_tracker())
 
-    def get_potential_winners_list(self):
+    def get_potential_winners_list(self) -> List[str]:
         """
         Returns:
             A list of usernames that are marked as potential winners
@@ -150,7 +155,7 @@ class Database:
 
     def get_random_winners_from_list(
         self, num_winners: int, potential_winners_list: list
-    ):
+    ) -> List[str]:
         """
         Picks a number of unique winners from the potential winners list.
 

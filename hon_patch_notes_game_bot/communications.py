@@ -3,12 +3,19 @@ This module contains functions related to communications across the Reddit platf
 """
 import time
 import re
+from typing import List
+
 from praw.exceptions import RedditAPIException
+from praw import Reddit
 from hon_patch_notes_game_bot.config.config import STAFF_MEMBER_THAT_HANDS_OUT_REWARDS
 
 
 def send_message_to_staff(
-    reddit, winners_list_path, staff_recipients, version_string, gold_coin_reward
+    reddit: Reddit,
+    winners_list_path: str,
+    staff_recipients: List[str],
+    version_string: str,
+    gold_coin_reward: int,
 ):
     """
     Sends the winners list results to a list of recipients via Private Message (PM)
@@ -48,7 +55,9 @@ def send_message_to_staff(
                 continue
 
 
-def send_message_to_winners(reddit, winners_list, version_string, gold_coin_reward):
+def send_message_to_winners(
+    reddit: Reddit, winners_list: List[str], version_string: str, gold_coin_reward: int
+):
     """
     Sends the winners list results to a list of recipients via Private Message (PM).
 
@@ -69,7 +78,8 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
         message = (
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
-            f"Please send /u/{STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} a Private Message (PM) to request a code for {str(gold_coin_reward)} Gold Coins.\n\n"
+            f"Please send /u/{STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} a Private Message (PM) to request a code"
+            f" for {str(gold_coin_reward)} Gold Coins.\n\n"
             "Thank you for participating in the game! =)"
         )
         try:
@@ -84,7 +94,6 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
             )
 
             # Rate limit error handling
-            # Reference: https://github.com/GrafeasGroup/tor/blob/5ee21af7cc752abc6e7ae6aa47228105e6ec2e05/tor/core/helpers.py#L160-L171
             if redditException.error_type == "RATELIMIT":
                 # Error printouts for debugging
                 print(f"Full Reddit Exception: {redditException}\n\n")
@@ -94,10 +103,15 @@ def send_message_to_winners(reddit, winners_list, version_string, gold_coin_rewa
                 regex_capture = re.search(
                     r"(\d+) minutes", redditException.items[0].message
                 )
-                minutesToSleep = regex_capture.group(1)
-                secondsToSleep = int(minutesToSleep) * 60
-                print("Sleeping for " + str(secondsToSleep) + " seconds")
-                time.sleep(secondsToSleep)
+
+                if regex_capture is None:
+                    print("Invalid regex detected. Sleeping for 60 seconds...")
+                    time.sleep(60)
+                else:
+                    minutesToSleep = regex_capture.group(1)
+                    secondsToSleep = int(minutesToSleep) * 60
+                    print("Sleeping for " + str(secondsToSleep) + " seconds")
+                    time.sleep(secondsToSleep)
 
             continue
 

@@ -14,6 +14,18 @@
 
 # Dev Dependencies
 
+- black: https://black.readthedocs.io/en/stable/
+
+  - Strict code formatter for Python
+
+- flake8: https://flake8.pycqa.org/en/latest/
+
+  - Python code linter
+
+- mypy: http://mypy-lang.org/
+
+  - Optional static type checker for Python code
+
 - pytest: https://docs.pytest.org/en/stable/
 
   - Unit testing library
@@ -21,13 +33,6 @@
 - pytest-cov: https://pytest-cov.readthedocs.io/en/latest/
 
   - Outputs testing coverage reports in the terminal
-
-- black: https://black.readthedocs.io/en/stable/
-
-  - Strict code formatter for Python
-
-- flake8: https://flake8.pycqa.org/en/latest/
-  - Python code linter
 
 # Unit Testing
 

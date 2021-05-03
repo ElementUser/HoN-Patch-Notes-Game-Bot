@@ -1,4 +1,3 @@
-import pytest
 import os
 
 import hon_patch_notes_game_bot.util as util
