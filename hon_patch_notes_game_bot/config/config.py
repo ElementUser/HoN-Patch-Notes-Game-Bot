@@ -9,7 +9,7 @@ This file will contain the bot script configuration that are most likely to chan
 # [GAME] 4.9.X - Patch Notes Guessing Game
 submission_title = "[GAME] 4.9.3 - Patch Notes Guessing Game"
 community_submission_title = "4.9.3 - Community-revealed Patch Notes"
-game_end_time = "May 15, 2021, 4:00 am UTC"
+game_end_time = "May 10, 2021, 4:00 am UTC"
 
 # ================
 # Reward settings
