@@ -62,6 +62,10 @@ jobs:
           poetry run flake8 ./hon_patch_notes_game_bot --count --select=E9,F63,F7,F82 --show-source --statistics
           poetry run flake8 ./hon_patch_notes_game_bot --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+      - name: Run optional static type checking with mypy
+        run: |
+          poetry run mypy .
+
       - name: Test with pytest-cov & Poetry
         run: |
           poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/

@@ -6,25 +6,27 @@ import sys
 from dateutil import tz
 from dateutil.parser import parse
 from datetime import datetime
+from typing import List, Optional
 
 from hon_patch_notes_game_bot.config.config import NUM_WINNERS
+from hon_patch_notes_game_bot.database import Database
 
 
-def get_patch_notes_line_number(commentBody: str) -> int:
+def get_patch_notes_line_number(commentBody: str) -> Optional[int]:
     """
         Returns the first integer from the comment body
 
         Returns None if no valid integer can be found
         """
-
-    try:
-        comment_first_line = commentBody.partition("\n")[0]
-        return int(re.search(r"\d+", comment_first_line).group())
-    except AttributeError:
+    comment_first_line = commentBody.partition("\n")[0]
+    number_line_match = re.search(r"\d+", comment_first_line)
+    if number_line_match is None:
         return None
 
+    return int(number_line_match.group())
 
-def is_game_expired(time_string: str):
+
+def is_game_expired(time_string: str) -> bool:
     """
     Takes in a time string to determine if the game has expired
 
@@ -37,7 +39,9 @@ def is_game_expired(time_string: str):
     return present_time > game_end_datetime
 
 
-def output_winners_list_to_file(potential_winners_list, winners_list, output_file_path):
+def output_winners_list_to_file(
+    potential_winners_list: List[str], winners_list: List[str], output_file_path: str
+):
     """
     Outputs the list of winners & potential winners to an output file
 
@@ -86,7 +90,7 @@ def generate_submission_compiled_patch_notes_template_line(line_number: int):
     return f">{str(line_number)} |\n\n"
 
 
-def convert_time_string_to_wolframalpha_query_url(time_string: str):
+def convert_time_string_to_wolframalpha_query_url(time_string: str) -> str:
     """
     Converts a time string to a Wolframalpha URL
 
@@ -112,8 +116,14 @@ if __name__ == "__main__":
     else:
         num_winners = NUM_WINNERS
 
+    # Instantiate database
+    database = Database()
+    potential_winners_list = database.get_potential_winners_list()
+    winners_list = database.get_random_winners_from_list(
+        num_winners=num_winners, potential_winners_list=potential_winners_list
+    )
     output_winners_list_to_file(
-        db_path="cache/db.json",
         output_file_path="cache/winners_list.txt",
-        num_winners=num_winners,
+        potential_winners_list=potential_winners_list,
+        winners_list=winners_list,
     )

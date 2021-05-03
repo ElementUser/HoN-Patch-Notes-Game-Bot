@@ -1,1 +1,0 @@
-from hon_patch_notes_game_bot import __version__

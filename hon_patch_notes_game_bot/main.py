@@ -32,18 +32,20 @@ from hon_patch_notes_game_bot.communications import (
 # ============
 # Constants
 # ============
-BOT_USERNAME = "hon-bot"
-USER_AGENT = "HoN Patch Notes Game Bot by /u/hon-bot"
-PATCH_NOTES_PATH = "config/patch_notes.txt"
-SUBMISSION_CONTENT_PATH = "config/submission_content.md"
-COMMUNITY_SUBMISSION_CONTENT_PATH = "config/community_patch_notes_compilation.md"
-WINNERS_LIST_FILE_PATH = "cache/winners_list.txt"
+BOT_USERNAME: str = "hon-bot"
+USER_AGENT: str = "HoN Patch Notes Game Bot by /u/hon-bot"
+PATCH_NOTES_PATH: str = "config/patch_notes.txt"
+SUBMISSION_CONTENT_PATH: str = "config/submission_content.md"
+COMMUNITY_SUBMISSION_CONTENT_PATH: str = "config/community_patch_notes_compilation.md"
+WINNERS_LIST_FILE_PATH: str = "cache/winners_list.txt"
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
 version_string = patch_notes_file.get_version_string()
 
 
-def processed_submission_content(submission_content_path, patch_notes_file):
+def processed_submission_content(
+    submission_content_path: str, patch_notes_file: PatchNotesFile
+):
     """
     Reads the submission_content.md file, then uses data from a PatchNotesFile instance to further process it
 
@@ -79,7 +81,9 @@ def processed_submission_content(submission_content_path, patch_notes_file):
 
 
 def processed_community_notes_thread_submission_content(
-    submission_content_path, patch_notes_file, main_submission_url
+    submission_content_path: str,
+    patch_notes_file: PatchNotesFile,
+    main_submission_url: str,
 ):
     """
     Reads the community_patch_notes_compilation.md file, then uses data from a PatchNotesFile instance to further process it

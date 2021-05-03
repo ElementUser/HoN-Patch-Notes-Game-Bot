@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import linecache
 from hon_patch_notes_game_bot.config.config import invalid_line_strings
-import typing
+from typing import List, Optional
 
 """
 This module will load in a "patch_notes.txt" and contain methods that performs read-only operations on the file
@@ -9,7 +9,7 @@ This module will load in a "patch_notes.txt" and contain methods that performs r
 
 
 class PatchNotesFile:
-    def __init__(self, patch_notes_file_path: str) -> None:
+    def __init__(self, patch_notes_file_path: str):
         """
         Parametrized constructor
 
@@ -19,7 +19,7 @@ class PatchNotesFile:
 
         self.patch_notes_file = patch_notes_file_path
 
-    def get_content_from_line_number(self, lineNumber: int) -> str:
+    def get_content_from_line_number(self, lineNumber: int) -> Optional[str]:
         """
         Attempts to get content from a particular line number from the patch notes file
 
@@ -55,7 +55,7 @@ class PatchNotesFile:
         tempFile.close()
         return numLines
 
-    def get_list_of_blank_line_numbers(self) -> typing.List[int]:
+    def get_list_of_blank_line_numbers(self) -> List[int]:
         """
         Gets a list of blank line numbers from self.patch_notes_file.
         A line is considered "blank" if it is just a new line,

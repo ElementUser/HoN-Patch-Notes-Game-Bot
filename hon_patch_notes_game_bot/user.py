@@ -5,7 +5,7 @@ class RedditUser:
         can_submit_guess: bool = True,
         is_potential_winner: bool = False,
         num_guesses: int = 0,
-    ) -> None:
+    ):
         """
         Parametrized constructor
         """

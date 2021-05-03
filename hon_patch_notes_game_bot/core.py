@@ -3,16 +3,21 @@ This module contains the bot's core loop
 
 PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/comment.html
 """
-from prawcore.exceptions import ServerError
-from praw.exceptions import RedditAPIException
-from praw.models import Comment
 import time
+
+from prawcore.exceptions import ServerError
+from praw import Reddit
+from praw.exceptions import RedditAPIException
+from praw.models import Comment, Redditor, Submission
+import typing
+
+from hon_patch_notes_game_bot.database import Database
+from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.user import RedditUser
 from hon_patch_notes_game_bot.util import (
     get_patch_notes_line_number,
     generate_submission_compiled_patch_notes_template_line,
 )
-from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.config.config import (
     MIN_COMMENT_KARMA,
     MIN_LINK_KARMA,
@@ -28,11 +33,11 @@ class Core:
     def __init__(
         self,
         db: Database,
-        reddit,
-        submission,
-        community_submission,
-        patch_notes_file: str,
-    ) -> None:
+        reddit: Reddit,
+        submission: Submission,
+        community_submission: Submission,
+        patch_notes_file: PatchNotesFile,
+    ):
         """
         Parametrized constructor
         """
@@ -43,7 +48,7 @@ class Core:
         self.community_submission = community_submission
         self.patch_notes_file = patch_notes_file
 
-    def has_exceeded_revealed_line_count(self):
+    def has_exceeded_revealed_line_count(self) -> bool:
         """
         Checks if the number of revealed lines exceeds the max allowed revealed line count
 
@@ -56,8 +61,8 @@ class Core:
         )
 
     def reply_with_bad_guess_feedback(
-        self, user, author, comment, first_line: str
-    ) -> None:
+        self, user: RedditUser, author: Redditor, comment: Comment, first_line: str,
+    ):
         """
         Replies to a comment with feedback for a bad guess
 
@@ -92,7 +97,8 @@ class Core:
                 "Better luck next time!",
             )
 
-    def get_user_from_database(self, author):
+    @typing.no_type_check  # Avoid this error: error: Value of type "Optional[Document]" is not indexable
+    def get_user_from_database(self, author: Redditor) -> RedditUser:
         """
         Gets a RedditUser instance from the database if found
 
@@ -119,7 +125,7 @@ class Core:
             self.db.add_user(user)
             return user
 
-    def safe_comment_reply(self, comment, text_body: str):
+    def safe_comment_reply(self, comment: Comment, text_body: str):
         """
         Attempts to reply to a comment & safely handles a RedditAPIException
         (e.g. if that comment has been deleted & cannot be responded to)
@@ -135,7 +141,7 @@ class Core:
         except Exception:
             pass
 
-    def is_account_too_new(self, Redditor, days):
+    def is_account_too_new(self, redditor: Redditor, days: int) -> bool:
         """
         Checks if the Reddit account is too new to post
 
@@ -148,10 +154,10 @@ class Core:
             False if the account is old enough to post
         """
         DAYS_TO_SECONDS = 86400
-        return Redditor.created_utc > (time.time() - (days * DAYS_TO_SECONDS))
+        return redditor.created_utc > (time.time() - (days * DAYS_TO_SECONDS))
 
     def update_community_compiled_patch_notes_in_submission(
-        self, patch_notes_line_number, line_content
+        self, patch_notes_line_number: int, line_content: str
     ):
         """
         Edits the submission body & replaces the appropriate line number
@@ -180,12 +186,12 @@ class Core:
 
         self.community_submission.edit(body=edited_submission_text)
 
-    def is_disallowed_to_post(self, Redditor, comment):
+    def is_disallowed_to_post(self, redditor: Redditor, comment: Comment) -> bool:
         """
         Checks if a Redditor is disallowed to post based on their account stats
 
         Attributes:
-            Redditor: a PRAW Redditor instance
+            redditor: a PRAW Redditor instance
             comment: a PRAW comment model instance to respond to
 
         Returns:
@@ -194,33 +200,33 @@ class Core:
         """
 
         # Do not process posts from disallowed users
-        if Redditor.name in disallowed_users_set:
+        if redditor.name in disallowed_users_set:
             return True
 
         # Deter Reddit throwaway accounts from participating
-        if not Redditor.has_verified_email:
+        if not redditor.has_verified_email:
             self.safe_comment_reply(
                 comment,
-                f"Sorry {Redditor.name}, your email is not verified on your account.\n\n"
+                f"Sorry {redditor.name}, your email is not verified on your account.\n\n"
                 "Please try again after you have officially verified your email with Reddit!",
             )
             return True
 
         if (
-            Redditor.comment_karma < MIN_COMMENT_KARMA
-            and Redditor.link_karma < MIN_LINK_KARMA
+            redditor.comment_karma < MIN_COMMENT_KARMA
+            and redditor.link_karma < MIN_LINK_KARMA
         ):
             self.safe_comment_reply(
                 comment,
-                f"Sorry {Redditor.name}, your link karma and your comment karma are too low.\n\n"
+                f"Sorry {redditor.name}, your link karma and your comment karma are too low.\n\n"
                 "Please try again when you have legitimately raised your link and/or comment karma a bit!",
             )
             return True
 
-        if self.is_account_too_new(Redditor=Redditor, days=MIN_ACCOUNT_AGE_DAYS):
+        if self.is_account_too_new(redditor=redditor, days=MIN_ACCOUNT_AGE_DAYS):
             self.safe_comment_reply(
                 comment,
-                f"Sorry {Redditor.name}, your account is too new.\n\n"
+                f"Sorry {redditor.name}, your account is too new.\n\n"
                 "Please try again in the future!",
             )
             return True
@@ -234,7 +240,7 @@ class Core:
         This function searches for each template string line number in the submission,
         and then fills it with the line content according to the local database & current patch_notes.txt file
         """
-        patch_notes_entries = self.database.get_all_entries_in_patch_notes_tracker()
+        patch_notes_entries = self.db.get_all_entries_in_patch_notes_tracker()
         for entry in patch_notes_entries:
             line_number = entry["id"]
             line_content = self.patch_notes_file.get_content_from_line_number(
@@ -352,8 +358,8 @@ class Core:
                                                 user,
                                                 author,
                                                 unread_item,
-                                                f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry.\n\n"
-                                                "It contains the following invalid string:\n\n"
+                                                f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry."
+                                                "\n\nIt contains the following invalid string:\n\n"
                                                 f">{invalid_string}\n\n",
                                             )
                                             should_continue_loop = (
