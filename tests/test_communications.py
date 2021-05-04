@@ -2,9 +2,6 @@ from unittest import mock
 from hon_patch_notes_game_bot import communications
 from hon_patch_notes_game_bot.config.config import staff_recipients, gold_coin_reward
 
-# This file currently has no tests,
-#   as the 'communications' module largely relies on API calls from other libraries (e.g. praw).
-
 
 @mock.patch("praw.Reddit")
 def test_send_message_to_staff(mock_reddit: mock.Mock):
