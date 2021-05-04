@@ -115,12 +115,10 @@ class Database:
             True if the patch notes line number exists in the database
             False otherwise
         """
-        if (
+        return (
             self.db.table("patch_notes_line_tracker").get(LineNumber.id == line_number)
-            is None
-        ):
-            return False
-        return True
+            is not None
+        )
 
     def get_all_entries_in_patch_notes_tracker(self) -> List[Document]:
         """

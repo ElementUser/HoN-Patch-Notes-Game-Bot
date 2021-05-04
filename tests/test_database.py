@@ -36,6 +36,9 @@ class TestDataBase:
         url_string = "https://www.reddit.com/r/HeroesofNewerth/comments/in14hz/game_486_patch_notes_guessing_game/"
         assert self.database.get_submission_url(tag="main") == url_string
 
+    def test_get_unfound_submission_url(self):
+        assert self.database.get_submission_url(tag="unfound_url_tag") is None
+
     def test_user_exists(self):
         assert self.database.user_exists("S2Sliferjam")
         assert not self.database.user_exists(
@@ -83,6 +86,9 @@ class TestDataBase:
 
     def test_check_patch_notes_line_number(self):
         assert self.database.check_patch_notes_line_number(69)
+
+    def test_check_unfound_patch_notes_line_number(self):
+        assert not self.database.check_patch_notes_line_number(69420)
 
     def test_add_patch_notes_line_number(self):
         added_line_number = 77777
