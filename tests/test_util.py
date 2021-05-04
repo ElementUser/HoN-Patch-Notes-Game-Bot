@@ -20,9 +20,13 @@ def test_is_game_expired():
 
 
 def test_output_winners_list_to_file():
+    output_file_path = "./tests/cache/winners_list.txt"
+
+    # Remove existing file before running test
+    os.remove(output_file_path)
+
     potential_winners_list = ["a", "b", "c", "d", "e"]
     winners_list = ["a", "b", "c"]
-    output_file_path = "./tests/cache/winners_list.txt"
 
     util.output_winners_list_to_file(
         potential_winners_list=potential_winners_list,
@@ -30,8 +34,6 @@ def test_output_winners_list_to_file():
         output_file_path=output_file_path,
     )
     assert os.path.exists(output_file_path)
-    # Remove existing file after running test
-    os.remove(output_file_path)
 
 
 def test_generate_submission_compiled_patch_notes_template_line():
