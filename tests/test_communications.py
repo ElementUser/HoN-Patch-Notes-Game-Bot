@@ -27,7 +27,10 @@ def test_send_message_to_staff(mock_reddit: Mock):
     assert_test(mock_reddit)
 
     # Exceptions
-    mock_reddit.redditor.message.side_effect = RedditAPIException
+    mock_reddit.redditor.side_effect = RedditAPIException(
+        ["Error type", "Error message", None], "Optional string",
+    )
     assert_test(mock_reddit)
-    mock_reddit.redditor.message.side_effect = ValueError
+
+    mock_reddit.redditor.side_effect = Exception()
     assert_test(mock_reddit)
