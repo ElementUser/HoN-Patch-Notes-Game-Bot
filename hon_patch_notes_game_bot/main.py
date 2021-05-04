@@ -181,10 +181,12 @@ def main():  # noqa: C901
             patch_notes_file=patch_notes_file,
         )
         if not core.loop():
+            print("Reddit Bot script ended via core loop end conditions")
             break
 
         # Stop indefinite loop if current time is greater than the closing time.
         if is_game_expired(game_end_time):
+            print("Reddit Bot script ended via time deadline")
             break
 
         # Time to wait before calling the Reddit API again (in seconds)
@@ -193,7 +195,6 @@ def main():  # noqa: C901
     # ========================
     # Bot end script actions
     # ========================
-    print("Reddit Bot script ended via time deadline")
 
     # Save winners list in memory
     potential_winners_list = database.get_potential_winners_list()
