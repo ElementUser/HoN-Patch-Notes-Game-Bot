@@ -157,10 +157,10 @@ def main():  # noqa: C901
         community_submission = reddit.submission(url=community_submission_url)
 
     # ===============================================================
-    # Indefinite loop to listen to unread comment messages on Reddit
+    # Core loop to listen to unread comment messages on Reddit
     # ===============================================================
     print("Reddit Bot's core loop started")
-    while True:
+    while 1:
         core = Core(
             reddit=reddit,
             db=database,
@@ -183,42 +183,8 @@ def main():  # noqa: C901
     # ========================
     # Bot end script actions
     # ========================
-
-    # Save winners list in memory
-    potential_winners_list = database.get_potential_winners_list()
-    winners_list = database.get_random_winners_from_list(
-        num_winners=NUM_WINNERS, potential_winners_list=potential_winners_list
-    )
-
-    # Save winners submission content to file
-    winners_submission_content = output_winners_list_to_file(
-        potential_winners_list=potential_winners_list,
-        winners_list=winners_list,
-        output_file_path=WINNERS_LIST_FILE_PATH,
-    )
-    print(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
-
-    # Update main submission with winner submission content at the top
-    submission.edit(winners_submission_content + submission.selftext)
-    print("Reddit submission successfully updated with the winners list info!")
-
-    # Send Private Messages to the staff members regarding the winners
-    send_message_to_staff(
-        reddit=reddit,
-        winners_list_path=WINNERS_LIST_FILE_PATH,
-        staff_recipients=STAFF_RECIPIENTS_LIST,
-        version_string=version_string,
-        gold_coin_reward=GOLD_COIN_REWARD,
-    )
-
-    # Send each winner a message asking them to contact FB-Saphirez for the Gold Coin codes
-    send_message_to_winners(
-        reddit=reddit,
-        winners_list=winners_list,
-        version_string=version_string,
-        gold_coin_reward=GOLD_COIN_REWARD,
-    )
-
+    print("Performing actions after the game has ended...")
+    core.perform_post_game_actions()
     print("Reddit bot script ended gracefully")
 
 

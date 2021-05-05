@@ -11,21 +11,30 @@ from praw.exceptions import RedditAPIException
 from praw.models import Comment, Redditor, Submission
 import typing
 
+from hon_patch_notes_game_bot.communications import (
+    send_message_to_staff,
+    send_message_to_winners,
+)
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.user import RedditUser
 from hon_patch_notes_game_bot.util import (
     get_patch_notes_line_number,
     generate_submission_compiled_patch_notes_template_line,
+    output_winners_list_to_file,
 )
 from hon_patch_notes_game_bot.config.config import (
+    DISALLOWED_USERS_SET,
+    GOLD_COIN_REWARD,
+    INVALID_LINE_STRINGS,
+    MAX_NUM_GUESSES,
+    MAX_PERCENT_OF_LINES_REVEALED,
     MIN_COMMENT_KARMA,
     MIN_LINK_KARMA,
-    MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
-    MAX_PERCENT_OF_LINES_REVEALED,
-    DISALLOWED_USERS_SET,
-    INVALID_LINE_STRINGS,
+    NUM_WINNERS,
+    STAFF_RECIPIENTS_LIST,
+    WINNERS_LIST_FILE_PATH,
 )
 
 
@@ -252,6 +261,51 @@ class Core:
             self.update_community_compiled_patch_notes_in_submission(
                 patch_notes_line_number=line_number, line_content=line_content
             )
+
+    def perform_post_game_actions(self):
+        """
+        After the game ends, performs a series of operations.
+
+        These operations currently include:
+        - Generating the winners list
+        - Saving the winners list to a file
+        - Updating the main submission with the winners list content
+        - Sending Private Messages to staff members & winners
+        """
+        # Save winners list in memory
+        potential_winners_list = self.db.get_potential_winners_list()
+        winners_list = self.db.get_random_winners_from_list(
+            num_winners=NUM_WINNERS, potential_winners_list=potential_winners_list
+        )
+
+        # Save winners submission content to file
+        winners_submission_content = output_winners_list_to_file(
+            potential_winners_list=potential_winners_list,
+            winners_list=winners_list,
+            output_file_path=WINNERS_LIST_FILE_PATH,
+        )
+        print(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
+
+        # Update main submission with winner submission content at the top
+        self.submission.edit(winners_submission_content + self.submission.selftext)
+        print("Reddit submission successfully updated with the winners list info!")
+
+        # Private messages
+        version_string = self.patch_notes_file.get_version_string()
+        send_message_to_staff(
+            reddit=self.reddit,
+            winners_list_path=WINNERS_LIST_FILE_PATH,
+            staff_recipients=STAFF_RECIPIENTS_LIST,
+            version_string=version_string,
+            gold_coin_reward=GOLD_COIN_REWARD,
+        )
+
+        send_message_to_winners(
+            reddit=self.reddit,
+            winners_list=winners_list,
+            version_string=version_string,
+            gold_coin_reward=GOLD_COIN_REWARD,
+        )
 
     def loop(self):  # noqa: C901
         """
