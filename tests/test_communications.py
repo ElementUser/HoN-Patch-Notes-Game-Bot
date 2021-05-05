@@ -1,11 +1,16 @@
 from unittest.mock import Mock, patch
+from pytest import mark
 from praw.exceptions import RedditAPIException
 
 from hon_patch_notes_game_bot import communications
 from hon_patch_notes_game_bot.config.config import (
-    STAFF_RECIPIENTS_LIST,
+    COMMUNITY_SUBMISSION_CONTENT_PATH,
     GOLD_COIN_REWARD,
+    STAFF_RECIPIENTS_LIST,
+    SUBMISSION_CONTENT_PATH,
 )
+from tests.test_database import database_path, Database
+from tests.test_patch_notes_file_handler import patch_notes_file
 
 
 @patch("praw.Reddit")
@@ -73,3 +78,25 @@ def test_send_message_to_winners(mock_reddit: Mock, sleep_func: Mock = Mock()):
 
     mock_reddit.redditor.side_effect = Exception()
     assert_test(mock_reddit)
+
+
+@patch("praw.Reddit")
+@patch("praw.models.Subreddit")
+@mark.usefixtures("patch_notes_file")
+def test_init_submissions(mock_reddit: Mock, mock_subreddit: Mock, patch_notes_file):
+    database = Database(db_path=database_path)
+    submission_content_path = f"./tests/{SUBMISSION_CONTENT_PATH}"
+    community_submission_content_path = f"./tests/{COMMUNITY_SUBMISSION_CONTENT_PATH}"
+
+    assert (
+        communications.init_submissions(
+            mock_reddit,
+            mock_subreddit,
+            database,
+            patch_notes_file,
+            submission_content_path,
+            community_submission_content_path,
+        )
+        is not None
+    )
+

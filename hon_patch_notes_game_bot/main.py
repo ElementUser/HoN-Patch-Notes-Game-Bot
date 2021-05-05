@@ -8,10 +8,12 @@ from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.config.config import (
     BOT_USERNAME,
+    COMMUNITY_SUBMISSION_CONTENT_PATH,
     GAME_END_TIME,
     PATCH_NOTES_PATH,
     SLEEP_INTERVAL_SECONDS,
     SUBREDDIT_NAME,
+    SUBMISSION_CONTENT_PATH,
     USER_AGENT,
 )
 from hon_patch_notes_game_bot.utils import is_game_expired
@@ -33,7 +35,12 @@ def main():
 
     # Initialize submissions (i.e. Reddit threads)
     submission, community_submission = init_submissions(
-        reddit, subreddit, database, patch_notes_file
+        reddit,
+        subreddit,
+        database,
+        patch_notes_file,
+        SUBMISSION_CONTENT_PATH,
+        COMMUNITY_SUBMISSION_CONTENT_PATH,
     )
 
     # ===============================================================

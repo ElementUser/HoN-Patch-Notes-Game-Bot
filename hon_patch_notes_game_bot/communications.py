@@ -16,10 +16,8 @@ from hon_patch_notes_game_bot.utils import (
     processed_community_notes_thread_submission_content,
 )
 from hon_patch_notes_game_bot.config.config import (
-    COMMUNITY_SUBMISSION_CONTENT_PATH,
     COMMUNITY_SUBMISSION_TITLE,
     STAFF_MEMBER_THAT_HANDS_OUT_REWARDS,
-    SUBMISSION_CONTENT_PATH,
     SUBMISSION_TITLE,
 )
 
@@ -29,6 +27,8 @@ def init_submissions(
     subreddit: Subreddit,
     database: Database,
     patch_notes_file: PatchNotesFile,
+    submission_content_path: str,
+    community_submission_content_path: str,
 ) -> Tuple[Submission, Submission]:
     """
     Initializes the primary and community submission (i.e. "Reddit threads") objects.
@@ -40,7 +40,7 @@ def init_submissions(
     """
     # Main submission
     submission_content = processed_submission_content(
-        SUBMISSION_CONTENT_PATH, patch_notes_file
+        submission_content_path, patch_notes_file
     )
     submission: Submission = None
     submission_url = database.get_submission_url(tag="main")
@@ -58,7 +58,7 @@ def init_submissions(
 
     # Community submission
     community_submission_content = processed_community_notes_thread_submission_content(
-        COMMUNITY_SUBMISSION_CONTENT_PATH, patch_notes_file, submission_url
+        community_submission_content_path, patch_notes_file, submission_url
     )
     community_submission: Submission = None
     community_submission_url = database.get_submission_url(tag="community")
