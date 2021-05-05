@@ -95,7 +95,8 @@ def send_message_to_winners(
                 if subException.error_type == "RATELIMIT":
                     failed_recipients_list.append(recipient)
                     print(
-                        f"{redditException}\n{recipient} was not sent a message (added to retry list), continuing to next recipient"
+                        f"{redditException}\n{recipient} was not sent a message (added to retry list), "
+                        "continuing to next recipient"
                     )
                     print(f"Subexception: {subException}\n\n")
 
