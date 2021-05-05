@@ -1,13 +1,85 @@
+#!/usr/bin/python
 """
 This module contains functions related to communications across the Reddit platform
 """
 import time
 import re
-from typing import List
+from typing import List, Tuple
 
-from praw.exceptions import RedditAPIException
 from praw import Reddit
-from hon_patch_notes_game_bot.config.config import STAFF_MEMBER_THAT_HANDS_OUT_REWARDS
+from praw.exceptions import RedditAPIException
+from praw.models import Subreddit, Submission
+from hon_patch_notes_game_bot.database import Database
+from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
+from hon_patch_notes_game_bot.utils import (
+    processed_submission_content,
+    processed_community_notes_thread_submission_content,
+)
+from hon_patch_notes_game_bot.config.config import (
+    COMMUNITY_SUBMISSION_CONTENT_PATH,
+    COMMUNITY_SUBMISSION_TITLE,
+    STAFF_MEMBER_THAT_HANDS_OUT_REWARDS,
+    SUBMISSION_CONTENT_PATH,
+    SUBMISSION_TITLE,
+)
+
+
+def init_submissions(
+    reddit: Reddit,
+    subreddit: Subreddit,
+    database: Database,
+    patch_notes_file: PatchNotesFile,
+) -> Tuple[Submission, Submission]:
+    """
+    Initializes the primary and community submission (i.e. "Reddit threads") objects.
+    If they do not exist in the database, then this function creates them.
+        Otherwise, it retrieves the submissions via their URL from the database.
+
+    Returns:
+        - A tuple containing the primary submission and community submission objects
+    """
+    # Main submission
+    submission_content = processed_submission_content(
+        SUBMISSION_CONTENT_PATH, patch_notes_file
+    )
+    submission: Submission = None
+    submission_url = database.get_submission_url(tag="main")
+
+    # Get main submission if it does not exist
+    if submission_url is None:
+        submission = subreddit.submit(
+            title=SUBMISSION_TITLE, selftext=submission_content
+        )
+        database.insert_submission_url("main", submission.url)
+        submission_url = submission.url
+    else:
+        # Obtain submission via URL
+        submission = reddit.submission(url=submission_url)
+
+    # Community submission
+    community_submission_content = processed_community_notes_thread_submission_content(
+        COMMUNITY_SUBMISSION_CONTENT_PATH, patch_notes_file, submission_url
+    )
+    community_submission: Submission = None
+    community_submission_url = database.get_submission_url(tag="community")
+
+    # Get community submission if it does not exist
+    if community_submission_url is None:
+        community_submission = subreddit.submit(
+            title=COMMUNITY_SUBMISSION_TITLE, selftext=community_submission_content,
+        )
+        database.insert_submission_url("community", community_submission.url)
+
+        # Update main Reddit Thread's in-line URL to connect to the community submission URL
+        updated_text = submission.selftext.replace(
+            "#community-patch-notes-thread-url", community_submission.url
+        )
+        submission.edit(body=updated_text)
+    else:
+        # Obtain submission via URL
+        community_submission = reddit.submission(url=community_submission_url)
+
+    return submission, community_submission
 
 
 def send_message_to_staff(

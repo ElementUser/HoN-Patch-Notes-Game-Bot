@@ -1,7 +1,6 @@
 import os
 
-import hon_patch_notes_game_bot.util as util
-from hon_patch_notes_game_bot.database import Database
+import hon_patch_notes_game_bot.utils as util
 
 # ============
 # Unit tests

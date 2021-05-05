@@ -1,5 +1,6 @@
+#!/usr/bin/python
 """
-This module contains the bot's core loop
+This module contains the bot's core loop and most of the logic in its "engine".
 
 PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/comment.html
 """
@@ -18,7 +19,7 @@ from hon_patch_notes_game_bot.communications import (
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.user import RedditUser
-from hon_patch_notes_game_bot.util import (
+from hon_patch_notes_game_bot.utils import (
     get_patch_notes_line_number,
     generate_submission_compiled_patch_notes_template_line,
     output_winners_list_to_file,
