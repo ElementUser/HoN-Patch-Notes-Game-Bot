@@ -5,23 +5,22 @@ from pytest import mark
 from datetime import datetime
 from praw.exceptions import RedditAPIException
 
-from tests.test_database import database_path
 from hon_patch_notes_game_bot import core
-from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.user import RedditUser
 from hon_patch_notes_game_bot.config.config import MIN_ACCOUNT_AGE_DAYS
 
 
-@mark.usefixtures("get_patch_notes_file_class_fixture")
+@mark.usefixtures(
+    "get_patch_notes_file_class_fixture", "setup_and_teardown_test_database"
+)
 class TestCore(TestCase):
     def setUp(self):
         self.mock_reddit = patch("praw.Reddit")
         self.mock_submission = patch("praw.models.Submission")
         self.mock_community_submission = patch("praw.models.Submission")
-        self.database = Database(db_path=database_path)
         self.core = core.Core(
             reddit=self.mock_reddit,
-            db=self.database,
+            db=self._database,
             submission=self.mock_submission,
             community_submission=self.mock_community_submission,
             patch_notes_file=self._patch_notes_file,
@@ -64,7 +63,6 @@ class TestCore(TestCase):
         assert self.core.get_user_from_database(mock_author)
 
         # Non-existing user
-        # TODO: Reset DB state
         mock_author.name = "I_do_not_exist_asjdoiajsdiodwjowjdwq"
         assert self.core.get_user_from_database(mock_author)
 

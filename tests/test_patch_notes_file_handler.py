@@ -8,7 +8,6 @@ patch_notes_file_path = "./tests/config/patch_notes_test.txt"
 # Fixtures (to also be re-used in other testing modules)
 @pytest.fixture(scope="module")
 def get_patch_notes_file():
-    """Initializes patch notes file object"""
     return PatchNotesFile(patch_notes_file_path)
 
 

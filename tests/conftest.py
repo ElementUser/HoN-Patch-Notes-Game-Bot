@@ -6,3 +6,4 @@ from tests.test_patch_notes_file_handler import (
     get_patch_notes_file,
     get_patch_notes_file_class_fixture,
 )
+from tests.test_database import setup_and_teardown_test_database
