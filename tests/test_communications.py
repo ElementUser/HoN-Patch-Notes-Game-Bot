@@ -40,14 +40,14 @@ def test_send_message_to_staff(mock_reddit: Mock):
 
 
 @patch("praw.Reddit")
-def test_send_message_to_winners(mock_reddit: Mock):
+@patch("time.sleep")  # This is mocked so the unit tests do not actually sleep
+def test_send_message_to_winners(mock_reddit: Mock, sleep_func: Mock = Mock()):
     # Inner test function that is called multiple times
     def assert_test(mock_reddit):
         assert (
             communications.send_message_to_winners(
                 mock_reddit,
-                # 1 user so that we only sleep one time in exception testing
-                winners_list=["User1"],
+                winners_list=["User1", "User2"],
                 version_string="4.9.3",
                 gold_coin_reward=GOLD_COIN_REWARD,
             )
@@ -67,7 +67,7 @@ def test_send_message_to_winners(mock_reddit: Mock):
     assert_test(mock_reddit)
 
     mock_reddit.redditor.side_effect = RedditAPIException(
-        ["RATELIMIT", "Please try again after 0.01 minutes", None], "Optional string",
+        ["RATELIMIT", "Please try again after 9 minutes", None], "Optional string",
     )
     assert_test(mock_reddit)
 
