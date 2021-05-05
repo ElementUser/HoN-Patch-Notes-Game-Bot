@@ -1,11 +1,13 @@
 from unittest.mock import patch
 from unittest import TestCase
 from pytest import mark
+from datetime import datetime
 
+from tests.test_database import database_path
 from hon_patch_notes_game_bot import core
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.user import RedditUser
-from tests.test_database import database_path
+from hon_patch_notes_game_bot.config.config import MIN_ACCOUNT_AGE_DAYS
 
 
 @mark.usefixtures("get_patch_notes_file_class_fixture")
@@ -51,3 +53,26 @@ class TestCore(TestCase):
         # User is potential winner
         mock_user.is_potential_winner = True
         assert_test()
+
+    def test_get_user_from_database(self):
+        mock_author = patch("praw.models.Redditor")
+
+        # Existing user
+        mock_author.name = "Tehnubzor"
+        assert self.core.get_user_from_database(mock_author)
+
+        # Non-existing user
+        # TODO: Reset DB state
+        mock_author.name = "I_do_not_exist_asjdoiajsdiodwjowjdwq"
+        assert self.core.get_user_from_database(mock_author)
+
+    def test_is_account_too_new(self):
+        mock_author = patch("praw.models.Redditor")
+
+        # "Old" user (passes the check)
+        mock_author.created_utc = 1609390800  # December 31, 2020 at 00:00:00
+        assert not self.core.is_account_too_new(mock_author, MIN_ACCOUNT_AGE_DAYS)
+
+        # "New" user (fails the check)
+        mock_author.created_utc = datetime.utcnow().timestamp()
+        assert self.core.is_account_too_new(mock_author, MIN_ACCOUNT_AGE_DAYS)
