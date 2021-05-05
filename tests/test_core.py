@@ -98,3 +98,33 @@ class TestCore(TestCase):
             )
             is None
         )
+
+    def test_is_disallowed_to_post(self):
+        mock_redditor = patch("praw.models.Redditor")
+        mock_comment = patch("praw.models.Comment")
+
+        # Disallowed users set condition
+        mock_redditor.name = "ElementUser"
+        assert self.core.is_disallowed_to_post(mock_redditor, mock_comment)
+        mock_redditor.name = "Some_username"
+
+        # No verified email
+        mock_redditor.has_verified_email = False
+        assert self.core.is_disallowed_to_post(mock_redditor, mock_comment)
+        mock_redditor.has_verified_email = True
+
+        # Comment karma is 0
+        mock_redditor.comment_karma = 0
+        mock_redditor.link_karma = 0
+        assert self.core.is_disallowed_to_post(mock_redditor, mock_comment)
+        mock_redditor.comment_karma = 9999
+        mock_redditor.link_karma = 9999
+
+        # is_account_too_new() condition is True
+        mock_redditor.created_utc = datetime.utcnow().timestamp()
+        assert self.core.is_disallowed_to_post(mock_redditor, mock_comment)
+        mock_redditor.created_utc = 1609390800  # December 31, 2020 at 00:00:00
+
+        # Function should return False now
+        assert not self.core.is_disallowed_to_post(mock_redditor, mock_comment)
+
