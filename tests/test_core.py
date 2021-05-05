@@ -1,7 +1,9 @@
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from unittest import TestCase
 from pytest import mark
+
 from datetime import datetime
+from praw.exceptions import RedditAPIException
 
 from tests.test_database import database_path
 from hon_patch_notes_game_bot import core
@@ -76,3 +78,15 @@ class TestCore(TestCase):
         # "New" user (fails the check)
         mock_author.created_utc = datetime.utcnow().timestamp()
         assert self.core.is_account_too_new(mock_author, MIN_ACCOUNT_AGE_DAYS)
+
+    def test_safe_comment_reply(self):
+        # Regular use case
+        mock_comment = patch("praw.models.Comment")
+        assert self.core.safe_comment_reply(mock_comment, "Test Body") is None
+
+        # Exceptions
+        mock_comment.reply = Mock()
+        mock_comment.reply.side_effect = RedditAPIException(
+            ["RATELIMIT", "Error message", None], "Optional string",
+        )
+        assert self.core.safe_comment_reply(mock_comment, "Test Body") is None
