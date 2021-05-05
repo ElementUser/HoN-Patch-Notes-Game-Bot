@@ -90,3 +90,13 @@ class TestCore(TestCase):
             ["RATELIMIT", "Error message", None], "Optional string",
         )
         assert self.core.safe_comment_reply(mock_comment, "Test Body") is None
+
+    def test_update_community_compiled_patch_notes_in_submission(self):
+        self.core.community_submission.selftext = "Test string"
+        self.core.community_submission.edit = Mock()
+        assert (
+            self.core.update_community_compiled_patch_notes_in_submission(
+                1, "Test content line"
+            )
+            is None
+        )
