@@ -16,22 +16,15 @@ from hon_patch_notes_game_bot.config.config import (
     NUM_WINNERS,
     PATCH_NOTES_PATH,
     SLEEP_INTERVAL_SECONDS,
-    STAFF_RECIPIENTS_LIST,
     SUBMISSION_CONTENT_PATH,
     SUBMISSION_TITLE,
     SUBREDDIT_NAME,
     USER_AGENT,
-    WINNERS_LIST_FILE_PATH,
 )
 from hon_patch_notes_game_bot.util import (
     is_game_expired,
-    output_winners_list_to_file,
     generate_submission_compiled_patch_notes_template_line,
     convert_time_string_to_wolframalpha_query_url,
-)
-from hon_patch_notes_game_bot.communications import (
-    send_message_to_staff,
-    send_message_to_winners,
 )
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
@@ -42,7 +35,8 @@ def processed_submission_content(
     submission_content_path: str, patch_notes_file: PatchNotesFile
 ):
     """
-    Reads the submission_content.md file, then uses data from a PatchNotesFile instance to further process it
+    Reads the submission_content.md file, then uses data from a PatchNotesFile instance to further process it.
+    Iterates through a pre-set dictionary's key-value pairs to perform the string replacement processing.
 
     Returns:
         A processed string containing the submission content
