@@ -18,6 +18,14 @@ class TestCore(TestCase):
         self.mock_reddit = patch("praw.Reddit")
         self.mock_submission = patch("praw.models.Submission")
         self.mock_community_submission = patch("praw.models.Submission")
+
+        # Configure mocks
+        self.mock_submission.selftext = "Test string"
+        self.mock_submission.edit = Mock()
+        self.mock_community_submission.selftext = "Test string"
+        self.mock_community_submission.edit = Mock()
+
+        # Create a concrete Core object
         self.core = core.Core(
             reddit=self.mock_reddit,
             db=self._database,
@@ -90,8 +98,6 @@ class TestCore(TestCase):
         assert self.core.safe_comment_reply(mock_comment, "Test Body") is None
 
     def test_update_community_compiled_patch_notes_in_submission(self):
-        self.core.community_submission.selftext = "Test string"
-        self.core.community_submission.edit = Mock()
         assert (
             self.core.update_community_compiled_patch_notes_in_submission(
                 1, "Test content line"
@@ -128,3 +134,8 @@ class TestCore(TestCase):
         # Function should return False now
         assert not self.core.is_disallowed_to_post(mock_redditor, mock_comment)
 
+    def test_fix_corrupted_community_submission_edit(self):
+        assert self.core.fix_corrupted_community_submission_edit() is None
+
+    def test_perform_post_game_actions(self):
+        assert self.core.perform_post_game_actions() is None
