@@ -44,13 +44,15 @@ def send_message_to_staff(
                     subject=subject_line, message=winners_list_text
                 )
             except RedditAPIException as redditError:
+                print(f"RedditAPIException encountered: {redditError}")
                 print(
-                    f"{redditError}\n{recipient} was not sent a message, continuing to next recipient"
+                    f"{recipient} was not sent a message, continuing to next recipient"
                 )
                 continue
             except Exception as error:
+                print(f"General Exception encountered: {error}")
                 print(
-                    f"{error}\n{recipient} was not sent a message, continuing to next recipient"
+                    f"{recipient} was not sent a message, continuing to next recipient"
                 )
                 continue
 
@@ -111,7 +113,7 @@ def send_message_to_winners(
                     else:
                         minutesToSleep = regex_capture.group(1)
                         secondsToSleep = int(float(minutesToSleep) * 60)
-                        print("Sleeping for " + str(secondsToSleep) + " seconds")
+                        print(f"Sleeping for {str(secondsToSleep)} seconds")
                         time.sleep(secondsToSleep)
                         break
 

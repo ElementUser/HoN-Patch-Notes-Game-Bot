@@ -6,16 +6,22 @@ from hon_patch_notes_game_bot.core import Core
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.config.config import (
-    submission_title,
-    community_submission_title,
-    SLEEP_INTERVAL_SECONDS,
-    SUBREDDIT_NAME,
-    game_end_time,
-    NUM_WINNERS,
-    staff_recipients,
-    gold_coin_reward,
+    BOT_USERNAME,
+    COMMUNITY_SUBMISSION_CONTENT_PATH,
+    COMMUNITY_SUBMISSION_TITLE,
+    GAME_END_TIME,
+    GOLD_COIN_REWARD,
     MAX_NUM_GUESSES,
     MAX_PERCENT_OF_LINES_REVEALED,
+    NUM_WINNERS,
+    PATCH_NOTES_PATH,
+    SLEEP_INTERVAL_SECONDS,
+    STAFF_RECIPIENTS_LIST,
+    SUBMISSION_CONTENT_PATH,
+    SUBMISSION_TITLE,
+    SUBREDDIT_NAME,
+    USER_AGENT,
+    WINNERS_LIST_FILE_PATH,
 )
 from hon_patch_notes_game_bot.util import (
     is_game_expired,
@@ -27,17 +33,6 @@ from hon_patch_notes_game_bot.communications import (
     send_message_to_staff,
     send_message_to_winners,
 )
-
-
-# ============
-# Constants
-# ============
-BOT_USERNAME: str = "hon-bot"
-USER_AGENT: str = "HoN Patch Notes Game Bot by /u/hon-bot"
-PATCH_NOTES_PATH: str = "config/patch_notes.txt"
-SUBMISSION_CONTENT_PATH: str = "config/submission_content.md"
-COMMUNITY_SUBMISSION_CONTENT_PATH: str = "config/community_patch_notes_compilation.md"
-WINNERS_LIST_FILE_PATH: str = "cache/winners_list.txt"
 
 patch_notes_file = PatchNotesFile(PATCH_NOTES_PATH)
 version_string = patch_notes_file.get_version_string()
@@ -54,28 +49,21 @@ def processed_submission_content(
     """
     with open(submission_content_path, "r") as file:
         submission_content = file.read()
-        submission_content = submission_content.replace(
-            "`patch_version`", version_string
-        )
-        submission_content = submission_content.replace(
-            "`max_line_count`", str(patch_notes_file.get_total_line_count())
-        )
-        submission_content = submission_content.replace(
-            "`game_end_time`",
-            f"[{game_end_time}]({convert_time_string_to_wolframalpha_query_url(game_end_time)})",
-        )
-        submission_content = submission_content.replace(
-            "`gold_coin_reward`", str(gold_coin_reward),
-        )
-        submission_content = submission_content.replace(
-            "`max_num_guesses`", str(MAX_NUM_GUESSES),
-        )
-        submission_content = submission_content.replace(
-            "`num_winners`", str(NUM_WINNERS),
-        )
-        submission_content = submission_content.replace(
-            "`MAX_PERCENT_OF_LINES_REVEALED`", str(MAX_PERCENT_OF_LINES_REVEALED)
-        )
+
+        replacement_dict = {
+            "PATCH_VERSION": version_string,
+            "GAME_END_TIME": f"[{GAME_END_TIME}]({convert_time_string_to_wolframalpha_query_url(GAME_END_TIME)})",
+            "GOLD_COIN_REWARD": str(GOLD_COIN_REWARD),
+            "MAX_LINE_COUNT": str(patch_notes_file.get_total_line_count()),
+            "MAX_NUM_GUESSES": str(MAX_NUM_GUESSES),
+            "MAX_PERCENT_OF_LINES_REVEALED": str(MAX_PERCENT_OF_LINES_REVEALED),
+            "NUM_WINNERS": str(NUM_WINNERS),
+        }
+
+        for source_str, target_str in replacement_dict.items():
+            submission_content = submission_content.replace(
+                f"`{source_str}`", target_str
+            )
 
         return submission_content
 
@@ -133,7 +121,7 @@ def main():  # noqa: C901
     if submission_url is None:
         # Create thread if submission does not exist
         submission = subreddit.submit(
-            title=submission_title, selftext=submission_content
+            title=SUBMISSION_TITLE, selftext=submission_content
         )
         database.insert_submission_url("main", submission.url)
         submission_url = submission.url
@@ -154,7 +142,7 @@ def main():  # noqa: C901
     if community_submission_url is None:
         # Create thread if submission does not exist
         community_submission = subreddit.submit(
-            title=community_submission_title, selftext=community_submission_content,
+            title=COMMUNITY_SUBMISSION_TITLE, selftext=community_submission_content,
         )
         database.insert_submission_url("community", community_submission.url)
 
@@ -185,7 +173,7 @@ def main():  # noqa: C901
             break
 
         # Stop indefinite loop if current time is greater than the closing time.
-        if is_game_expired(game_end_time):
+        if is_game_expired(GAME_END_TIME):
             print("Reddit Bot script ended via time deadline")
             break
 
@@ -218,9 +206,9 @@ def main():  # noqa: C901
     send_message_to_staff(
         reddit=reddit,
         winners_list_path=WINNERS_LIST_FILE_PATH,
-        staff_recipients=staff_recipients,
+        staff_recipients=STAFF_RECIPIENTS_LIST,
         version_string=version_string,
-        gold_coin_reward=gold_coin_reward,
+        gold_coin_reward=GOLD_COIN_REWARD,
     )
 
     # Send each winner a message asking them to contact FB-Saphirez for the Gold Coin codes
@@ -228,7 +216,7 @@ def main():  # noqa: C901
         reddit=reddit,
         winners_list=winners_list,
         version_string=version_string,
-        gold_coin_reward=gold_coin_reward,
+        gold_coin_reward=GOLD_COIN_REWARD,
     )
 
     print("Reddit bot script ended gracefully")

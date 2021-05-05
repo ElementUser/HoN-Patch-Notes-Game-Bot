@@ -2,7 +2,10 @@ from unittest.mock import Mock, patch
 from praw.exceptions import RedditAPIException
 
 from hon_patch_notes_game_bot import communications
-from hon_patch_notes_game_bot.config.config import staff_recipients, gold_coin_reward
+from hon_patch_notes_game_bot.config.config import (
+    STAFF_RECIPIENTS_LIST,
+    GOLD_COIN_REWARD,
+)
 
 
 @patch("praw.Reddit")
@@ -13,9 +16,9 @@ def test_send_message_to_staff(mock_reddit: Mock):
             communications.send_message_to_staff(
                 mock_reddit,
                 winners_list_path="./tests/cache/winners_list.txt",
-                staff_recipients=staff_recipients,
+                staff_recipients=STAFF_RECIPIENTS_LIST,
                 version_string="4.9.3",
-                gold_coin_reward=gold_coin_reward,
+                gold_coin_reward=GOLD_COIN_REWARD,
             )
             is None
         )
@@ -46,7 +49,7 @@ def test_send_message_to_winners(mock_reddit: Mock):
                 # 1 user so that we only sleep one time in exception testing
                 winners_list=["User1"],
                 version_string="4.9.3",
-                gold_coin_reward=gold_coin_reward,
+                gold_coin_reward=GOLD_COIN_REWARD,
             )
             is None
         )

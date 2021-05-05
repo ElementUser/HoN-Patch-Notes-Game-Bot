@@ -24,8 +24,8 @@ from hon_patch_notes_game_bot.config.config import (
     MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
     MAX_PERCENT_OF_LINES_REVEALED,
-    disallowed_users_set,
-    invalid_line_strings,
+    DISALLOWED_USERS_SET,
+    INVALID_LINE_STRINGS,
 )
 
 
@@ -200,7 +200,7 @@ class Core:
         """
 
         # Do not process posts from disallowed users
-        if redditor.name in disallowed_users_set:
+        if redditor.name in DISALLOWED_USERS_SET:
             return True
 
         # Deter Reddit throwaway accounts from participating
@@ -347,7 +347,7 @@ class Core:
                                 # Only check for invalid strings if line_content is not empty
                                 else:
                                     # If the line content is correct, check other invalid strings for guessing
-                                    for invalid_string in invalid_line_strings:
+                                    for invalid_string in INVALID_LINE_STRINGS:
                                         if invalid_string in line_content:
                                             is_valid_guess = False
                                             self.update_community_compiled_patch_notes_in_submission(
