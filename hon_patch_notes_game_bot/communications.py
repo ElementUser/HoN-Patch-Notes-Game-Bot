@@ -88,30 +88,31 @@ def send_message_to_winners(
 
         # Reddit API Exception
         except RedditAPIException as redditException:
-            failed_recipients_list.append(recipient)
-            print(
-                f"{redditException}\n{recipient} was not sent a message (added to retry list), continuing to next recipient"
-            )
+            print(f"Full Reddit Exception: {redditException}\n\n")
 
-            # Rate limit error handling
-            if redditException.error_type == "RATELIMIT":
-                # Error printouts for debugging
-                print(f"Full Reddit Exception: {redditException}\n\n")
-                print(f"Reddit Exception Item 0: {redditException.items[0]}\n\n")
+            for subException in redditException.items:
+                # Rate limit error handling
+                if subException.error_type == "RATELIMIT":
+                    failed_recipients_list.append(recipient)
+                    print(
+                        f"{redditException}\n{recipient} was not sent a message (added to retry list), continuing to next recipient"
+                    )
+                    print(f"Subexception: {subException}\n\n")
 
-                # Sleep for the rate limit duration by parsing the minute count from exception message
-                regex_capture = re.search(
-                    r"(\d+) minutes", redditException.items[0].message
-                )
-
-                if regex_capture is None:
-                    print("Invalid regex detected. Sleeping for 60 seconds...")
-                    time.sleep(60)
-                else:
-                    minutesToSleep = regex_capture.group(1)
-                    secondsToSleep = int(minutesToSleep) * 60
-                    print("Sleeping for " + str(secondsToSleep) + " seconds")
-                    time.sleep(secondsToSleep)
+                    # Sleep for the rate limit duration by parsing the minute count from exception message
+                    regex_capture = re.search(
+                        r"(0?\.?\d+) minutes?", subException.message
+                    )
+                    if regex_capture is None:
+                        print("Invalid regex detected. Sleeping for 10 seconds...")
+                        time.sleep(10)
+                        break
+                    else:
+                        minutesToSleep = regex_capture.group(1)
+                        secondsToSleep = int(float(minutesToSleep) * 60)
+                        print("Sleeping for " + str(secondsToSleep) + " seconds")
+                        time.sleep(secondsToSleep)
+                        break
 
             continue
 
@@ -123,7 +124,10 @@ def send_message_to_winners(
 
     # At the end of the function, recurse this function to re-send messages to failed recipients
     # Recurse only if failed_recipients_list has content in it
-    if len(failed_recipients_list) > 0:
+    # Prevents infinite loops by ensuring that the failed recipients count
+    #   gradually progresses towards the end condition.
+    failed_recipients = len(failed_recipients_list)
+    if failed_recipients > 0 and failed_recipients < len(winners_list):
         send_message_to_winners(
             reddit, failed_recipients_list, version_string, gold_coin_reward
         )
