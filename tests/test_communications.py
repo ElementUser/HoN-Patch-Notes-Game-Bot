@@ -10,7 +10,6 @@ from hon_patch_notes_game_bot.config.config import (
     SUBMISSION_CONTENT_PATH,
 )
 from tests.test_database import database_path, Database
-from tests.test_patch_notes_file_handler import patch_notes_file
 
 
 @patch("praw.Reddit")
@@ -82,8 +81,10 @@ def test_send_message_to_winners(mock_reddit: Mock, sleep_func: Mock = Mock()):
 
 @patch("praw.Reddit")
 @patch("praw.models.Subreddit")
-@mark.usefixtures("patch_notes_file")
-def test_init_submissions(mock_reddit: Mock, mock_subreddit: Mock, patch_notes_file):
+@mark.usefixtures("get_patch_notes_file")
+def test_init_submissions(
+    mock_reddit: Mock, mock_subreddit: Mock, get_patch_notes_file
+):
     database = Database(db_path=database_path)
     submission_content_path = f"./tests/{SUBMISSION_CONTENT_PATH}"
     community_submission_content_path = f"./tests/{COMMUNITY_SUBMISSION_CONTENT_PATH}"
@@ -93,7 +94,7 @@ def test_init_submissions(mock_reddit: Mock, mock_subreddit: Mock, patch_notes_f
             mock_reddit,
             mock_subreddit,
             database,
-            patch_notes_file,
+            get_patch_notes_file,
             submission_content_path,
             community_submission_content_path,
         )
