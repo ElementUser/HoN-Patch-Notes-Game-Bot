@@ -1,6 +1,8 @@
 from unittest.mock import patch, Mock
 from unittest import TestCase
+from prawcore.exceptions import ServerError
 from pytest import mark
+from requests.models import Response
 
 from datetime import datetime
 from praw.exceptions import RedditAPIException
@@ -153,3 +155,16 @@ class TestCore(TestCase):
             self.mock_comment,
             patch_notes_line_number,
         )
+
+    @patch("hon_patch_notes_game_bot.core.Core")
+    @patch("time.sleep")
+    def test_loop(self, mock_core, sleep_func=Mock()):
+        # Exception tests
+        mock_response = Mock(spec=Response)
+        mock_response.status_code = 503
+        mock_response.json.return_value = {}
+        mock_core.loop.side_effect = ServerError(mock_response)
+        assert self.core.loop()
+
+        mock_core.loop.side_effect = Exception("General Exception")
+        assert self.core.loop()
