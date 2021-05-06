@@ -25,10 +25,12 @@ class TestCore(TestCase):
         self.dummy_user = RedditUser("User1")
 
         # Configure mocks
+        self.mock_reddit.inbox = Mock()
         self.mock_submission.selftext = "Test string"
         self.mock_submission.edit = Mock()
         self.mock_community_submission.selftext = "Test string"
         self.mock_community_submission.edit = Mock()
+        self.mock_community_submission.url = "Community Submission URL"
         self.mock_author.name = "User2"
 
         # Create a concrete Core object
@@ -159,6 +161,8 @@ class TestCore(TestCase):
     @patch("hon_patch_notes_game_bot.core.Core")
     @patch("time.sleep")
     def test_loop(self, mock_core, sleep_func=Mock()):
+        # TODO: Regular test
+
         # Exception tests
         mock_response = Mock(spec=Response)
         mock_response.status_code = 503
@@ -168,3 +172,13 @@ class TestCore(TestCase):
 
         mock_core.loop.side_effect = Exception("General Exception")
         assert self.core.loop()
+
+    def test_process_guess_for_user(self):
+        patch_notes_line_number = 1
+
+        assert self.core.process_guess_for_user(
+            self.dummy_user,
+            self.mock_author,
+            self.mock_comment,
+            patch_notes_line_number,
+        )

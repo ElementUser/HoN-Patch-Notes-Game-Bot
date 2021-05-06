@@ -149,10 +149,12 @@ class Core:
         """
         try:
             comment.reply(body=text_body)
-        except RedditAPIException:
-            pass
-        except Exception:
-            pass
+        except RedditAPIException as redditErr:
+            print(f"Unable to reply (RedditAPIException): {redditErr}")
+            return None
+        except Exception as err:
+            print(f"Unable to reply (general Exception): {err}")
+            return None
 
     def is_account_too_new(self, redditor: Redditor, days: int) -> bool:
         """
