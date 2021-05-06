@@ -120,6 +120,21 @@ class Database:
             is not None
         )
 
+    def delete_patch_notes_line_number(self, line_number: int) -> bool:
+        """
+        Deletes a patch notes line entry from the patch notes table database
+
+        Returns:
+            True if the patch notes line entry removal operation was successful
+            False otherwise
+        """
+        if self.check_patch_notes_line_number(line_number):
+            self.db.table("patch_notes_line_tracker").remove(
+                LineNumber.id == line_number
+            )
+            return True
+        return False
+
     def get_all_entries_in_patch_notes_tracker(self) -> List[Document]:
         """
         Returns all entries in the patch_notes_tracker table (as a list of Document objects)

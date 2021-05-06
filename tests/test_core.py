@@ -146,17 +146,16 @@ class TestCore(TestCase):
             patch_notes_line_number,
         )
 
-        # If patch notes line number is already guessed
-        patch(
-            "hon_patch_notes_game_bot.database.Database.check_patch_notes_line_number",
-            return_value=True,
-        )
+        # If patch notes line number is already guessed (which it will be after the above test)
         assert not self.core.update_patch_notes_table_in_db(
             self.dummy_user,
             self.mock_author,
             self.mock_comment,
             patch_notes_line_number,
         )
+
+        # Teardown step
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
 
     @patch("hon_patch_notes_game_bot.core.Core")
     @patch("time.sleep")
@@ -174,11 +173,57 @@ class TestCore(TestCase):
         assert self.core.loop()
 
     def test_process_guess_for_user(self):
-        patch_notes_line_number = 1
+        def assert_test(patch_notes_line_number):
+            assert self.core.process_guess_for_user(
+                self.dummy_user,
+                self.mock_author,
+                self.mock_comment,
+                patch_notes_line_number,
+            )
 
-        assert self.core.process_guess_for_user(
-            self.dummy_user,
-            self.mock_author,
-            self.mock_comment,
-            patch_notes_line_number,
-        )
+        # Valid line number
+        patch_notes_line_number = 1
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
+        # Line number with invalid string sequence
+        patch_notes_line_number = 2
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
+        # Blank line number
+        patch_notes_line_number = 4
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
+        # User cannot submit guess case
+        patch_notes_line_number = 1
+        self.dummy_user.can_submit_guess = False
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
+    def test_process_game_rules_for_user(self):
+        def assert_test(patch_notes_line_number):
+            assert self.core.process_game_rules_for_user(
+                self.dummy_user,
+                self.mock_author,
+                self.mock_comment,
+                patch_notes_line_number,
+            )
+
+        # Regular usage
+        patch_notes_line_number = 1
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
+        # User cannot submit a guess
+        self.dummy_user.can_submit_guess = False
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
+        # User's guesses exceed the max
+        self.dummy_user.can_submit_guess = True
+        self.dummy_user.num_guesses = 9001
+        assert_test(patch_notes_line_number)
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
+
