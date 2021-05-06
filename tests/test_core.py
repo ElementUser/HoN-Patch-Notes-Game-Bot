@@ -1,11 +1,12 @@
 from unittest.mock import patch, Mock
 from unittest import TestCase
-from prawcore.exceptions import ServerError
 from pytest import mark
-from requests.models import Response
 
 from datetime import datetime
 from praw.exceptions import RedditAPIException
+from requests.models import Response
+from praw.models import Comment, Submission
+from prawcore.exceptions import ServerError
 
 from hon_patch_notes_game_bot import core
 from hon_patch_notes_game_bot.user import RedditUser
@@ -25,7 +26,6 @@ class TestCore(TestCase):
         self.dummy_user = RedditUser("User1")
 
         # Configure mocks
-        self.mock_reddit.inbox = Mock()
         self.mock_submission.selftext = "Test string"
         self.mock_submission.edit = Mock()
         self.mock_community_submission.selftext = "Test string"
@@ -157,21 +157,6 @@ class TestCore(TestCase):
         # Teardown step
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
 
-    @patch("hon_patch_notes_game_bot.core.Core")
-    @patch("time.sleep")
-    def test_loop(self, mock_core, sleep_func=Mock()):
-        # TODO: Regular test
-
-        # Exception tests
-        mock_response = Mock(spec=Response)
-        mock_response.status_code = 503
-        mock_response.json.return_value = {}
-        mock_core.loop.side_effect = ServerError(mock_response)
-        assert self.core.loop()
-
-        mock_core.loop.side_effect = Exception("General Exception")
-        assert self.core.loop()
-
     def test_process_guess_for_user(self):
         def assert_test(patch_notes_line_number):
             assert self.core.process_guess_for_user(
@@ -227,3 +212,37 @@ class TestCore(TestCase):
         assert_test(patch_notes_line_number)
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
 
+    @patch("hon_patch_notes_game_bot.core.Core")
+    @patch("time.sleep")
+    def test_loop(self, mock_core, sleep_func=Mock()):
+        patch_notes_line_number = 1
+
+        # Perform mock configurations
+        self.mock_reddit.inbox = Mock()
+        self.mock_comment = Mock(spec=Comment)
+        self.mock_comment.submission = Mock(spec=Submission)
+
+        # Set submission.id fields to be the same on both mocks
+        self.mock_comment.submission.id = 694201
+        self.mock_submission.id = 694201
+        self.mock_comment.author = self.mock_author
+        self.mock_comment.body = f"Patch notes line number: {patch_notes_line_number}"
+        self.mock_comment.reply = Mock()
+        self.mock_author.has_verified_email = True
+        self.mock_author.comment_karma = 9001
+        self.mock_author.created_utc = 1609390800  # December 31, 2020 at 00:00:00
+        self.mock_reddit.inbox.unread = Mock(return_value=[self.mock_comment])
+        assert self.core.loop()
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
+
+        # Exception tests
+        mock_response = Mock(spec=Response)
+        mock_response.status_code = 503
+        mock_response.json.return_value = {}
+        self.mock_reddit.inbox.unread.side_effect = ServerError(mock_response)
+        assert self.core.loop()
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
+
+        self.mock_reddit.inbox.unread.side_effect = Exception("General Exception")
+        assert self.core.loop()
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
