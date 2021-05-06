@@ -9,14 +9,12 @@ from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.config.config import (
     BOT_USERNAME,
     COMMUNITY_SUBMISSION_CONTENT_PATH,
-    GAME_END_TIME,
     PATCH_NOTES_PATH,
     SLEEP_INTERVAL_SECONDS,
     SUBREDDIT_NAME,
     SUBMISSION_CONTENT_PATH,
     USER_AGENT,
 )
-from hon_patch_notes_game_bot.utils import is_game_expired
 
 
 def main():
@@ -57,11 +55,6 @@ def main():
         )
         if not core.loop():
             print("Reddit Bot script ended via core loop end conditions")
-            break
-
-        # Stop indefinite loop if current time is greater than the closing time.
-        if is_game_expired(GAME_END_TIME):
-            print("Reddit Bot script ended via time deadline")
             break
 
         # Time to wait before calling the Reddit API again (in seconds)

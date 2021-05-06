@@ -37,6 +37,7 @@ PATCH_NOTES_PATH: str = "config/patch_notes.txt"
 SUBMISSION_CONTENT_PATH: str = "config/submission_content.md"
 COMMUNITY_SUBMISSION_CONTENT_PATH: str = "config/community_patch_notes_compilation.md"
 WINNERS_LIST_FILE_PATH: str = "cache/winners_list.txt"
+BLANK_LINE_REPLACEMENT: str = "..."
 
 # ================
 # Data structures
