@@ -1,5 +1,4 @@
 import os
-
 import hon_patch_notes_game_bot.utils as util
 
 # ============
