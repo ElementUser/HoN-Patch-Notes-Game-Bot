@@ -19,7 +19,7 @@ case $1 in
         poetry run flake8 ./hon_patch_notes_game_bot --count --select=E9,F63,F7,F82 --show-source --statistics
         poetry run flake8 ./hon_patch_notes_game_bot --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
         poetry run mypy .
-        poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/        
+        poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/
         ;;
 
     "winners")
