@@ -185,7 +185,7 @@ def send_message_to_winners(
                     # Sleep for the rate limit duration by parsing the minute and seconds count from
                     #   the message into named groups
                     regex_capture = re.search(
-                        r"\s+((?P<minutes>\d+) minutes)?\s?((?P<seconds>\d+) seconds)?\s+",
+                        r"\s+((?P<minutes>\d+) minutes?)?\s?((?P<seconds>\d+) seconds)?\s+",
                         subException.message,
                     )
                     if regex_capture is None:
