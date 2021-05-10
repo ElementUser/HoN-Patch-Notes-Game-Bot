@@ -140,10 +140,11 @@ def send_message_to_winners(
     This function also frequently encounters Reddit API Exceptions due to rate limits.
         To sleep for the appropriate duration without wasting time, the rate limit error is parsed:
 
-    Example strings:
+    Test strings for regex capture:
     RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes before trying again." on field 'ratelimit'
     RATELIMIT: "Looks like you've been doing that a lot. Take a break for 47 seconds before trying again." on field 'ratelimit'
     RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes 47 seconds before trying again." on field 'ratelimit'
+    RATELIMIT: "Looks like you've been doing that a lot. Take a break for 1 minute before trying again." on field 'ratelimit'
 
     Attributes:
         reddit: the PRAW Reddit instance
