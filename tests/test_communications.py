@@ -78,7 +78,8 @@ class TestCommunications(TestCase):
         assert_test(self.mock_reddit)
 
         self.mock_reddit.redditor.side_effect = RedditAPIException(
-            ["RATELIMIT", "Please try again after 9 minutes", None], "Optional string",
+            ["RATELIMIT", "Take a break for 4 minutes before trying again.", None],
+            "Optional string",
         )
         assert_test(self.mock_reddit)
 

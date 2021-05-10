@@ -143,7 +143,8 @@ def send_message_to_winners(
     Test strings for regex capture:
     RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes before trying again." on field 'ratelimit'
     RATELIMIT: "Looks like you've been doing that a lot. Take a break for 47 seconds before trying again." on field 'ratelimit'
-    RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes 47 seconds before trying again." on field 'ratelimit'
+    RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes 47 seconds before trying again."
+        on field 'ratelimit'
     RATELIMIT: "Looks like you've been doing that a lot. Take a break for 1 minute before trying again." on field 'ratelimit'
 
     Attributes:
@@ -197,8 +198,10 @@ def send_message_to_winners(
                         # Use named groups from regex capture and assign them to a dictionary
                         sleep_time_regex_groups = regex_capture.groupdict(default=0)
                         secondsToSleep = int(
-                            sleep_time_regex_groups.get("minutes")
-                        ) + int(sleep_time_regex_groups.get("seconds"))
+                            sleep_time_regex_groups.get("minutes")  # type: ignore
+                        ) + int(
+                            sleep_time_regex_groups.get("seconds")  # type: ignore
+                        )  # type: ignore
 
                         print(f"Sleeping for {str(secondsToSleep)} seconds")
                         time.sleep(secondsToSleep)

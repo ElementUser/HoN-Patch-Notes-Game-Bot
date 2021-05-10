@@ -232,7 +232,7 @@ class TestCore(TestCase):
         self.mock_author.comment_karma = 9001
         self.mock_author.created_utc = 1609390800  # December 31, 2020 at 00:00:00
         self.mock_reddit.inbox.unread = Mock(return_value=[self.mock_comment])
-        assert self.core.loop()
+        assert not self.core.loop()
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
 
         # Exception tests
@@ -240,9 +240,9 @@ class TestCore(TestCase):
         mock_response.status_code = 503
         mock_response.json.return_value = {}
         self.mock_reddit.inbox.unread.side_effect = ServerError(mock_response)
-        assert self.core.loop()
+        assert not self.core.loop()
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
 
         self.mock_reddit.inbox.unread.side_effect = Exception("General Exception")
-        assert self.core.loop()
+        assert not self.core.loop()
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
