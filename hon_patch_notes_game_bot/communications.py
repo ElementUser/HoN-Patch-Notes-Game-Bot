@@ -164,6 +164,7 @@ def send_message_to_winners(
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
             f"Please send /u/{STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} a Private Message (PM) to request a code"
             f" for {str(gold_coin_reward)} Gold Coins.\n\n"
+            "Be sure to check your Reddit Chat inbox as well (not just your Reddit mail inbox)!\n\n"
             "Thank you for participating in the game! =)"
         )
         try:
