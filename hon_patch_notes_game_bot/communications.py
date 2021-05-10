@@ -137,6 +137,14 @@ def send_message_to_winners(
 
     This function uses recursion to send messages to failed recipients.
 
+    This function also frequently encounters Reddit API Exceptions due to rate limits.
+        To sleep for the appropriate duration without wasting time, the rate limit error is parsed:
+
+    Example strings:
+    RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes before trying again." on field 'ratelimit'
+    RATELIMIT: "Looks like you've been doing that a lot. Take a break for 47 seconds before trying again." on field 'ratelimit'
+    RATELIMIT: "Looks like you've been doing that a lot. Take a break for 4 minutes 47 seconds before trying again." on field 'ratelimit'
+
     Attributes:
         reddit: the PRAW Reddit instance
         winners_list: a list of winning recipients for the PM
@@ -174,17 +182,23 @@ def send_message_to_winners(
                     )
                     print(f"Subexception: {subException}\n\n")
 
-                    # Sleep for the rate limit duration by parsing the minute count from exception message
+                    # Sleep for the rate limit duration by parsing the minute and seconds count from
+                    #   the message into named groups
                     regex_capture = re.search(
-                        r"(0?\.?\d+) minutes?", subException.message
+                        r"\s+((?P<minutes>\d+) minutes)?\s?((?P<seconds>\d+) seconds)?\s+",
+                        subException.message,
                     )
                     if regex_capture is None:
-                        print("Invalid regex detected. Sleeping for 10 seconds...")
-                        time.sleep(10)
+                        print("Invalid regex detected. Sleeping for 60 seconds...")
+                        time.sleep(60)
                         break
                     else:
-                        minutesToSleep = regex_capture.group(1)
-                        secondsToSleep = int(float(minutesToSleep) * 60)
+                        # Use named groups from regex capture and assign them to a dictionary
+                        sleep_time_regex_groups = regex_capture.groupdict(default=0)
+                        secondsToSleep = int(
+                            sleep_time_regex_groups.get("minutes")
+                        ) + int(sleep_time_regex_groups.get("seconds"))
+
                         print(f"Sleeping for {str(secondsToSleep)} seconds")
                         time.sleep(secondsToSleep)
                         break
