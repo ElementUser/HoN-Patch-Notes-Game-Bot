@@ -1,6 +1,8 @@
 # HoN Patch Notes Guessing Game (Bot)
 
-![Build](https://img.shields.io/github/workflow/status/ElementUser/HoN-Patch-Notes-Game-Bot/Github%20CI?label=Build%3A%20Github%20CI&style=flat-square) ![Coverage](https://img.shields.io/codecov/c/github/elementuser/HoN-Patch-Notes-Game-Bot?flag=coverage&label=codecov%20coverage&style=flat-square&token=ed238480-a595-4afc-afeb-e2005922b75d)
+![Build](https://img.shields.io/github/workflow/status/ElementUser/HoN-Patch-Notes-Game-Bot/Github%20CI?label=Build%3A%20Github%20CI&style=flat-square)
+
+[![codecov](https://codecov.io/gh/ElementUser/HoN-Patch-Notes-Game-Bot/branch/main/graph/badge.svg?token=S0HUUCHDKB)](https://codecov.io/gh/ElementUser/HoN-Patch-Notes-Game-Bot)
 
 This application automates the process of HoN's Patch Notes Guessing Game that is hosted in a thread on the Reddit platform.
 
