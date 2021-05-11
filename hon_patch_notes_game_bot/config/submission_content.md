@@ -1,14 +1,14 @@
 It's time for the HoN Patch Notes guessing game again!
 
-HoN Patch Version: `PATCH_VERSION`
+HoN Patch Version: `patch_version`
 
-This game will automatically stop running at **`GAME_END_TIME`**, or when **`MAX_PERCENT_OF_LINES_REVEALED`% of the total number of lines in the patch notes are revealed**. The bot will stop monitoring and responding to comments in this thread after either of these conditions are met.
+This game will automatically stop running at **`game_end_time`**, or when **`MAX_PERCENT_OF_LINES_REVEALED`% of the total number of lines in the patch notes are revealed**. The bot will stop monitoring and responding to comments in this thread after either of these conditions are met.
 
 ## Rules of the Game
 
-- Pick a number between 1 and `MAX_LINE_COUNT`, and post that number to the main thread or the comment that /u/hon-bot responds to you with.
+- Pick a number between 1 and `max_line_count`, and post that number to the main thread or the comment that /u/hon-bot responds to you with.
 - Guesses for lines that actually have content in the patch notes are considered "valid guesses", and the user will be entered into the pool of potential winners for a prize if they get a valid guess! See the Rewards section for more information.
-- Each user gets `MAX_NUM_GUESSES` guesses until they run out of guesses.
+- Each user gets `max_num_guesses` guesses until they run out of guesses.
 - If your guess has a number in it in your first line of your comment, it WILL be parsed by the bot and will count as a guess (whether you want it to or not). For simplicity's sake, please only include a number in your guess.
 - Guesses for line numbers that don't exist in the patch notes count as an invalid guess. You have been warned!
 - There are invalid lines in the patch notes. These are blank lines, and lines with separator elements like `_______` and `-------`.
@@ -25,7 +25,7 @@ This game will automatically stop running at **`GAME_END_TIME`**, or when **`MAX
 
 ## Rewards
 
-- `NUM_WINNERS` Lucky Winners from the pool of potential winners will receive `GOLD_COIN_REWARD` Gold Coins each (NAEU/International Client only - SEA players will not get a working code if they win, unfortunately).
+- `num_winners` Lucky Winners from the pool of potential winners will receive `gold_coin_reward` Gold Coins each (NAEU/International Client only - SEA players will not get a working code if they win, unfortunately).
 - Winners will be announced in this thread when the game ends.
 - You will receive a message from /u/hon-bot if you have been chosen!
 

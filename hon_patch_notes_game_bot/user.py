@@ -1,4 +1,3 @@
-#!/usr/bin/python
 class RedditUser:
     def __init__(
         self,
