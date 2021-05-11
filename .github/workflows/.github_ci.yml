@@ -26,7 +26,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        run: echo ${{ matrix.os.TARGET }}
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
