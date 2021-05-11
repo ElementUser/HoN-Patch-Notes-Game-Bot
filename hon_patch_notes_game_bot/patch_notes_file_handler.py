@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import linecache
-from hon_patch_notes_game_bot.config.config import invalid_line_strings
+from hon_patch_notes_game_bot.config.config import INVALID_LINE_STRINGS
 from typing import List, Optional
 
 """
@@ -70,7 +70,7 @@ class PatchNotesFile:
 
         for line_number, line in enumerate(tempFile):
             if line == "\n" or any(
-                invalid_entry in line for invalid_entry in invalid_line_strings
+                invalid_entry in line for invalid_entry in INVALID_LINE_STRINGS
             ):
                 list_of_blank_line_numbers.append(line_number + 1)
 

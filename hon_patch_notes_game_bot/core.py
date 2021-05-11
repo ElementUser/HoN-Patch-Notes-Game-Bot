@@ -1,5 +1,6 @@
+#!/usr/bin/python
 """
-This module contains the bot's core loop
+This module contains the bot's core loop and most of the logic in its "engine".
 
 PRAW Comment API: https://praw.readthedocs.io/en/latest/code_overview/models/comment.html
 """
@@ -11,21 +12,33 @@ from praw.exceptions import RedditAPIException
 from praw.models import Comment, Redditor, Submission
 import typing
 
+from hon_patch_notes_game_bot.communications import (
+    send_message_to_staff,
+    send_message_to_winners,
+)
 from hon_patch_notes_game_bot.database import Database
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.user import RedditUser
-from hon_patch_notes_game_bot.util import (
+from hon_patch_notes_game_bot.utils import (
     get_patch_notes_line_number,
     generate_submission_compiled_patch_notes_template_line,
+    is_game_expired,
+    output_winners_list_to_file,
 )
 from hon_patch_notes_game_bot.config.config import (
+    BLANK_LINE_REPLACEMENT,
+    DISALLOWED_USERS_SET,
+    GAME_END_TIME,
+    GOLD_COIN_REWARD,
+    INVALID_LINE_STRINGS,
+    MAX_NUM_GUESSES,
+    MAX_PERCENT_OF_LINES_REVEALED,
     MIN_COMMENT_KARMA,
     MIN_LINK_KARMA,
-    MAX_NUM_GUESSES,
     MIN_ACCOUNT_AGE_DAYS,
-    MAX_PERCENT_OF_LINES_REVEALED,
-    disallowed_users_set,
-    invalid_line_strings,
+    NUM_WINNERS,
+    STAFF_RECIPIENTS_LIST,
+    WINNERS_LIST_FILE_PATH,
 )
 
 
@@ -136,10 +149,12 @@ class Core:
         """
         try:
             comment.reply(body=text_body)
-        except RedditAPIException:
-            pass
-        except Exception:
-            pass
+        except RedditAPIException as redditErr:
+            print(f"Unable to reply (RedditAPIException): {redditErr}")
+            return None
+        except Exception as err:
+            print(f"Unable to reply (general Exception): {err}")
+            return None
 
     def is_account_too_new(self, redditor: Redditor, days: int) -> bool:
         """
@@ -200,7 +215,7 @@ class Core:
         """
 
         # Do not process posts from disallowed users
-        if redditor.name in disallowed_users_set:
+        if redditor.name in DISALLOWED_USERS_SET:
             return True
 
         # Deter Reddit throwaway accounts from participating
@@ -253,169 +268,272 @@ class Core:
                 patch_notes_line_number=line_number, line_content=line_content
             )
 
+    def perform_post_game_actions(self):
+        """
+        After the game ends, performs a series of operations.
+
+        These operations currently include:
+        - Generating the winners list
+        - Saving the winners list to a file
+        - Updating the main submission with the winners list content
+        - Sending Private Messages to staff members & winners
+        """
+        # Save winners list in memory
+        potential_winners_list = self.db.get_potential_winners_list()
+        winners_list = self.db.get_random_winners_from_list(
+            num_winners=NUM_WINNERS, potential_winners_list=potential_winners_list
+        )
+
+        # Save winners submission content to file
+        winners_submission_content = output_winners_list_to_file(
+            potential_winners_list=potential_winners_list,
+            winners_list=winners_list,
+            output_file_path=WINNERS_LIST_FILE_PATH,
+        )
+        print(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
+
+        # Update main submission with winner submission content at the top
+        self.submission.edit(winners_submission_content + self.submission.selftext)
+        print("Reddit submission successfully updated with the winners list info!")
+
+        # Private messages
+        version_string = self.patch_notes_file.get_version_string()
+        send_message_to_staff(
+            reddit=self.reddit,
+            winners_list_path=WINNERS_LIST_FILE_PATH,
+            staff_recipients=STAFF_RECIPIENTS_LIST,
+            version_string=version_string,
+            gold_coin_reward=GOLD_COIN_REWARD,
+        )
+
+        send_message_to_winners(
+            reddit=self.reddit,
+            winners_list=winners_list,
+            version_string=version_string,
+            gold_coin_reward=GOLD_COIN_REWARD,
+        )
+
+    def update_patch_notes_table_in_db(
+        self,
+        user: RedditUser,
+        author: Redditor,
+        unread_item: Comment,
+        patch_notes_line_number: int,
+    ) -> bool:
+        """
+        Attempts to update the patch notes table in the database
+
+        Returns:
+        - True, if the patch notes table was successfully updated
+        - False, if the line number was already guessed & the patch notes table was not updated
+        """
+        # Invalid guess if the line number was already guessed
+        if self.db.check_patch_notes_line_number(patch_notes_line_number):
+            self.reply_with_bad_guess_feedback(
+                user,
+                author,
+                unread_item,
+                f"Line #{patch_notes_line_number} has already been guessed.\n\n",
+            )
+            return False
+
+        # Valid entry: add the guessed entry to the patch_notes_line_number table
+        self.db.add_patch_notes_line_number(patch_notes_line_number)
+        return True
+
+    def process_guess_for_user(
+        self,
+        user: RedditUser,
+        author: Redditor,
+        unread_item: Comment,
+        patch_notes_line_number: int,
+    ) -> bool:
+        """
+        Processes the user's guess and performs the appropriate updates to various data sources
+            (database, user and patch notes community thread) based on the validity of the guess.
+
+        Returns:
+        - True, if the game should continue
+        - False, if the game's end condition is met.
+        """
+        line_content = self.patch_notes_file.get_content_from_line_number(
+            patch_notes_line_number
+        )
+
+        # Invalid guess by getting a blank line in the patch notes
+        if line_content is None:
+            self.update_community_compiled_patch_notes_in_submission(
+                patch_notes_line_number=patch_notes_line_number,
+                line_content=BLANK_LINE_REPLACEMENT,
+            )
+            self.reply_with_bad_guess_feedback(
+                user,
+                author,
+                unread_item,
+                f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
+            )
+
+            # Early exit checks/conditions
+            if self.has_exceeded_revealed_line_count():
+                return False
+            return True
+
+        # Only check for invalid strings if line_content is not empty
+        # If the line content is correct, check other invalid strings for guessing
+        for invalid_string in INVALID_LINE_STRINGS:
+            if invalid_string in line_content:
+                self.update_community_compiled_patch_notes_in_submission(
+                    patch_notes_line_number=patch_notes_line_number,
+                    line_content=line_content,
+                )
+                self.reply_with_bad_guess_feedback(
+                    user,
+                    author,
+                    unread_item,
+                    f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry."
+                    "\n\nIt contains the following invalid string:\n\n"
+                    f">{invalid_string}\n\n",
+                )
+
+                # Early exit checks/conditions
+                if self.has_exceeded_revealed_line_count():
+                    return False
+                return True
+
+        # If this code is reached, then the guess is valid!
+        user.is_potential_winner = True
+        self.update_community_compiled_patch_notes_in_submission(
+            patch_notes_line_number=patch_notes_line_number, line_content=line_content,
+        )
+
+        # Reply to comment
+        if user.can_submit_guess:
+            self.safe_comment_reply(
+                unread_item,
+                f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
+                f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
+                f">{line_content}\n"
+                "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
+                "See the main post for more details for potential prizes.\n\n___\n\n"
+                f"You have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left!\n\n"
+                "The community-compiled patch notes have been updated with your valid entry.\n\n"
+                f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
+            )
+        else:
+            self.safe_comment_reply(
+                unread_item,
+                f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
+                f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
+                f">{line_content}\n"
+                "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
+                "See the main post for more details for potential prizes.\n\n___\n\n"
+                f"{author.name}, you have used all of your guesses.\n\n"
+                "The community-compiled patch notes have been updated with your valid entry.\n\n"
+                f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
+            )
+
+        # Update user in DB
+        self.db.update_user(user)
+
+        # All checks have been passed if this point is reached
+        return True
+
+    def process_game_rules_for_user(
+        self,
+        user: RedditUser,
+        author: Redditor,
+        unread_item: Comment,
+        patch_notes_line_number: int,
+    ) -> bool:
+        """
+        Processes the game's rules for a player.
+
+        Returns:
+        - True, if the game should continue
+        - False, if the game's end condition is met.
+        """
+
+        # Prevent users who cannot make a guess from participating
+        if not user.can_submit_guess:
+            return True
+
+        # Update user in DB if guess is invalid
+        user.num_guesses += 1
+        if user.num_guesses >= MAX_NUM_GUESSES:
+            user.can_submit_guess = False
+            self.db.update_user(user)
+
+        # Update patch notes in DB
+        if not self.update_patch_notes_table_in_db(
+            user, author, unread_item, patch_notes_line_number
+        ):
+            return False
+
+        if not self.process_guess_for_user(
+            user, author, unread_item, patch_notes_line_number
+        ):
+            return False
+
+        return True
+
     def loop(self):  # noqa: C901
         """
         Core loop of the bot
 
-        Returns True if the loop should continue running, False otherwise
+        Returns:
+        - True, if the loop should continue running
+        - False, if the loop should stop running
         """
 
         # Check unread replies
         try:
-            should_continue_loop = True
+            # Stop indefinite loop if current time is greater than the closing time.
+            if is_game_expired(GAME_END_TIME):
+                print("Reddit Bot script ended via time deadline")
+                return False
 
             for unread_item in self.reddit.inbox.unread(limit=None):
+                unread_item.mark_read()
+
                 # Only proceed with processing the unread item if it belongs to the current thread
-                if isinstance(unread_item, Comment):
-                    unread_item.mark_read()
-                    if unread_item.submission.id == self.submission.id:
-                        author = unread_item.author
+                if (
+                    isinstance(unread_item, Comment)
+                    and unread_item.submission.id == self.submission.id
+                ):
+                    author = unread_item.author
 
-                        # Exit loop early if the user does not meet the posting conditions
-                        if self.is_disallowed_to_post(author, unread_item):
-                            continue
+                    # Exit loop early if the user does not meet the posting conditions
+                    if self.is_disallowed_to_post(author, unread_item):
+                        continue
 
-                        # Get patch notes line number from the user's post
-                        patch_notes_line_number = get_patch_notes_line_number(
-                            unread_item.body
-                        )
-                        if patch_notes_line_number is None:
-                            continue
+                    # Get patch notes line number from the user's post
+                    patch_notes_line_number = get_patch_notes_line_number(
+                        unread_item.body
+                    )
+                    if patch_notes_line_number is None:
+                        continue
 
-                        # Get author user id & search for it in the Database (add it if it doesn't exist)
-                        user = self.get_user_from_database(author)
+                    # Get author user id & search for it in the Database (add it if it doesn't exist)
+                    user = self.get_user_from_database(author)
 
-                        # ===================
-                        # Run the game rules
-                        # ===================
+                    # Run the game rules, and exit early if game-ending conditions are met
+                    if not self.process_game_rules_for_user(
+                        user, author, unread_item, patch_notes_line_number
+                    ):
+                        return False
 
-                        # Prevent users who cannot make a guess from participating
-                        if not user.can_submit_guess:
-                            continue
+                    # Stop indefinite loop if current time is greater than the closing time.
+                    if is_game_expired(GAME_END_TIME):
+                        print("Reddit Bot script ended via time deadline")
+                        return False
 
-                        else:
-                            user.num_guesses += 1
-                            if user.num_guesses >= MAX_NUM_GUESSES:
-                                user.can_submit_guess = False
-
-                            # Invalid guess if the line number was already guessed
-                            if self.db.check_patch_notes_line_number(
-                                patch_notes_line_number
-                            ):
-                                self.reply_with_bad_guess_feedback(
-                                    user,
-                                    author,
-                                    unread_item,
-                                    f"Line #{patch_notes_line_number} has already been guessed.\n\n",
-                                )
-
-                                # Update user in DB
-                                self.db.update_user(user)
-                                continue
-
-                            else:
-                                # Add the guessed entry to the patch_notes_line_number table
-                                self.db.add_patch_notes_line_number(
-                                    patch_notes_line_number
-                                )
-                                line_content = self.patch_notes_file.get_content_from_line_number(
-                                    patch_notes_line_number
-                                )
-
-                                # Boolean flag to check if the current guess is still considered valid
-                                # Set to True initially & a series of checks to set it to False will occur right after this
-                                is_valid_guess = True
-
-                                # Invalid guess by getting a blank line in the patch notes
-                                if line_content is None:
-                                    is_valid_guess = False
-                                    blank_line = "..."
-                                    self.update_community_compiled_patch_notes_in_submission(
-                                        patch_notes_line_number=patch_notes_line_number,
-                                        line_content=blank_line,
-                                    )
-                                    self.reply_with_bad_guess_feedback(
-                                        user,
-                                        author,
-                                        unread_item,
-                                        f"Whiffed! Line #{patch_notes_line_number} is blank.\n\n",
-                                    )
-                                    should_continue_loop = (
-                                        not self.has_exceeded_revealed_line_count()
-                                    )
-
-                                # Only check for invalid strings if line_content is not empty
-                                else:
-                                    # If the line content is correct, check other invalid strings for guessing
-                                    for invalid_string in invalid_line_strings:
-                                        if invalid_string in line_content:
-                                            is_valid_guess = False
-                                            self.update_community_compiled_patch_notes_in_submission(
-                                                patch_notes_line_number=patch_notes_line_number,
-                                                line_content=line_content,
-                                            )
-                                            self.reply_with_bad_guess_feedback(
-                                                user,
-                                                author,
-                                                unread_item,
-                                                f"Whiffed! Line #{patch_notes_line_number} contains an invalid string entry."
-                                                "\n\nIt contains the following invalid string:\n\n"
-                                                f">{invalid_string}\n\n",
-                                            )
-                                            should_continue_loop = (
-                                                not self.has_exceeded_revealed_line_count()
-                                            )
-                                            break
-
-                                # Valid guess!
-                                if is_valid_guess:
-                                    user.is_potential_winner = True
-
-                                    # Update community compiled patch notes in submission
-                                    self.update_community_compiled_patch_notes_in_submission(
-                                        patch_notes_line_number=patch_notes_line_number,
-                                        line_content=line_content,
-                                    )
-
-                                    if user.can_submit_guess:
-                                        self.safe_comment_reply(
-                                            unread_item,
-                                            f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
-                                            f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
-                                            f">{line_content}\n"
-                                            "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
-                                            "See the main post for more details for potential prizes.\n\n___\n\n"
-                                            f"You have {MAX_NUM_GUESSES - user.num_guesses} guess(es) left!\n\n"
-                                            "The community-compiled patch notes have been updated with your valid entry.\n\n"
-                                            f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
-                                        )
-                                    else:
-                                        self.safe_comment_reply(
-                                            unread_item,
-                                            f"Congratulations for correctly guessing a patch note line, {author.name}!\n\n"
-                                            f"Line #{patch_notes_line_number} from the patch notes is the following:\n\n"
-                                            f">{line_content}\n"
-                                            "You have been added to the pool of potential winners & can win a prize once this contest is over!\n\n"  # noqa: E501
-                                            "See the main post for more details for potential prizes.\n\n___\n\n"
-                                            f"{author.name}, you have used all of your guesses.\n\n"
-                                            "The community-compiled patch notes have been updated with your valid entry.\n\n"
-                                            f"[Click here to see the current status of the community-compiled patch notes!]({self.community_submission.url})",  # noqa: E501
-                                        )
-
-                                    should_continue_loop = (
-                                        not self.has_exceeded_revealed_line_count()
-                                    )
-
-                                # Update user in DB
-                                self.db.update_user(user)
-
-            # After going through the bot's inbox, return whether the loop should continue or not back to main.py
-            return should_continue_loop
+            # After going through the bot's inbox, return True if inner loop stop functions are not met
+            return True
 
         # Occasionally, Reddit may throw a 503 server error while under heavy load.
         # In that case, log the error & just wait and try again in the next loop cycle
         except ServerError as serverError:
-            print(serverError)
+            print(f"Server error encountered in core loop: {serverError}")
             sleep_time = 60
             print(f"Sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
@@ -423,7 +541,7 @@ class Core:
 
         # Handle remaining unforeseen exceptions and log the error
         except Exception as error:
-            print(error)
+            print(f"General exception encountered in core loop: {error}")
             sleep_time = 60
             print(f"Sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
