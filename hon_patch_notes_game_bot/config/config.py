@@ -8,15 +8,15 @@ from typing import List, Set
 # ==========
 
 # [GAME] 4.9.X - Patch Notes Guessing Game
-submission_title: str = "[GAME] 4.9.3 - Patch Notes Guessing Game"
-community_submission_title: str = "4.9.3 - Community-revealed Patch Notes"
-game_end_time: str = "May 10, 2021, 4:00 am UTC"
+SUBMISSION_TITLE: str = "[GAME] 4.9.3 - Patch Notes Guessing Game"
+COMMUNITY_SUBMISSION_TITLE: str = "4.9.3 - Community-revealed Patch Notes"
+GAME_END_TIME: str = "May 10, 2021, 4:00 am UTC"
 
 # ================
 # Reward settings
 # ================
 
-gold_coin_reward: int = 300
+GOLD_COIN_REWARD: int = 300
 NUM_WINNERS: int = 25
 
 # ================
@@ -31,12 +31,20 @@ MIN_ACCOUNT_AGE_DAYS: int = 7
 SLEEP_INTERVAL_SECONDS: int = 10
 STAFF_MEMBER_THAT_HANDS_OUT_REWARDS: str = "FB-Saphirez"
 
+BOT_USERNAME: str = "hon-bot"
+USER_AGENT: str = "HoN Patch Notes Game Bot by /u/hon-bot"
+PATCH_NOTES_PATH: str = "config/patch_notes.txt"
+SUBMISSION_CONTENT_PATH: str = "config/submission_content.md"
+COMMUNITY_SUBMISSION_CONTENT_PATH: str = "config/community_patch_notes_compilation.md"
+WINNERS_LIST_FILE_PATH: str = "cache/winners_list.txt"
+BLANK_LINE_REPLACEMENT: str = "..."
+
 # ================
 # Data structures
 # ================
 
 # Disallowed users: use a set for the O(1) access time
-disallowed_users_set: Set[str] = {
+DISALLOWED_USERS_SET: Set[str] = {
     "ElementUser",
     "FB-Saphirez",
     "the_timezone_bot",
@@ -50,7 +58,7 @@ disallowed_users_set: Set[str] = {
 }
 
 # Recipients user list (for Private Messages) for the winners list
-staff_recipients: List[str] = ["ElementUser", "FB-Saphirez"]
+STAFF_RECIPIENTS_LIST: List[str] = ["ElementUser", "FB-Saphirez"]
 
 # Invalid line strings (for guess validity in the game)
-invalid_line_strings: List[str] = ["_______", "-------"]
+INVALID_LINE_STRINGS: List[str] = ["_______", "-------"]
