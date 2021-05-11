@@ -69,3 +69,8 @@ jobs:
       - name: Test with pytest-cov & Poetry
         run: |
           poetry run pytest --cov-report term-missing --cov=hon_patch_notes_game_bot tests/
+
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
