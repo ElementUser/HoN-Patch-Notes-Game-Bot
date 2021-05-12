@@ -22,6 +22,7 @@ from hon_patch_notes_game_bot.user import RedditUser
 from hon_patch_notes_game_bot.utils import (
     get_patch_notes_line_number,
     generate_submission_compiled_patch_notes_template_line,
+    get_reward_codes_list,
     is_game_expired,
     output_winners_list_to_file,
 )
@@ -309,6 +310,7 @@ class Core:
         send_message_to_winners(
             reddit=self.reddit,
             winners_list=winners_list,
+            reward_codes_list=get_reward_codes_list(),
             version_string=version_string,
             gold_coin_reward=GOLD_COIN_REWARD,
         )

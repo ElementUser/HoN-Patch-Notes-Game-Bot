@@ -4,6 +4,7 @@ from pytest import mark
 from praw.exceptions import RedditAPIException
 
 from hon_patch_notes_game_bot import communications
+from hon_patch_notes_game_bot.utils import get_reward_codes_list
 from hon_patch_notes_game_bot.config.config import (
     COMMUNITY_SUBMISSION_CONTENT_PATH,
     GOLD_COIN_REWARD,
@@ -59,6 +60,7 @@ class TestCommunications(TestCase):
                 communications.send_message_to_winners(
                     mock_reddit,
                     winners_list=["User1", "User2"],
+                    reward_codes_list=get_reward_codes_list(),
                     version_string="4.9.3",
                     gold_coin_reward=GOLD_COIN_REWARD,
                 )
@@ -104,4 +106,3 @@ class TestCommunications(TestCase):
             )
             is not None
         )
-

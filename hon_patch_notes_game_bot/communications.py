@@ -130,7 +130,11 @@ def send_message_to_staff(
 
 
 def send_message_to_winners(
-    reddit: Reddit, winners_list: List[str], version_string: str, gold_coin_reward: int
+    reddit: Reddit,
+    winners_list: List[str],
+    reward_codes_list: List[str],
+    version_string: str,
+    gold_coin_reward: int,
 ):
     """
     Sends the winners list results to a list of recipients via Private Message (PM).
@@ -150,6 +154,7 @@ def send_message_to_winners(
     Attributes:
         reddit: the PRAW Reddit instance
         winners_list: a list of winning recipients for the PM
+        reward_codes_list: a list of reward codes for each winner
         version_string: the version of the patch notes
         gold_coin_reward: the number of Gold Coins intended for the reward
     """
@@ -159,17 +164,23 @@ def send_message_to_winners(
     failed_recipients_list = []
 
     for recipient in winners_list:
+        reward_code = (
+            "N/A - all possible reward codes have been used up.\n\n"
+            f"Please contact {STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} for a code to be issued manually."
+        )
+        if len(reward_codes_list) > 0:
+            reward_code = reward_codes_list[0]
+
         message = (
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
-            f"Please send /u/{STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} a Private Message (PM) to request a code"
-            f" for {str(gold_coin_reward)} Gold Coins.\n\n"
-            "Be sure to check your Reddit Chat inbox as well (not just your Reddit mail inbox)!\n\n"
+            f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**.\n\n\n\n"
             "Thank you for participating in the game! =)"
         )
         try:
             reddit.redditor(recipient).message(subject=subject_line, message=message)
             print(f"Winner message sent to {recipient}")
+            reward_codes_list.pop()
 
         # Reddit API Exception
         except RedditAPIException as redditException:
@@ -223,5 +234,10 @@ def send_message_to_winners(
     failed_recipients = len(failed_recipients_list)
     if failed_recipients > 0 and failed_recipients < len(winners_list):
         send_message_to_winners(
-            reddit, failed_recipients_list, version_string, gold_coin_reward
+            reddit,
+            failed_recipients_list,
+            reward_codes_list,
+            version_string,
+            gold_coin_reward,
         )
+

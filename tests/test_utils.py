@@ -54,3 +54,6 @@ def test_convert_time_string_to_wolframalpha_query_url():
         util.convert_time_string_to_wolframalpha_query_url(time_string) == expected_url
     )
 
+
+def test_get_reward_codes_list():
+    assert util.get_reward_codes_list()
