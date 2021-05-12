@@ -174,7 +174,8 @@ def send_message_to_winners(
         message = (
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
-            f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**.\n\n\n\n"
+            f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**.\n\n"
+            "You can redeem your reward code here: https://www.heroesofnewerth.com/redeem/\n\n"
             "Thank you for participating in the game! =)"
         )
         try:
@@ -183,7 +184,7 @@ def send_message_to_winners(
 
             # Pop reward code from list only if the message was sent successfully
             if len(reward_codes_list) > 0:
-                reward_codes_list.pop()
+                reward_codes_list.pop(0)
 
         # Reddit API Exception
         except RedditAPIException as redditException:
