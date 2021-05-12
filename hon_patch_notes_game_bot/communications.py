@@ -209,7 +209,7 @@ def send_message_to_winners(
                     else:
                         # Use named groups from regex capture and assign them to a dictionary
                         sleep_time_regex_groups = regex_capture.groupdict(default=0)
-                        secondsToSleep = int(
+                        secondsToSleep = 60 * int(
                             sleep_time_regex_groups.get("minutes")  # type: ignore
                         ) + int(
                             sleep_time_regex_groups.get("seconds")  # type: ignore
