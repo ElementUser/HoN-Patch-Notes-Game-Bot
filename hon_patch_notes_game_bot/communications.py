@@ -129,7 +129,7 @@ def send_message_to_staff(
                 continue
 
 
-def send_message_to_winners(
+def send_message_to_winners(  # noqa: C901
     reddit: Reddit,
     winners_list: List[str],
     reward_codes_list: List[str],
@@ -244,4 +244,3 @@ def send_message_to_winners(
             version_string,
             gold_coin_reward,
         )
-
