@@ -179,8 +179,11 @@ def send_message_to_winners(
         )
         try:
             reddit.redditor(recipient).message(subject=subject_line, message=message)
-            print(f"Winner message sent to {recipient}")
-            reward_codes_list.pop()
+            print(f"Winner message sent to {recipient}, with code: {reward_code}")
+
+            # Pop reward code from list only if the message was sent successfully
+            if len(reward_codes_list) > 0:
+                reward_codes_list.pop()
 
         # Reddit API Exception
         except RedditAPIException as redditException:
