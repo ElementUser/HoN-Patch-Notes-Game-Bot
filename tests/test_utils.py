@@ -56,4 +56,4 @@ def test_convert_time_string_to_wolframalpha_query_url():
 
 
 def test_get_reward_codes_list():
-    assert util.get_reward_codes_list()
+    assert util.get_reward_codes_list("tests/cache/reward_codes.txt")

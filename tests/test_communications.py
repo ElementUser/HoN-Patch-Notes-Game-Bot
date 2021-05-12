@@ -8,8 +8,10 @@ from hon_patch_notes_game_bot.utils import get_reward_codes_list
 from hon_patch_notes_game_bot.config.config import (
     COMMUNITY_SUBMISSION_CONTENT_PATH,
     GOLD_COIN_REWARD,
+    REWARD_CODES_FILE_PATH,
     STAFF_RECIPIENTS_LIST,
     SUBMISSION_CONTENT_PATH,
+    WINNERS_LIST_FILE_PATH,
 )
 
 
@@ -29,7 +31,7 @@ class TestCommunications(TestCase):
             assert (
                 communications.send_message_to_staff(
                     mock_reddit,
-                    winners_list_path="./tests/cache/winners_list.txt",
+                    winners_list_path=f"./tests/{WINNERS_LIST_FILE_PATH}",
                     staff_recipients=STAFF_RECIPIENTS_LIST,
                     version_string="4.9.3",
                     gold_coin_reward=GOLD_COIN_REWARD,
@@ -60,7 +62,9 @@ class TestCommunications(TestCase):
                 communications.send_message_to_winners(
                     mock_reddit,
                     winners_list=["User1", "User2"],
-                    reward_codes_list=get_reward_codes_list(),
+                    reward_codes_list=get_reward_codes_list(
+                        f"tests/{REWARD_CODES_FILE_PATH}"
+                    ),
                     version_string="4.9.3",
                     gold_coin_reward=GOLD_COIN_REWARD,
                 )

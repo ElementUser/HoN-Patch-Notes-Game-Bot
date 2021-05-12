@@ -2,7 +2,8 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 from pytest import mark
 
-from datetime import datetime
+from dateutil import tz
+from datetime import datetime, timedelta
 from praw.exceptions import RedditAPIException
 from requests.models import Response
 from praw.models import Comment, Submission
@@ -10,7 +11,11 @@ from prawcore.exceptions import ServerError
 
 from hon_patch_notes_game_bot import core
 from hon_patch_notes_game_bot.user import RedditUser
-from hon_patch_notes_game_bot.config.config import MIN_ACCOUNT_AGE_DAYS
+from hon_patch_notes_game_bot.config.config import (
+    MIN_ACCOUNT_AGE_DAYS,
+    REWARD_CODES_FILE_PATH,
+)
+from hon_patch_notes_game_bot.utils import get_reward_codes_list
 
 
 @mark.usefixtures(
@@ -134,6 +139,7 @@ class TestCore(TestCase):
         assert self.core.fix_corrupted_community_submission_edit() is None
 
     def test_perform_post_game_actions(self):
+        self.core.reward_codes_filepath = f"tests/{REWARD_CODES_FILE_PATH}"
         assert self.core.perform_post_game_actions() is None
 
     def test_update_patch_notes_table_in_db(self):
@@ -232,17 +238,28 @@ class TestCore(TestCase):
         self.mock_author.comment_karma = 9001
         self.mock_author.created_utc = 1609390800  # December 31, 2020 at 00:00:00
         self.mock_reddit.inbox.unread = Mock(return_value=[self.mock_comment])
+
+        # Game expires, so False is expected
         assert not self.core.loop()
+        self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
+
+        # Game does not expire yet; set expiration time to some time in the future
+        future_date = datetime.now(tz.UTC) + timedelta(days=30)
+        self.core.game_end_time = str(future_date)
+        assert self.core.loop()
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
 
         # Exception tests
         mock_response = Mock(spec=Response)
         mock_response.status_code = 503
         mock_response.json.return_value = {}
+
+        # Server error exception
         self.mock_reddit.inbox.unread.side_effect = ServerError(mock_response)
-        assert not self.core.loop()
+        assert self.core.loop()
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
 
+        # General exception
         self.mock_reddit.inbox.unread.side_effect = Exception("General Exception")
-        assert not self.core.loop()
+        assert self.core.loop()
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
