@@ -22,6 +22,7 @@ from hon_patch_notes_game_bot.user import RedditUser
 from hon_patch_notes_game_bot.utils import (
     get_patch_notes_line_number,
     generate_submission_compiled_patch_notes_template_line,
+    get_reward_codes_list,
     is_game_expired,
     output_winners_list_to_file,
 )
@@ -39,6 +40,7 @@ from hon_patch_notes_game_bot.config.config import (
     NUM_WINNERS,
     STAFF_RECIPIENTS_LIST,
     WINNERS_LIST_FILE_PATH,
+    REWARD_CODES_FILE_PATH,
 )
 
 
@@ -60,6 +62,8 @@ class Core:
         self.submission = submission
         self.community_submission = community_submission
         self.patch_notes_file = patch_notes_file
+        self.reward_codes_filepath = REWARD_CODES_FILE_PATH
+        self.game_end_time = GAME_END_TIME
 
     def has_exceeded_revealed_line_count(self) -> bool:
         """
@@ -309,6 +313,7 @@ class Core:
         send_message_to_winners(
             reddit=self.reddit,
             winners_list=winners_list,
+            reward_codes_list=get_reward_codes_list(self.reward_codes_filepath),
             version_string=version_string,
             gold_coin_reward=GOLD_COIN_REWARD,
         )
@@ -488,7 +493,7 @@ class Core:
         # Check unread replies
         try:
             # Stop indefinite loop if current time is greater than the closing time.
-            if is_game_expired(GAME_END_TIME):
+            if is_game_expired(self.game_end_time):
                 print("Reddit Bot script ended via time deadline")
                 return False
 
@@ -523,7 +528,7 @@ class Core:
                         return False
 
                     # Stop indefinite loop if current time is greater than the closing time.
-                    if is_game_expired(GAME_END_TIME):
+                    if is_game_expired(self.game_end_time):
                         print("Reddit Bot script ended via time deadline")
                         return False
 

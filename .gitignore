@@ -5,6 +5,8 @@
 *.json
 winners_list.txt
 patch_notes.txt
+reward_codes.txt
+cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

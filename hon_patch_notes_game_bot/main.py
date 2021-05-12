@@ -41,18 +41,20 @@ def main():
         COMMUNITY_SUBMISSION_CONTENT_PATH,
     )
 
+    # Create core object
+    core = Core(
+        reddit=reddit,
+        db=database,
+        submission=submission,
+        community_submission=community_submission,
+        patch_notes_file=patch_notes_file,
+    )
+
     # ===============================================================
     # Core loop to listen to unread comment messages on Reddit
     # ===============================================================
     print("Reddit Bot's core loop started")
     while 1:
-        core = Core(
-            reddit=reddit,
-            db=database,
-            submission=submission,
-            community_submission=community_submission,
-            patch_notes_file=patch_notes_file,
-        )
         if not core.loop():
             print("Reddit Bot script ended via core loop end conditions")
             break

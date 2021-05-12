@@ -85,11 +85,12 @@ Navigate to the project root directory in your terminal.
 - To run the script, use `./scripts.sh start`
 - To run unit tests, use `./scripts.sh test`
 - To reset the cache & database, use `./scripts.sh reset` before running `./scripts.sh start`
-- To pick a list of winners from the existing local database, use `./scripts.sh winners 20`, where the "20" can be replaced with an integer to specify the number of winners picked
 
 ## More Usage Notes
 
 For unreleased patch notes, **do not commit and push the branch to source control before their official release**.
+
+For `hon_patch_notes_game_bot/cache/reward_codes.txt`, populate the file manually (this is done via private means).
 
 To change up some commonly changed configuration before starting a new run, go to `hon_patch_notes_game_bot/config/config.py` and edit them.
 
