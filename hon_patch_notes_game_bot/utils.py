@@ -7,6 +7,7 @@ from dateutil import tz
 from dateutil.parser import parse
 from datetime import datetime
 from typing import List, Optional
+from pathlib import Path
 
 from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.config.config import (
@@ -15,6 +16,8 @@ from hon_patch_notes_game_bot.config.config import (
     MAX_NUM_GUESSES,
     MAX_PERCENT_OF_LINES_REVEALED,
     NUM_WINNERS,
+    REWARD_CODES_FILE_PATH,
+    WINNERS_LIST_FILE_PATH,
 )
 
 
@@ -164,3 +167,17 @@ def processed_community_notes_thread_submission_content(
 
         submission_content += f"\n\n**Guesses in this thread will not be responded to by the bot. [Visit the main thread instead!]({main_submission_url})**\n\nFeel free to discuss patch changes here liberally (based on the currently revealed notes)! :)"  # noqa: E501
         return submission_content
+
+
+def get_reward_codes_list(
+    reward_codes_filepath: str = REWARD_CODES_FILE_PATH,
+) -> List[str]:
+    with open(reward_codes_filepath, "r") as file:
+        reward_codes_file_content = file.readlines()
+        reward_codes_list = [line for line in reward_codes_file_content]
+        return reward_codes_list
+
+
+if __name__ == "__main__":
+    reward_codes_list = get_reward_codes_list(REWARD_CODES_FILE_PATH)
+    print(reward_codes_list)
