@@ -90,7 +90,7 @@ Navigate to the project root directory in your terminal.
 
 For unreleased patch notes, **do not commit and push the branch to source control before their official release**.
 
-For `hon_patch_notes_game_bot/cache/reward_codes.txt`, populate the file manually (this is done via private means).
+For `hon_patch_notes_game_bot/config/reward_codes.txt`, populate the file manually (this is done via private means).
 
 To change up some commonly changed configuration before starting a new run, go to `hon_patch_notes_game_bot/config/config.py` and edit them.
 
