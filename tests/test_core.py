@@ -238,8 +238,8 @@ class TestCore(TestCase):
         self.mock_author.created_utc = 1609390800  # December 31, 2020 at 00:00:00
         self.mock_reddit.inbox.unread = Mock(return_value=[self.mock_comment])
 
-        # Game expires, so False is expected
-        assert not self.core.loop()
+        # Check that core.loop() returns either True or False
+        assert self.core.loop() is not None
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)  # Teardown
 
         # Game does not expire yet; set expiration time to some time in the future
