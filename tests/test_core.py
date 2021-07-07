@@ -37,6 +37,7 @@ class TestCore(TestCase):
         self.mock_community_submission.edit = Mock()
         self.mock_community_submission.url = "Community Submission URL"
         self.mock_author.name = "User2"
+        self.mock_comment.reply = Mock()
 
         # Create a concrete Core object
         self.core = core.Core(
@@ -95,7 +96,6 @@ class TestCore(TestCase):
         assert self.core.safe_comment_reply(self.mock_comment, "Test Body") is None
 
         # Exceptions
-        self.mock_comment.reply = Mock()
         self.mock_comment.reply.side_effect = RedditAPIException(
             ["RATELIMIT", "Error message", None], "Optional string",
         )
@@ -233,7 +233,6 @@ class TestCore(TestCase):
         self.mock_submission.id = 694201
         self.mock_comment.author = self.mock_author
         self.mock_comment.body = f"Patch notes line number: {patch_notes_line_number}"
-        self.mock_comment.reply = Mock()
         self.mock_author.has_verified_email = True
         self.mock_author.comment_karma = 9001
         self.mock_author.created_utc = 1609390800  # December 31, 2020 at 00:00:00
