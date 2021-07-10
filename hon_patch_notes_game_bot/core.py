@@ -462,11 +462,11 @@ class Core:
         if not user.can_submit_guess:
             return True
 
-        # Update user in DB if guess is invalid
+        # Update user in DB after guess
         user.num_guesses += 1
         if user.num_guesses >= MAX_NUM_GUESSES:
             user.can_submit_guess = False
-            self.db.update_user(user)
+        self.db.update_user(user)
 
         # Update patch notes in DB
         if not self.update_patch_notes_table_in_db(
