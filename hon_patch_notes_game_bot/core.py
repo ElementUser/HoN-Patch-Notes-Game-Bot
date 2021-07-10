@@ -469,10 +469,9 @@ class Core:
         self.db.update_user(user)
 
         # Update patch notes in DB
-        if not self.update_patch_notes_table_in_db(
+        self.update_patch_notes_table_in_db(
             user, author, unread_item, patch_notes_line_number
-        ):
-            return False
+        )
 
         if not self.process_guess_for_user(
             user, author, unread_item, patch_notes_line_number
