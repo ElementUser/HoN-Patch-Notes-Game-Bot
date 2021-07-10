@@ -72,10 +72,17 @@ class Core:
         Returns True if the line count has been exceeded
         Returns False otherwise
         """
-        return self.db.get_entry_count_in_patch_notes_line_tracker() >= (
+
+        line_count_exceeded = self.db.get_entry_count_in_patch_notes_line_tracker() >= (
             (MAX_PERCENT_OF_LINES_REVEALED / 100)
             * self.patch_notes_file.get_total_line_count()
         )
+
+        if not line_count_exceeded:
+            print(
+                "Number of revealed lines exceeds the max allowed revealed line count."
+            )
+        return line_count_exceeded
 
     def reply_with_bad_guess_feedback(
         self, user: RedditUser, author: Redditor, comment: Comment, first_line: str,
@@ -439,6 +446,10 @@ class Core:
 
         # Update user in DB
         self.db.update_user(user)
+
+        # Early exit checks/conditions
+        if self.has_exceeded_revealed_line_count():
+            return False
 
         # All checks have been passed if this point is reached
         return True
