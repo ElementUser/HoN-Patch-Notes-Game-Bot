@@ -103,7 +103,7 @@ def send_message_to_staff(
     """
     with open(winners_list_path, "r") as winners_list_file:
         winners_list_text = (
-            f"Give {str(gold_coin_reward)} Gold Coins to each winner.\n\n"
+            f"The following Reddit users have won {str(gold_coin_reward)} Gold Coins from the Reddit Patch Notes game:\n\n"
             + winners_list_file.read()
         )
         subject_line = (

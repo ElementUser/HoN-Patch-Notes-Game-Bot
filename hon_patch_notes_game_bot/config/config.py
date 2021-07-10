@@ -59,7 +59,7 @@ DISALLOWED_USERS_SET: Set[str] = {
 }
 
 # Recipients user list (for Private Messages) for the winners list
-STAFF_RECIPIENTS_LIST: List[str] = ["ElementUser", "FB-Saphirez"]
+STAFF_RECIPIENTS_LIST: List[str] = ["ElementUser"]
 
 # Invalid line strings (for guess validity in the game)
 INVALID_LINE_STRINGS: List[str] = ["_______", "-------"]
