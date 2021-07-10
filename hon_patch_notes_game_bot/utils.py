@@ -43,7 +43,12 @@ def is_game_expired(time_string: str) -> bool:
     """
     game_end_datetime = parse(time_string, fuzzy=True)
     present_time = datetime.now(tz.UTC)
-    return present_time > game_end_datetime
+
+    b_game_expired = present_time > game_end_datetime
+    if b_game_expired:
+        print("Reddit Bot script ended via time deadline")
+
+    return b_game_expired
 
 
 def output_winners_list_to_file(

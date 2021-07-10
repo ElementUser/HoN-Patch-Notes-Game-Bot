@@ -73,16 +73,16 @@ class Core:
         Returns False otherwise
         """
 
-        line_count_exceeded = self.db.get_entry_count_in_patch_notes_line_tracker() >= (
+        b_line_count_exceeded = self.db.get_entry_count_in_patch_notes_line_tracker() >= (
             (MAX_PERCENT_OF_LINES_REVEALED / 100)
             * self.patch_notes_file.get_total_line_count()
         )
-
-        if not line_count_exceeded:
+        if b_line_count_exceeded:
             print(
                 "Number of revealed lines exceeds the max allowed revealed line count."
             )
-        return line_count_exceeded
+
+        return b_line_count_exceeded
 
     def reply_with_bad_guess_feedback(
         self, user: RedditUser, author: Redditor, comment: Comment, first_line: str,
@@ -504,7 +504,6 @@ class Core:
         try:
             # Stop indefinite loop if current time is greater than the closing time.
             if is_game_expired(self.game_end_time):
-                print("Reddit Bot script ended via time deadline")
                 return False
 
             for unread_item in self.reddit.inbox.unread(limit=None):
@@ -539,7 +538,6 @@ class Core:
 
                     # Stop indefinite loop if current time is greater than the closing time.
                     if is_game_expired(self.game_end_time):
-                        print("Reddit Bot script ended via time deadline")
                         return False
 
             # After going through the bot's inbox, return True if inner loop stop functions are not met
