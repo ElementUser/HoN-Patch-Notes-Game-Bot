@@ -174,7 +174,7 @@ def send_message_to_winners(  # noqa: C901
         message = (
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
-            f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**.\n\n"
+            f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**\n\n"
             "You can redeem your reward code here: https://www.heroesofnewerth.com/redeem/\n\n"
             f"Please contact {STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} if any issues arise.\n\n"
             "Thank you for participating in the game! =)"
