@@ -341,12 +341,6 @@ class Core:
         """
         # Invalid guess if the line number was already guessed
         if self.db.check_patch_notes_line_number(patch_notes_line_number):
-            self.reply_with_bad_guess_feedback(
-                user,
-                author,
-                unread_item,
-                f"Line #{patch_notes_line_number} has already been guessed.\n\n",
-            )
             return False
 
         # Valid entry: add the guessed entry to the patch_notes_line_number table
@@ -480,9 +474,17 @@ class Core:
         self.db.update_user(user)
 
         # Update patch notes in DB
-        self.update_patch_notes_table_in_db(
+        if not self.update_patch_notes_table_in_db(
             user, author, unread_item, patch_notes_line_number
-        )
+        ):
+            # If update is unsuccessful, then respond and exit early (prevents 2x replies to the user)
+            self.reply_with_bad_guess_feedback(
+                user,
+                author,
+                unread_item,
+                f"Line #{patch_notes_line_number} has already been guessed.\n\n",
+            )
+            return True
 
         if not self.process_guess_for_user(
             user, author, unread_item, patch_notes_line_number

@@ -5,7 +5,7 @@ name = "hon_patch_notes_game_bot"
 version = "0.2.4.0"
 
 [tool.poetry.dependencies]
-praw = "^7.2.0"
+praw = "^7.3.0"
 prawcore = "^2.0.0"
 python = "^3.7"
 python-dateutil = "^2.8.1"
