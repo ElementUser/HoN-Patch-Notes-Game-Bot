@@ -71,6 +71,10 @@ jobs:
         run: |
           poetry run mypy .
 
+      - name: Run bandit to check for vulnerabilities
+        run: |
+          poetry run bandit -r hon_patch_notes_game_bot/*.py
+
       - name: Run Pytest and generate coverage report
         run: |
           poetry run pytest --cov=hon_patch_notes_game_bot tests/ --cov-report=term-missing --cov-report=xml

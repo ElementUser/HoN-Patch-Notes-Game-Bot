@@ -4,6 +4,8 @@
 
 [![codecov](https://codecov.io/gh/ElementUser/HoN-Patch-Notes-Game-Bot/branch/main/graph/badge.svg?token=S0HUUCHDKB)](https://codecov.io/gh/ElementUser/HoN-Patch-Notes-Game-Bot)
 
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+
 This application automates the process of HoN's Patch Notes Guessing Game that is hosted in a thread on the Reddit platform.
 
 Specifically, the bot is intended to create a thread in the [/r/heroesofnewerth subreddit](https://www.reddit.com/r/HeroesofNewerth/).
