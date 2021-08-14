@@ -73,7 +73,7 @@ jobs:
 
       - name: Run bandit to check for vulnerabilities
         run: |
-          poetry run bandit -r hon_patch_notes_game_bot/*.py
+          poetry run bandit -r ./hon_patch_notes_game_bot/
 
       - name: Run Pytest and generate coverage report
         run: |
