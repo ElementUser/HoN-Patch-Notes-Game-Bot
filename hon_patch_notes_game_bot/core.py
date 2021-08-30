@@ -468,9 +468,7 @@ class Core:
         self.db.update_user(user)
 
         # Update patch notes in DB
-        if not self.update_patch_notes_table_in_db(
-            user, author, unread_item, patch_notes_line_number
-        ):
+        if not self.update_patch_notes_table_in_db(patch_notes_line_number):
             # If update is unsuccessful, then respond and exit early (prevents 2x replies to the user)
             self.reply_with_bad_guess_feedback(
                 user,

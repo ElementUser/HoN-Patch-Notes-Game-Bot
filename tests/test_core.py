@@ -145,20 +145,10 @@ class TestCore(TestCase):
     def test_update_patch_notes_table_in_db(self):
         patch_notes_line_number = 1
 
-        assert self.core.update_patch_notes_table_in_db(
-            self.dummy_user,
-            self.mock_author,
-            self.mock_comment,
-            patch_notes_line_number,
-        )
+        assert self.core.update_patch_notes_table_in_db(patch_notes_line_number)
 
         # If patch notes line number is already guessed (which it will be after the above test)
-        assert not self.core.update_patch_notes_table_in_db(
-            self.dummy_user,
-            self.mock_author,
-            self.mock_comment,
-            patch_notes_line_number,
-        )
+        assert not self.core.update_patch_notes_table_in_db(patch_notes_line_number)
 
         # Teardown step
         self.core.db.delete_patch_notes_line_number(patch_notes_line_number)
