@@ -325,13 +325,7 @@ class Core:
             gold_coin_reward=GOLD_COIN_REWARD,
         )
 
-    def update_patch_notes_table_in_db(
-        self,
-        user: RedditUser,
-        author: Redditor,
-        unread_item: Comment,
-        patch_notes_line_number: int,
-    ) -> bool:
+    def update_patch_notes_table_in_db(self, patch_notes_line_number: int) -> bool:
         """
         Attempts to update the patch notes table in the database
 
