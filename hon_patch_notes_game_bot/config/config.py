@@ -56,6 +56,7 @@ DISALLOWED_USERS_SET: Set[str] = {
     "rrreeddiitt",
     "diabetis_",
     "Apejohn",
+    "BodaddyTV",
 }
 
 # Recipients user list (for Private Messages) for the winners list
