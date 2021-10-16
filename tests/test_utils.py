@@ -1,4 +1,5 @@
 import os
+import re
 import hon_patch_notes_game_bot.utils as util
 
 # ============
@@ -57,3 +58,17 @@ def test_convert_time_string_to_wolframalpha_query_url():
 
 def test_get_reward_codes_list():
     assert util.get_reward_codes_list("tests/config/reward_codes.txt")
+
+
+def test_tprint():
+    message = "Test message"
+    output_message = util.tprint(message)
+
+    # Test if message is within the output message
+    assert message in output_message
+
+    # Test whether timestamp is in correct format in the output message
+    regex_capture = re.search(
+        r"\[\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}]", output_message
+    )
+    assert regex_capture is not None

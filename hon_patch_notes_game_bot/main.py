@@ -15,6 +15,7 @@ from hon_patch_notes_game_bot.config.config import (
     SUBMISSION_CONTENT_PATH,
     USER_AGENT,
 )
+from hon_patch_notes_game_bot.utils import tprint
 
 
 def main():
@@ -53,10 +54,10 @@ def main():
     # ===============================================================
     # Core loop to listen to unread comment messages on Reddit
     # ===============================================================
-    print("Reddit Bot's core loop started")
+    tprint("Reddit Bot's core loop started")
     while 1:
         if not core.loop():
-            print("Reddit Bot script ended via core loop end conditions")
+            tprint("Reddit Bot script ended via core loop end conditions")
             break
 
         # Time to wait before calling the Reddit API again (in seconds)
@@ -65,9 +66,9 @@ def main():
     # ========================
     # Bot end script actions
     # ========================
-    print("Performing actions after the game has ended...")
+    tprint("Performing actions after the game has ended...")
     core.perform_post_game_actions()
-    print("Reddit bot script ended gracefully")
+    tprint("Reddit bot script ended gracefully")
 
 
 if __name__ == "__main__":

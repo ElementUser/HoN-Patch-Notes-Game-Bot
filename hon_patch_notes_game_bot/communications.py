@@ -14,6 +14,7 @@ from hon_patch_notes_game_bot.patch_notes_file_handler import PatchNotesFile
 from hon_patch_notes_game_bot.utils import (
     processed_submission_content,
     processed_community_notes_thread_submission_content,
+    tprint,
 )
 from hon_patch_notes_game_bot.config.config import (
     COMMUNITY_SUBMISSION_TITLE,
@@ -116,14 +117,14 @@ def send_message_to_staff(
                     subject=subject_line, message=winners_list_text
                 )
             except RedditAPIException as redditError:
-                print(f"RedditAPIException encountered: {redditError}")
-                print(
+                tprint(f"RedditAPIException encountered: {redditError}")
+                tprint(
                     f"{recipient} was not sent a message, continuing to next recipient"
                 )
                 continue
             except Exception as error:
-                print(f"General Exception encountered: {error}")
-                print(
+                tprint(f"General Exception encountered: {error}")
+                tprint(
                     f"{recipient} was not sent a message, continuing to next recipient"
                 )
                 continue
@@ -181,7 +182,7 @@ def send_message_to_winners(  # noqa: C901
         )
         try:
             reddit.redditor(recipient).message(subject=subject_line, message=message)
-            print(f"Winner message sent to {recipient}, with code: {reward_code}")
+            tprint(f"Winner message sent to {recipient}, with code: {reward_code}")
 
             # Pop reward code from list only if the message was sent successfully
             if len(reward_codes_list) > 0:
@@ -189,17 +190,17 @@ def send_message_to_winners(  # noqa: C901
 
         # Reddit API Exception
         except RedditAPIException as redditException:
-            print(f"Full Reddit Exception: {redditException}\n\n")
+            tprint(f"Full Reddit Exception: {redditException}\n\n")
 
             for subException in redditException.items:
                 # Rate limit error handling
                 if subException.error_type == "RATELIMIT":
                     failed_recipients_list.append(recipient)
-                    print(
+                    tprint(
                         f"{redditException}\n{recipient} was not sent a message (added to retry list), "
                         "continuing to next recipient"
                     )
-                    print(f"Subexception: {subException}\n\n")
+                    tprint(f"Subexception: {subException}\n\n")
 
                     # Sleep for the rate limit duration by parsing the minute and seconds count from
                     #   the message into named groups
@@ -214,10 +215,17 @@ def send_message_to_winners(  # noqa: C901
                     else:
                         # Use named groups from regex capture and assign them to a dictionary
                         sleep_time_regex_groups = regex_capture.groupdict(default=0)
-                        secondsToSleep = 60 * int(
-                            sleep_time_regex_groups.get("minutes")  # type: ignore
-                        ) + int(
-                            sleep_time_regex_groups.get("seconds")  # type: ignore
+
+                        # Add 1 extra second to account for millisecond-precision checking
+                        secondsToSleep = (
+                            60
+                            * int(
+                                sleep_time_regex_groups.get("minutes")  # type: ignore
+                            )
+                            + int(
+                                sleep_time_regex_groups.get("seconds")  # type: ignore
+                            )
+                            + 1
                         )  # type: ignore
 
                         print(f"Sleeping for {str(secondsToSleep)} seconds")
@@ -227,7 +235,7 @@ def send_message_to_winners(  # noqa: C901
             continue
 
         except Exception as error:
-            print(
+            tprint(
                 f"{error}\n{recipient} was not sent a message (will not retry), continuing to next recipient"
             )
             continue

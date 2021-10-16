@@ -25,6 +25,7 @@ from hon_patch_notes_game_bot.utils import (
     get_reward_codes_list,
     is_game_expired,
     output_winners_list_to_file,
+    tprint,
 )
 from hon_patch_notes_game_bot.config.config import (
     BLANK_LINE_REPLACEMENT,
@@ -78,7 +79,7 @@ class Core:
             * self.patch_notes_file.get_total_line_count()
         )
         if b_line_count_exceeded:
-            print(
+            tprint(
                 "Number of revealed lines exceeds the max allowed revealed line count."
             )
 
@@ -161,10 +162,10 @@ class Core:
         try:
             comment.reply(body=text_body)
         except RedditAPIException as redditErr:
-            print(f"Unable to reply (RedditAPIException): {redditErr}")
+            tprint(f"Unable to reply (RedditAPIException): {redditErr}")
             return None
         except Exception as err:
-            print(f"Unable to reply (general Exception): {err}")
+            tprint(f"Unable to reply (general Exception): {err}")
             return None
 
     def is_account_too_new(self, redditor: Redditor, days: int) -> bool:
@@ -301,11 +302,11 @@ class Core:
             winners_list=winners_list,
             output_file_path=WINNERS_LIST_FILE_PATH,
         )
-        print(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
+        tprint(f"Winners list successfully output to: {WINNERS_LIST_FILE_PATH}")
 
         # Update main submission with winner submission content at the top
         self.submission.edit(winners_submission_content + self.submission.selftext)
-        print("Reddit submission successfully updated with the winners list info!")
+        tprint("Reddit submission successfully updated with the winners list info!")
 
         # Private messages
         version_string = self.patch_notes_file.get_version_string()
@@ -540,16 +541,16 @@ class Core:
         # Occasionally, Reddit may throw a 503 server error while under heavy load.
         # In that case, log the error & just wait and try again in the next loop cycle
         except ServerError as serverError:
-            print(f"Server error encountered in core loop: {serverError}")
+            tprint(f"Server error encountered in core loop: {serverError}")
             sleep_time = 60
-            print(f"Sleeping for {sleep_time} seconds...")
+            tprint(f"Sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
             return True  # main.py loop should continue after the sleep period
 
         # Handle remaining unforeseen exceptions and log the error
         except Exception as error:
-            print(f"General exception encountered in core loop: {error}")
+            tprint(f"General exception encountered in core loop: {error}")
             sleep_time = 60
-            print(f"Sleeping for {sleep_time} seconds...")
+            tprint(f"Sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
             return True  # main.py loop should continue after the sleep period

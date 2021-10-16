@@ -46,7 +46,7 @@ def is_game_expired(time_string: str) -> bool:
 
     b_game_expired = present_time > game_end_datetime
     if b_game_expired:
-        print("Reddit Bot script ended via time deadline")
+        tprint("Reddit Bot script ended via time deadline")
 
     return b_game_expired
 
@@ -73,14 +73,14 @@ def output_winners_list_to_file(
         output_file.truncate()
 
         # Winners subheading and content
-        file_content = "## Winners\n\n```"
+        file_content = "## Winners\n\n```\n"
 
         for winner in winners_list:
             file_content += f"{winner}\n"
         file_content += "```"
 
         # Potential Winners subheading and content
-        file_content += "\n## Potential Winners\n\n```"
+        file_content += "\n## Potential Winners\n\n```\n"
         for user in potential_winners_list:
             file_content += f"{user}\n"
         file_content += "```"
@@ -185,3 +185,18 @@ def get_reward_codes_list(
         reward_codes_file_content = file.readlines()
         reward_codes_list = [line.rstrip() for line in reward_codes_file_content]
         return reward_codes_list
+
+
+def tprint(message: str) -> str:
+    """
+    Wrapper around print() function.
+    Prints message to console with a timestamp as a prefix to the message.
+
+    Returns:
+    - The printed message with the timestamp prefix
+    """
+    current_time = datetime.now()
+    timestamp_without_milliseconds = str(current_time).split(".")[0]
+    final_message = f"[{timestamp_without_milliseconds}] {message}"
+    print(final_message)
+    return final_message
