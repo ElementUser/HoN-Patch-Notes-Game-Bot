@@ -8,16 +8,16 @@ from typing import List, Set
 # ==========
 
 # [GAME] 4.9.X - Patch Notes Guessing Game
-SUBMISSION_TITLE: str = "[GAME] 4.9.4 - Patch Notes Guessing Game"
-COMMUNITY_SUBMISSION_TITLE: str = "4.9.4 - Community-revealed Patch Notes"
-GAME_END_TIME: str = "July 17, 2021, 4:00 am UTC"
+SUBMISSION_TITLE: str = "[GAME] 4.9.6 - Patch Notes Guessing Game"
+COMMUNITY_SUBMISSION_TITLE: str = "4.9.6 - Community-revealed Patch Notes"
+GAME_END_TIME: str = "November 27, 2021, 4:00 am UTC"
 
 # ================
 # Reward settings
 # ================
 
-GOLD_COIN_REWARD: int = 200
-NUM_WINNERS: int = 15
+GOLD_COIN_REWARD: int = 300
+NUM_WINNERS: int = 20
 
 # ================
 # Other constants
@@ -57,6 +57,7 @@ DISALLOWED_USERS_SET: Set[str] = {
     "diabetis_",
     "Apejohn",
     "BodaddyTV",
+    "federicosmettila",
 }
 
 # Recipients user list (for Private Messages) for the winners list
