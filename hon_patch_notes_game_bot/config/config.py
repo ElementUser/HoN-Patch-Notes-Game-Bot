@@ -17,7 +17,7 @@ GAME_END_TIME: str = "November 27, 2021, 4:00 am UTC"
 # ================
 
 GOLD_COIN_REWARD: int = 300
-NUM_WINNERS: int = 20
+NUM_WINNERS: int = 15
 
 # ================
 # Other constants
@@ -29,7 +29,7 @@ MIN_COMMENT_KARMA: int = 4
 MIN_LINK_KARMA: int = 4
 MIN_ACCOUNT_AGE_DAYS: int = 7
 SLEEP_INTERVAL_SECONDS: int = 10
-STAFF_MEMBER_THAT_HANDS_OUT_REWARDS: str = "FB-Saphirez"
+STAFF_MEMBER_THAT_HANDS_OUT_REWARDS: str = "ElementUser"
 
 BOT_USERNAME: str = "hon-bot"
 USER_AGENT: str = "HoN Patch Notes Game Bot by /u/hon-bot"

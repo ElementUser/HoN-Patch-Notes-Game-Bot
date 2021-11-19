@@ -172,12 +172,21 @@ def send_message_to_winners(  # noqa: C901
         if len(reward_codes_list) > 0:
             reward_code = reward_codes_list[0]
 
+        # TODO: Add this back if reward codes generator works again
+        # message = (
+        #     f"Congratulations {recipient}!\n\n"
+        #     f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
+        #     f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**\n\n"
+        #     "You can redeem your reward code here: https://www.heroesofnewerth.com/redeem/\n\n"
+        #     f"Please contact {STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} if any issues arise.\n\n"
+        #     "Thank you for participating in the game! =)"
+        # )
+
         message = (
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
-            f"Your reward code for {str(gold_coin_reward)} Gold Coins is: **{reward_code}**\n\n"
+            f"Please contact /u/{STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} via the Reddit Messaging system to obtain your code.\n\n"
             "You can redeem your reward code here: https://www.heroesofnewerth.com/redeem/\n\n"
-            f"Please contact {STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} if any issues arise.\n\n"
             "Thank you for participating in the game! =)"
         )
         try:
