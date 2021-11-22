@@ -7,9 +7,9 @@ from typing import List, Set
 # Variables
 # ==========
 
-# [GAME] 4.9.X - Patch Notes Guessing Game
-SUBMISSION_TITLE: str = "[GAME] 4.9.6 - Patch Notes Guessing Game"
-COMMUNITY_SUBMISSION_TITLE: str = "4.9.6 - Community-revealed Patch Notes"
+# [GAME] 4.10.X - Patch Notes Guessing Game
+SUBMISSION_TITLE: str = "[GAME] 4.10.0 - Patch Notes Guessing Game"
+COMMUNITY_SUBMISSION_TITLE: str = "4.10.0 - Community-revealed Patch Notes"
 GAME_END_TIME: str = "November 27, 2021, 4:00 am UTC"
 
 # ================
