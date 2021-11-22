@@ -186,7 +186,7 @@ def send_message_to_winners(  # noqa: C901
             f"Congratulations {recipient}!\n\n"
             f"You have been chosen by the bot as a winner for the {version_string} Patch Notes Guessing Game!\n\n"
             f"Please contact /u/{STAFF_MEMBER_THAT_HANDS_OUT_REWARDS} via the Reddit Messaging system to obtain your code.\n\n"
-            "You can redeem your reward code here: https://www.heroesofnewerth.com/redeem/\n\n"
+            "Please include your In-Game Username in your message.\n\n"
             "Thank you for participating in the game! =)"
         )
         try:
